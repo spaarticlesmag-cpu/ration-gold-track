@@ -47,6 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // JADAYU Custom Colors
+        gold: {
+          light: "hsl(var(--gold-light))",
+          DEFAULT: "hsl(var(--primary))", 
+          dark: "hsl(var(--gold-dark))",
+        },
+        cream: "hsl(var(--cream))",
+        temple: {
+          shadow: "hsl(var(--temple-shadow))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
