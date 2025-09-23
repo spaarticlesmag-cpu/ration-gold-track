@@ -27,7 +27,7 @@ export const QuotaCard = ({
   };
 
   return (
-    <Card className="shadow-soft hover:shadow-gold transition-all duration-300">
+    <Card className="shadow-soft hover:shadow-gold transition-all duration-200">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold">Your Ration Quota</CardTitle>
@@ -53,10 +53,7 @@ export const QuotaCard = ({
                     {remaining} {item.unit} remaining
                   </span>
                 </div>
-                <Progress 
-                  value={percentage} 
-                  className="h-2"
-                />
+                <Progress value={percentage} className="h-2" />
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Used: {item.used} {item.unit}</span>
                   <span>Total: {item.allocated} {item.unit}</span>

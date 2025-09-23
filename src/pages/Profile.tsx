@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
+import { QRCodeSVG } from 'qrcode.react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Phone, MapPin, CreditCard, FileText, Save, ArrowLeft, Crown, Truck, Users } from 'lucide-react';
@@ -19,6 +20,15 @@ const Profile = () => {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const qrPayload = JSON.stringify({
+    user_id: user?.id,
+    name: profile?.full_name,
+    role: profile?.role,
+    mobile: profile?.mobile_number,
+    address: profile?.address,
+    ration_card_number: profile?.ration_card_number,
+    verify_url: `${window.location.origin}/verify/${user?.id}`,
+  });
   
   const [formData, setFormData] = useState({
     full_name: '',
@@ -291,6 +301,20 @@ const Profile = () => {
             )}
           </CardContent>
         </Card>
+
+        <div className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Your QR Code</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center gap-3">
+              <QRCodeSVG value={qrPayload} size={192} includeMargin className="rounded-md" />
+              <div className="text-xs text-muted-foreground text-center">
+                Delivery partner can scan to view verification details.
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

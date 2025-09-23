@@ -5,6 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
+import Shop from "./pages/Shop";
+import Quota from "./pages/Quota";
+import Track from "./pages/Track";
+import History from "./pages/History";
+import Cart from "./pages/Cart";
+import Payment from "./pages/Payment";
+import Verify from "./pages/Verify";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import CustomerDashboard from "./pages/CustomerDashboard";
@@ -75,10 +82,66 @@ const App = () => (
               }
             />
             <Route
+              path="/shop"
+              element={
+                <ProtectedRoute>
+                  <Shop />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/quota"
+              element={
+                <ProtectedRoute>
+                  <Quota />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/track"
+              element={
+                <ProtectedRoute>
+                  <Track />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/history"
+              element={
+                <ProtectedRoute>
+                  <History />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/profile"
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <Cart />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payment"
+              element={
+                <ProtectedRoute>
+                  <Payment />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/verify/:id"
+              element={
+                <ProtectedRoute>
+                  <Verify />
                 </ProtectedRoute>
               }
             />
