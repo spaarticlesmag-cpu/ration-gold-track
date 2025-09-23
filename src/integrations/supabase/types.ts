@@ -14,7 +14,153 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          price_at_time: number
+          quantity: number
+          ration_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          price_at_time: number
+          quantity: number
+          ration_item_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          price_at_time?: number
+          quantity?: number
+          ration_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_ration_item_id_fkey"
+            columns: ["ration_item_id"]
+            isOneToOne: false
+            referencedRelation: "ration_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_id: string
+          delivered_at: string | null
+          delivery_address: string
+          id: string
+          qr_code: string | null
+          qr_expires_at: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          total_amount: number
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          delivered_at?: string | null
+          delivery_address: string
+          id?: string
+          qr_code?: string | null
+          qr_expires_at?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          total_amount: number
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          delivered_at?: string | null
+          delivery_address?: string
+          id?: string
+          qr_code?: string | null
+          qr_expires_at?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          total_amount?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          aadhaar_number: string | null
+          address: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          mobile_number: string | null
+          ration_card_number: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          aadhaar_number?: string | null
+          address?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          mobile_number?: string | null
+          ration_card_number?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          aadhaar_number?: string | null
+          address?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          mobile_number?: string | null
+          ration_card_number?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ration_items: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          name: string
+          price_per_kg: number
+          stock_quantity: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          price_per_kg: number
+          stock_quantity?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          price_per_kg?: number
+          stock_quantity?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +169,13 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      order_status:
+        | "pending"
+        | "approved"
+        | "out_for_delivery"
+        | "delivered"
+        | "cancelled"
+      user_role: "customer" | "delivery_partner" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +302,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      order_status: [
+        "pending",
+        "approved",
+        "out_for_delivery",
+        "delivered",
+        "cancelled",
+      ],
+      user_role: ["customer", "delivery_partner", "admin"],
+    },
   },
 } as const
