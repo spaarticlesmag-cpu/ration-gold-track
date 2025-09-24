@@ -11,7 +11,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { QRCodeSVG } from 'qrcode.react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Phone, MapPin, CreditCard, FileText, Save, ArrowLeft, Crown, Truck, Users } from 'lucide-react';
+import { User, Phone, MapPin, CreditCard, FileText, Save, ArrowLeft, Crown, Truck, Users, Image as ImageIcon } from 'lucide-react';
+import DocumentUpload from '@/components/DocumentUpload';
 import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
@@ -36,6 +37,8 @@ const Profile = () => {
     address: '',
     aadhaar_number: '',
     ration_card_number: '',
+    aadhaar_document_url: '',
+    ration_card_document_url: '',
   });
 
   useEffect(() => {
@@ -46,6 +49,8 @@ const Profile = () => {
         address: profile.address || '',
         aadhaar_number: profile.aadhaar_number || '',
         ration_card_number: profile.ration_card_number || '',
+        aadhaar_document_url: (profile as any).aadhaar_document_url || '',
+        ration_card_document_url: (profile as any).ration_card_document_url || '',
       });
     }
   }, [profile]);
@@ -76,6 +81,8 @@ const Profile = () => {
           address: formData.address,
           aadhaar_number: formData.aadhaar_number,
           ration_card_number: formData.ration_card_number,
+          aadhaar_document_url: formData.aadhaar_document_url,
+          ration_card_document_url: formData.ration_card_document_url,
         })
         .eq('user_id', user.id);
 
@@ -280,6 +287,19 @@ const Profile = () => {
                         placeholder="Enter your 12-digit Aadhaar number"
                         maxLength={12}
                       />
+                      <div className="pt-2">
+                        <Label className="flex items-center gap-2 mb-2">
+                          <ImageIcon className="w-4 h-4" /> Aadhaar Document (image/pdf)
+                        </Label>
+                        <DocumentUpload
+                          userId={user.id}
+                          bucket="documents"
+                          folder="aadhaar"
+                          label="Upload Aadhaar"
+                          currentUrl={formData.aadhaar_document_url}
+                          onUploaded={(url) => setFormData({ ...formData, aadhaar_document_url: url })}
+                        />
+                      </div>
                     </div>
 
                     <div className="space-y-2">
@@ -294,6 +314,19 @@ const Profile = () => {
                         disabled={!isEditing}
                         placeholder="Enter your ration card number"
                       />
+                      <div className="pt-2">
+                        <Label className="flex items-center gap-2 mb-2">
+                          <ImageIcon className="w-4 h-4" /> Ration Card Document (image/pdf)
+                        </Label>
+                        <DocumentUpload
+                          userId={user.id}
+                          bucket="documents"
+                          folder="ration"
+                          label="Upload Ration Card"
+                          currentUrl={formData.ration_card_document_url}
+                          onUploaded={(url) => setFormData({ ...formData, ration_card_document_url: url })}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
