@@ -8,10 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
-import { Eye, EyeOff, Crown, Truck, Users } from 'lucide-react';
+import { Eye, EyeOff, Crown, Truck, Users, Image as ImageIcon } from 'lucide-react';
+import DocumentUpload from '@/components/DocumentUpload';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
-  const { user, loading, signIn, signUp } = useAuth();
+  const { user, session, loading, signIn, signUp } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   
   // Sign In Form State
@@ -31,6 +33,8 @@ const Auth = () => {
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [aadhaarUrl, setAadhaarUrl] = useState<string>('');
+  const [rationUrl, setRationUrl] = useState<string>('');
 
   if (loading) {
     return (
@@ -65,7 +69,24 @@ const Auth = () => {
       signUpData.address,
       signUpData.role
     );
-    
+    // If a session exists immediately (e.g., email confirmation disabled), persist uploaded doc URLs
+    try {
+      const userId = session?.user?.id;
+      if (userId && (aadhaarUrl || rationUrl)) {
+        await supabase.from('profiles').upsert({
+          user_id: userId,
+          full_name: signUpData.fullName,
+          mobile_number: signUpData.mobile,
+          address: signUpData.address,
+          role: signUpData.role,
+          aadhaar_document_url: aadhaarUrl || null,
+          ration_card_document_url: rationUrl || null,
+        }, { onConflict: 'user_id' });
+      }
+    } catch (err) {
+      console.error('Failed to persist document URLs on signup', err);
+    }
+
     setIsSubmitting(false);
   };
 
@@ -268,6 +289,38 @@ const Auth = () => {
                     </div>
                   </div>
                   
+                  {signUpData.role === 'customer' && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <ImageIcon className="w-4 h-4" /> Documents
+                      </div>
+                      {session?.user?.id ? (
+                        <div className="space-y-3">
+                          <DocumentUpload
+                            userId={session.user.id}
+                            bucket="documents"
+                            folder="aadhaar"
+                            label="Upload Aadhaar (image/pdf)"
+                            currentUrl={aadhaarUrl}
+                            onUploaded={(url) => setAadhaarUrl(url)}
+                          />
+                          <DocumentUpload
+                            userId={session.user.id}
+                            bucket="documents"
+                            folder="ration"
+                            label="Upload Ration Card (image/pdf)"
+                            currentUrl={rationUrl}
+                            onUploaded={(url) => setRationUrl(url)}
+                          />
+                        </div>
+                      ) : (
+                        <div className="text-xs text-muted-foreground">
+                          After creating your account and logging in, upload Aadhaar and Ration card photos from the Profile page.
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <Button
                     type="submit"
                     className="w-full gradient-gold hover:opacity-90"
