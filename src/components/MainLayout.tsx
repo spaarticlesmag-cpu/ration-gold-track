@@ -7,7 +7,7 @@ interface MainLayoutProps {
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-background">
-      <NavHeader userName="Rahul Kumar" userRole="customer" />
+      <NavHeader />
       <main className="container mx-auto px-4 py-6">
         {children}
       </main>

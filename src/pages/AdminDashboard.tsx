@@ -275,10 +275,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream">
-      <NavHeader 
-        userName={profile?.full_name} 
-        userRole="admin" 
-      />
+      <NavHeader />
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">

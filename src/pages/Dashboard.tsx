@@ -120,7 +120,7 @@ export default function Dashboard() {
         style={{ backgroundImage: `url(${templeBg})` }}
       >
         <div className="absolute inset-0 bg-background/80" />
-        <NavHeader userName="Rahul Kumar" userRole="customer" />
+        <NavHeader />
         
         <div className="relative container mx-auto px-4 py-8 text-center">
           <h1 className="text-4xl font-bold gradient-gold bg-clip-text text-transparent mb-2">

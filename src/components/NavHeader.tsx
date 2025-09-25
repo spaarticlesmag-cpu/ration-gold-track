@@ -8,21 +8,36 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/useAuth";
 
 interface NavHeaderProps {
   userName?: string;
   userRole?: "customer" | "delivery" | "admin";
 }
 
-export const NavHeader = ({ userName = "Rahul Kumar", userRole = "customer" }: NavHeaderProps) => {
+export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
+  const { profile, signOut } = useAuth();
   const [notifications] = useState(3);
 
+  // Use auth data if available, otherwise fall back to props
+  const displayName = profile?.full_name || userName || "User";
+  const displayRole = profile?.role || userRole || "customer";
+
   const getRoleDisplay = () => {
-    switch (userRole) {
+    switch (displayRole) {
       case "customer": return "Beneficiary";
-      case "delivery": return "Delivery Partner";
+      case "delivery_partner": return "Delivery Partner";
       case "admin": return "Admin";
       default: return "User";
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      // The auth context will handle the redirect to /auth
+    } catch (error) {
+      console.error('Logout failed:', error);
     }
   };
 
@@ -82,7 +97,7 @@ export const NavHeader = ({ userName = "Rahul Kumar", userRole = "customer" }: N
                 <Button variant="ghost" className="flex items-center space-x-2">
                   <User className="h-5 w-5" />
                   <div className="hidden md:block text-left">
-                    <div className="text-sm font-medium">{userName}</div>
+                    <div className="text-sm font-medium">{displayName}</div>
                     <div className="text-xs text-muted-foreground">{getRoleDisplay()}</div>
                   </div>
                 </Button>
@@ -94,7 +109,7 @@ export const NavHeader = ({ userName = "Rahul Kumar", userRole = "customer" }: N
                     Profile
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign Out
                 </DropdownMenuItem>
