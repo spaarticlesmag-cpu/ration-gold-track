@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History } from "lucide-react";
+import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -55,31 +55,69 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
           </div>
 
           <nav className="hidden md:flex items-center space-x-2">
-            <Button asChild variant="ghost">
-              <Link to="/shop" className="flex items-center gap-2">
-                <ShoppingCart className="h-4 w-4" /> Shop
-              </Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link to="/cart" className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-primary" /> Cart
-              </Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link to="/quota" className="flex items-center gap-2">
-                <BadgePercent className="h-4 w-4" /> Quota
-              </Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link to="/track" className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" /> Track
-              </Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link to="/history" className="flex items-center gap-2">
-                <History className="h-4 w-4" /> History
-              </Link>
-            </Button>
+            {/* Show different navigation items based on user role */}
+            {displayRole === 'customer' && (
+              <>
+                <Button asChild variant="ghost">
+                  <Link to="/shop" className="flex items-center gap-2">
+                    <ShoppingCart className="h-4 w-4" /> Shop
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost">
+                  <Link to="/cart" className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-primary" /> Cart
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost">
+                  <Link to="/quota" className="flex items-center gap-2">
+                    <BadgePercent className="h-4 w-4" /> Quota
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost">
+                  <Link to="/track" className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" /> Track
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost">
+                  <Link to="/history" className="flex items-center gap-2">
+                    <History className="h-4 w-4" /> History
+                  </Link>
+                </Button>
+              </>
+            )}
+            {displayRole === 'delivery_partner' && (
+              <>
+                <Button asChild variant="ghost">
+                  <Link to="/track" className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" /> Track
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost">
+                  <Link to="/qr-scanner" className="flex items-center gap-2">
+                    <QrCode className="h-4 w-4" /> QR Scanner
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost">
+                  <Link to="/history" className="flex items-center gap-2">
+                    <History className="h-4 w-4" /> History
+                  </Link>
+                </Button>
+              </>
+            )}
+            {displayRole === 'admin' && (
+              <>
+                <Button asChild variant="ghost">
+                  <Link to="/track" className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" /> Track
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost">
+                  <Link to="/history" className="flex items-center gap-2">
+                    <History className="h-4 w-4" /> History
+                  </Link>
+                </Button>
+              </>
+            )}
           </nav>
 
           <div className="flex items-center space-x-4">

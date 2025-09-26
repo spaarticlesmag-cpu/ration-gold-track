@@ -14,6 +14,7 @@ import Payment from "./pages/Payment";
 import Verify from "./pages/Verify";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
+import QRScanner from "./pages/QRScanner";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import DeliveryDashboard from "./pages/DeliveryDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -142,6 +143,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Verify />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/qr-scanner"
+              element={
+                <ProtectedRoute>
+                  <QRScanner />
                 </ProtectedRoute>
               }
             />
