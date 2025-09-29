@@ -19,6 +19,8 @@ import CustomerDashboard from "./pages/CustomerDashboard";
 import DeliveryDashboard from "./pages/DeliveryDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import Beneficiaries from "./pages/Beneficiaries";
+import IncomingOrders from "./pages/IncomingOrders";
 
 const queryClient = new QueryClient();
 
@@ -111,6 +113,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <History />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/beneficiaries"
+              element={
+                <ProtectedRoute>
+                  <Beneficiaries />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/incoming-orders"
+              element={
+                <ProtectedRoute>
+                  <IncomingOrders />
                 </ProtectedRoute>
               }
             />

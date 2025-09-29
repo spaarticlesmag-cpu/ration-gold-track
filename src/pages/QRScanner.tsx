@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { NavHeader } from '@/components/NavHeader';
 import { useToast } from '@/hooks/use-toast';
-import { QrCode, Camera, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
+import { QrCode, Camera, CheckCircle, AlertCircle, ArrowLeft, ScanLine } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const QRScanner = () => {
@@ -144,8 +144,10 @@ const QRScanner = () => {
                       playsInline
                       muted
                     />
-                    <div className="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none">
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-primary rounded-lg opacity-50"></div>
+                    <div className="absolute inset-0 rounded-lg pointer-events-none">
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 border-2 border-primary rounded-lg opacity-70 shadow-[0_0_40px_rgba(255,200,0,0.4)]"></div>
+                      <div className="absolute left-6 right-6 h-0.5 bg-primary/70 animate-pulse" style={{ top: '25%' }}></div>
+                      <div className="absolute left-6 right-6 h-0.5 bg-primary/70 animate-pulse" style={{ bottom: '25%' }}></div>
                     </div>
                   </div>
                   <div className="flex gap-2">
