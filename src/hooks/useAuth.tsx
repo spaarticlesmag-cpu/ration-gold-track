@@ -12,6 +12,7 @@ interface Profile {
   address: string;
   aadhaar_number?: string;
   ration_card_number?: string;
+  ration_card_type?: 'yellow' | 'pink' | 'blue' | 'white';
 }
 
 interface AuthContextType {

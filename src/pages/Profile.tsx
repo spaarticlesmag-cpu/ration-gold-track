@@ -11,9 +11,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { QRCodeSVG } from 'qrcode.react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { User, Phone, MapPin, CreditCard, FileText, Save, ArrowLeft, Crown, Truck, Users, Image as ImageIcon } from 'lucide-react';
+import { User, Phone, MapPin, CreditCard, FileText, Save, ArrowLeft, Crown, Truck, Users, Image as ImageIcon, IdCard } from 'lucide-react';
 import DocumentUpload from '@/components/DocumentUpload';
 import { useNavigate } from 'react-router-dom';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Profile = () => {
   const { user, profile, loading, refreshProfile } = useAuth();
@@ -37,6 +38,7 @@ const Profile = () => {
     address: '',
     aadhaar_number: '',
     ration_card_number: '',
+    ration_card_type: (profile as any)?.ration_card_type || 'pink',
     aadhaar_document_url: '',
     ration_card_document_url: '',
   });
@@ -49,6 +51,7 @@ const Profile = () => {
         address: profile.address || '',
         aadhaar_number: profile.aadhaar_number || '',
         ration_card_number: profile.ration_card_number || '',
+        ration_card_type: (profile as any).ration_card_type || 'pink',
         aadhaar_document_url: (profile as any).aadhaar_document_url || '',
         ration_card_document_url: (profile as any).ration_card_document_url || '',
       });
@@ -81,6 +84,7 @@ const Profile = () => {
           address: formData.address,
           aadhaar_number: formData.aadhaar_number,
           ration_card_number: formData.ration_card_number,
+          ration_card_type: formData.ration_card_type,
           aadhaar_document_url: formData.aadhaar_document_url,
           ration_card_document_url: formData.ration_card_document_url,
         })
@@ -314,6 +318,24 @@ const Profile = () => {
                         disabled={!isEditing}
                         placeholder="Enter your ration card number"
                       />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <IdCard className="w-4 h-4" /> Ration Card Type
+                  </Label>
+                  <Select value={formData.ration_card_type} onValueChange={(v) => setFormData({ ...formData, ration_card_type: v })} disabled={!isEditing}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select card type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yellow">Yellow (AAY)</SelectItem>
+                      <SelectItem value="pink">Pink (Priority/BPL)</SelectItem>
+                      <SelectItem value="blue">Blue (APL Subsidy)</SelectItem>
+                      <SelectItem value="white">White (APL Non-Priority)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
                       <div className="pt-2">
                         <Label className="flex items-center gap-2 mb-2">
                           <ImageIcon className="w-4 h-4" /> Ration Card Document (image/pdf)
