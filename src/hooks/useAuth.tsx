@@ -24,6 +24,8 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string, mobile: string, address: string, role?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  devSignIn: (role: 'customer' | 'delivery_partner' | 'admin', opts?: { ration_card_type?: 'yellow' | 'pink' | 'blue' | 'white' }) => void;
+  devSignOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,6 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [devMode, setDevMode] = useState(false);
   const { toast } = useToast();
 
   const fetchProfile = async (userId: string) => {
@@ -72,9 +75,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        if (devMode) return; // Ignore Supabase auth changes in dev mode
         setSession(session);
         setUser(session?.user ?? null);
-        
         if (session?.user) {
           setTimeout(() => {
             fetchProfile(session.user.id);
@@ -82,22 +85,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else {
           setProfile(null);
         }
-        
         setLoading(false);
       }
     );
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        setTimeout(() => {
-          fetchProfile(session.user.id);
-        }, 0);
+      if (!devMode) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          setTimeout(() => {
+            fetchProfile(session.user.id);
+          }, 0);
+        }
       }
-      
       setLoading(false);
     });
 
@@ -172,6 +174,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const devSignIn: AuthContextType["devSignIn"] = (role, opts) => {
+    setDevMode(true);
+    const mockUser = {
+      id: `dev-${role}`,
+      email: `dev+${role}@local.dev`,
+    } as unknown as User;
+    setUser(mockUser);
+    setSession(null);
+    setProfile({
+      id: `dev-prof-${role}`,
+      user_id: mockUser.id,
+      full_name: role === 'admin' ? 'Dev Admin' : role === 'delivery_partner' ? 'Dev Rider' : 'Dev Customer',
+      role,
+      mobile_number: '9999999999',
+      address: role === 'delivery_partner' ? 'Rider Hub, Kochi' : 'Demo Address, Kerala',
+      aadhaar_number: null as any,
+      ration_card_number: role === 'customer' ? 'KRL-DEV-0001' : undefined,
+      ration_card_type: role === 'customer' ? (opts?.ration_card_type || 'pink') : undefined,
+    } as unknown as Profile);
+    setLoading(false);
+  };
+
+  const devSignOut = () => {
+    setDevMode(false);
+    setUser(null);
+    setSession(null);
+    setProfile(null);
+  };
+
   const value = {
     user,
     session,
@@ -181,6 +212,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signUp,
     signOut,
     refreshProfile,
+    devSignIn,
+    devSignOut,
   };
 
   return (

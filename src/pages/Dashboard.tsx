@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ShoppingCart, MapPin, QrCode, History } from "lucide-react";
 import { NavHeader } from "@/components/NavHeader";
 import { QuotaCard } from "@/components/QuotaCard";
@@ -13,6 +13,7 @@ import wheatImg from "@/assets/wheat.jpg";
 import sugarImg from "@/assets/sugar.jpg";
 import { useCart } from "@/hooks/useCart";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface CartItem {
   id: string;
@@ -22,6 +23,7 @@ interface CartItem {
 export default function Dashboard() {
   const navigate = useNavigate();
   const { lines, add, remove, totalItems, totalAmount } = useCart();
+  const { profile } = useAuth();
 
   const quotaData = [
     { name: "Rice", allocated: 10, used: 3, unit: "kg" },
@@ -29,7 +31,7 @@ export default function Dashboard() {
     { name: "Sugar", allocated: 2, used: 0.5, unit: "kg" },
   ];
 
-  const rationItems = [
+  const rationItemsBase = [
     {
       id: "rice",
       name: "Premium Rice",
@@ -58,6 +60,36 @@ export default function Dashboard() {
       subsidized: true,
     },
   ];
+
+  // Adjust items based on ration card type (demo rules)
+  const rationItems = useMemo(() => {
+    const t = (profile as any)?.ration_card_type as 'yellow' | 'pink' | 'blue' | 'white' | undefined;
+    if (!t) return rationItemsBase;
+    const copy = rationItemsBase.map(i => ({ ...i }));
+    if (t === 'yellow') {
+      // Large free allocation example
+      copy.find(i => i.id === 'rice')!.available = 20;
+      copy.find(i => i.id === 'wheat')!.available = 15;
+      copy.forEach(i => { if (i.id !== 'sugar') i.price = 0; });
+    } else if (t === 'pink') {
+      // Per-member handled in Quota; here show subsidized prices
+      copy.find(i => i.id === 'rice')!.price = 2;
+      copy.find(i => i.id === 'wheat')!.price = 2;
+      copy.find(i => i.id === 'rice')!.available = 8;
+      copy.find(i => i.id === 'wheat')!.available = 2;
+    } else if (t === 'blue') {
+      // Subsidy pricing
+      copy.find(i => i.id === 'rice')!.price = 2;
+      copy.find(i => i.id === 'wheat')!.price = 6.7;
+      copy.find(i => i.id === 'rice')!.available = 9;
+      copy.find(i => i.id === 'wheat')!.available = 2;
+    } else if (t === 'white') {
+      // Minimal free allocation
+      copy.find(i => i.id === 'rice')!.available = 2;
+      copy.find(i => i.id === 'wheat')!.available = 0;
+    }
+    return copy;
+  }, [profile]);
 
   const recentOrders = [
     {

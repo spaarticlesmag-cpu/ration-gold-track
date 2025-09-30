@@ -13,7 +13,7 @@ import DocumentUpload from '@/components/DocumentUpload';
 import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
-  const { user, session, loading, signIn, signUp } = useAuth();
+  const { user, session, loading, signIn, signUp, devSignIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   
   // Sign In Form State
@@ -116,43 +116,8 @@ const Auth = () => {
   const quickLogin = async (role: 'customer' | 'delivery_partner' | 'admin') => {
     try {
       setQuickLoading(role);
-      const email = `dev+${role}@jadayu.dev`;
-      const password = 'DevPass123!';
-
-      // Try normal sign-in first
-      const { error: signInErr } = await signIn(email, password);
-      if (!signInErr) return;
-
-      // If sign-in failed, create the user then sign-in
-      await signUp(
-        email,
-        password,
-        role === 'admin' ? 'Demo Admin' : role === 'delivery_partner' ? 'Demo Rider' : 'Demo Customer',
-        '9999999999',
-        role === 'delivery_partner' ? 'Rider Hub, Kochi' : 'Demo Address, Kerala',
-        role
-      );
-
-      // Upsert minimal profile with ration card demo defaults
-      try {
-        const userId = (await supabase.auth.getUser()).data.user?.id;
-        if (userId) {
-          await supabase.from('profiles').upsert({
-            user_id: userId,
-            full_name: role === 'admin' ? 'Demo Admin' : role === 'delivery_partner' ? 'Demo Rider' : 'Demo Customer',
-            mobile_number: '9999999999',
-            address: role === 'delivery_partner' ? 'Rider Hub, Kochi' : 'Demo Address, Kerala',
-            role,
-            ration_card_number: role === 'customer' ? 'KRL-DEV-0001' : null,
-            ration_card_type: role === 'customer' ? 'pink' : null,
-          }, { onConflict: 'user_id' });
-        }
-      } catch (e) {
-        console.error('Quick login profile upsert failed', e);
-      }
-
-      // Sign in the freshly created user
-      await signIn(email, password);
+      // Pure client-side mock auth
+      devSignIn(role, { ration_card_type: 'pink' });
     } finally {
       setQuickLoading(null);
     }
