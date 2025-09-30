@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,7 @@ interface BeneficiaryProfile {
   address: string | null;
   aadhaar_number: string | null;
   ration_card_number: string | null;
+  ration_card_type?: 'yellow' | 'pink' | 'blue' | 'white' | null;
   role: 'customer' | 'delivery_partner' | 'admin';
 }
 
@@ -45,7 +46,17 @@ const Beneficiaries = () => {
     }
   };
 
-  const filtered = items.filter((p) => {
+  // Demo beneficiaries if none come from server
+  const demo: BeneficiaryProfile[] = useMemo(() => ([
+    { id: 'd1', user_id: 'u1', full_name: 'Anitha K', mobile_number: '98470 12345', address: 'Kochi, Ernakulam', aadhaar_number: 'XXXX-XXXX-1234', ration_card_number: 'KRL-AY-0001', ration_card_type: 'yellow', role: 'customer' },
+    { id: 'd2', user_id: 'u2', full_name: 'Rahul M', mobile_number: '97450 98765', address: 'Kazhakootam, Thiruvananthapuram', aadhaar_number: 'XXXX-XXXX-5678', ration_card_number: 'KRL-PL-2309', ration_card_type: 'pink', role: 'customer' },
+    { id: 'd3', user_id: 'u3', full_name: 'Shilpa P', mobile_number: '99610 44556', address: 'Kozhikode', aadhaar_number: 'XXXX-XXXX-7788', ration_card_number: 'KRL-AP-5521', ration_card_type: 'blue', role: 'customer' },
+    { id: 'd4', user_id: 'u4', full_name: 'Vishnu S', mobile_number: '98953 33221', address: 'Thrissur', aadhaar_number: 'XXXX-XXXX-9911', ration_card_number: 'KRL-NP-8876', ration_card_type: 'white', role: 'customer' },
+  ]), []);
+
+  const list = items.length ? items : demo;
+
+  const filtered = list.filter((p) => {
     const q = search.toLowerCase().trim();
     if (!q) return true;
     return (
@@ -127,7 +138,12 @@ const Beneficiaries = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{p.ration_card_number || '—'}</Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{p.ration_card_number || '—'}</Badge>
+                          {p.ration_card_type && (
+                            <Badge variant="secondary">{p.ration_card_type}</Badge>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
