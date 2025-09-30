@@ -126,6 +126,7 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+    scroll-behavior: smooth;
   }
 }
 
@@ -148,5 +149,35 @@ All colors MUST be HSL.
   
   .shadow-soft {
     box-shadow: var(--shadow-soft);
+  }
+
+  /* Premium typography utilities */
+  .heading-premium {
+    @apply font-extrabold tracking-tight;
+    background: var(--gradient-premium);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 1px 0 hsl(var(--gold-light) / 0.2);
+  }
+
+  .subheading-muted {
+    @apply text-sm md:text-base text-muted-foreground;
+  }
+
+  /* Icon sizing helpers for global scale-up */
+  .icon-lg {
+    width: 1.75rem; /* ~28px */
+    height: 1.75rem;
+  }
+  .icon-xl {
+    width: 2rem; /* 32px */
+    height: 2rem;
+  }
+
+  /* Tap target min sizes for touch */
+  .tap-target {
+    min-width: 44px;
+    min-height: 44px;
   }
 }

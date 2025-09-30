@@ -11,6 +11,8 @@ import templeBg from "@/assets/temple-bg.jpg";
 import riceImg from "@/assets/rice.jpg";
 import wheatImg from "@/assets/wheat.jpg";
 import sugarImg from "@/assets/sugar.jpg";
+import { useCart } from "@/hooks/useCart";
+import { useNavigate } from "react-router-dom";
 
 interface CartItem {
   id: string;
@@ -18,7 +20,8 @@ interface CartItem {
 }
 
 export default function Dashboard() {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const navigate = useNavigate();
+  const { lines, add, remove, totalItems, totalAmount } = useCart();
 
   const quotaData = [
     { name: "Rice", allocated: 10, used: 3, unit: "kg" },
@@ -74,42 +77,17 @@ export default function Dashboard() {
   ];
 
   const handleAddToCart = (id: string, quantity: number) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === id);
-      if (existing) {
-        return prev.map(item =>
-          item.id === id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      }
-      return [...prev, { id, quantity }];
-    });
+    const item = rationItems.find(r => r.id === id);
+    if (!item) return;
+    add({ id: item.id, name: item.name, unit: item.unit, price: item.price }, quantity);
   };
 
   const handleRemoveFromCart = (id: string, quantity: number) => {
-    setCart(prev =>
-      prev.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(0, item.quantity - quantity) }
-          : item
-      ).filter(item => item.quantity > 0)
-    );
+    remove(id, quantity);
   };
 
   const getCartQuantity = (id: string) => {
-    return cart.find(item => item.id === id)?.quantity || 0;
-  };
-
-  const getTotalCartItems = () => {
-    return cart.reduce((sum, item) => sum + item.quantity, 0);
-  };
-
-  const getTotalAmount = () => {
-    return cart.reduce((sum, cartItem) => {
-      const item = rationItems.find(r => r.id === cartItem.id);
-      return sum + (item?.price || 0) * cartItem.quantity;
-    }, 0);
+    return lines.find(l => l.id === id)?.quantity || 0;
   };
 
   return (
@@ -123,10 +101,10 @@ export default function Dashboard() {
         <NavHeader />
         
         <div className="relative container mx-auto px-4 py-8 text-center">
-          <h1 className="text-4xl font-bold gradient-gold bg-clip-text text-transparent mb-2">
+          <h1 className="text-5xl md:text-6xl heading-premium mb-3">
             Welcome to JADAYU
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="subheading-muted">
             Smart Ration Delivery Service • Traditional Values, Modern Technology
           </p>
         </div>
@@ -180,42 +158,35 @@ export default function Dashboard() {
                   validUntil="Dec 2024"
                 />
 
-                {cart.length > 0 && (
+                {totalItems > 0 && (
                   <Card className="shadow-gold">
                     <CardHeader>
                       <CardTitle className="flex items-center space-x-2">
                         <ShoppingCart className="w-5 h-5" />
-                        <span>Your Cart ({getTotalCartItems()} items)</span>
+                        <span>Your Cart ({totalItems} items)</span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      {cart.map((cartItem) => {
-                        const item = rationItems.find(r => r.id === cartItem.id);
-                        if (!item) return null;
-                        
-                        return (
-                          <div key={cartItem.id} className="flex justify-between items-center">
-                            <div>
-                              <div className="font-medium">{item.name}</div>
-                              <div className="text-sm text-muted-foreground">
-                                {cartItem.quantity} {item.unit} × ₹{item.price}
-                              </div>
-                            </div>
-                            <div className="font-semibold">
-                              ₹{(item.price * cartItem.quantity).toFixed(2)}
+                      {lines.map((l) => (
+                        <div key={l.id} className="flex justify-between items-center">
+                          <div>
+                            <div className="font-medium">{l.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {l.quantity} {l.unit} × ₹{l.price}
                             </div>
                           </div>
-                        );
-                      })}
+                          <div className="font-semibold">₹{(l.price * l.quantity).toFixed(2)}</div>
+                        </div>
+                      ))}
                       
                       <div className="border-t border-border pt-4">
                         <div className="flex justify-between items-center text-lg font-bold">
                           <span>Total</span>
-                          <span className="text-primary">₹{getTotalAmount().toFixed(2)}</span>
+                          <span className="text-primary">₹{totalAmount.toFixed(2)}</span>
                         </div>
                       </div>
                       
-                      <Button variant="premium" className="w-full">
+                      <Button variant="premium" className="w-full" onClick={() => navigate('/cart')}>
                         Place Order
                       </Button>
                     </CardContent>

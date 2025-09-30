@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode, Users } from "lucide-react";
+import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode, Users, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,8 @@ interface NavHeaderProps {
 export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
   const { profile, signOut } = useAuth();
   const [notifications] = useState(3);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Use auth data if available, otherwise fall back to props
   const displayName = profile?.full_name || userName || "User";
@@ -46,6 +48,18 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
+            {/* Back button: show on all pages except home ("/") */}
+            {location.pathname !== "/" && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="tap-target mr-1"
+                onClick={() => navigate(-1)}
+                aria-label="Go back"
+              >
+                <ArrowLeft className="icon-lg" />
+              </Button>
+            )}
             <Link to="/" className="text-2xl font-bold gradient-gold bg-clip-text text-transparent">
               JADAYU
             </Link>
@@ -60,27 +74,27 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant="ghost">
                   <Link to="/shop" className="flex items-center gap-2">
-                    <ShoppingCart className="h-4 w-4" /> Shop
+                    <ShoppingCart className="icon-lg" /> Shop
                   </Link>
                 </Button>
                 <Button asChild variant="ghost">
                   <Link to="/cart" className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-primary" /> Cart
+                    <span className="h-3 w-3 rounded-full bg-primary" /> Cart
                   </Link>
                 </Button>
                 <Button asChild variant="ghost">
                   <Link to="/quota" className="flex items-center gap-2">
-                    <BadgePercent className="h-4 w-4" /> Quota
+                    <BadgePercent className="icon-lg" /> Quota
                   </Link>
                 </Button>
                 <Button asChild variant="ghost">
                   <Link to="/track" className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" /> Track
+                    <MapPin className="icon-lg" /> Track
                   </Link>
                 </Button>
                 <Button asChild variant="ghost">
                   <Link to="/history" className="flex items-center gap-2">
-                    <History className="h-4 w-4" /> History
+                    <History className="icon-lg" /> History
                   </Link>
                 </Button>
               </>
@@ -89,17 +103,17 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant="ghost">
                   <Link to="/track" className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" /> Track
+                    <MapPin className="icon-lg" /> Track
                   </Link>
                 </Button>
                 <Button asChild variant="ghost">
                   <Link to="/qr-scanner" className="flex items-center gap-2">
-                    <QrCode className="h-4 w-4" /> QR Scanner
+                    <QrCode className="icon-lg" /> QR Scanner
                   </Link>
                 </Button>
                 <Button asChild variant="ghost">
                   <Link to="/history" className="flex items-center gap-2">
-                    <History className="h-4 w-4" /> History
+                    <History className="icon-lg" /> History
                   </Link>
                 </Button>
               </>
@@ -108,17 +122,17 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant="ghost">
                   <Link to="/track" className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" /> Track
+                    <MapPin className="icon-lg" /> Track
                   </Link>
                 </Button>
                 <Button asChild variant="ghost">
                   <Link to="/beneficiaries" className="flex items-center gap-2">
-                    <Users className="h-4 w-4" /> Beneficiaries
+                    <Users className="icon-lg" /> Beneficiaries
                   </Link>
                 </Button>
                 <Button asChild variant="ghost">
                   <Link to="/history" className="flex items-center gap-2">
-                    <History className="h-4 w-4" /> History
+                    <History className="icon-lg" /> History
                   </Link>
                 </Button>
               </>
@@ -128,8 +142,8 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
           <div className="flex items-center space-x-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="relative tap-target">
+                  <Bell className="icon-lg" />
                   {notifications > 0 && (
                     <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {notifications}
@@ -159,8 +173,8 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2">
-                  <User className="h-5 w-5" />
+                <Button variant="ghost" className="flex items-center space-x-2 tap-target">
+                  <User className="icon-lg" />
                   <div className="hidden md:block text-left">
                     <div className="text-sm font-medium">{displayName}</div>
                     <div className="text-xs text-muted-foreground">{getRoleDisplay()}</div>
@@ -183,8 +197,8 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <Menu className="h-5 w-5" />
+                <Button variant="ghost" size="icon" className="md:hidden tap-target">
+                  <Menu className="icon-lg" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
