@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
-import { Eye, EyeOff, Crown, Truck, Users, Image as ImageIcon } from 'lucide-react';
+import { Eye, EyeOff, Crown, Truck, Users, Image as ImageIcon, Sparkles } from 'lucide-react';
 import DocumentUpload from '@/components/DocumentUpload';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -35,6 +35,7 @@ const Auth = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [aadhaarUrl, setAadhaarUrl] = useState<string>('');
   const [rationUrl, setRationUrl] = useState<string>('');
+  const [quickLoading, setQuickLoading] = useState<string | null>(null);
 
   if (loading) {
     return (
@@ -109,6 +110,51 @@ const Auth = () => {
         return 'Delivery Partner';
       default:
         return 'Customer/Beneficiary';
+    }
+  };
+
+  const quickLogin = async (role: 'customer' | 'delivery_partner' | 'admin') => {
+    try {
+      setQuickLoading(role);
+      const email = `dev+${role}@jadayu.dev`;
+      const password = 'DevPass123!';
+
+      // Try normal sign-in first
+      const { error: signInErr } = await signIn(email, password);
+      if (!signInErr) return;
+
+      // If sign-in failed, create the user then sign-in
+      await signUp(
+        email,
+        password,
+        role === 'admin' ? 'Demo Admin' : role === 'delivery_partner' ? 'Demo Rider' : 'Demo Customer',
+        '9999999999',
+        role === 'delivery_partner' ? 'Rider Hub, Kochi' : 'Demo Address, Kerala',
+        role
+      );
+
+      // Upsert minimal profile with ration card demo defaults
+      try {
+        const userId = (await supabase.auth.getUser()).data.user?.id;
+        if (userId) {
+          await supabase.from('profiles').upsert({
+            user_id: userId,
+            full_name: role === 'admin' ? 'Demo Admin' : role === 'delivery_partner' ? 'Demo Rider' : 'Demo Customer',
+            mobile_number: '9999999999',
+            address: role === 'delivery_partner' ? 'Rider Hub, Kochi' : 'Demo Address, Kerala',
+            role,
+            ration_card_number: role === 'customer' ? 'KRL-DEV-0001' : null,
+            ration_card_type: role === 'customer' ? 'pink' : null,
+          }, { onConflict: 'user_id' });
+        }
+      } catch (e) {
+        console.error('Quick login profile upsert failed', e);
+      }
+
+      // Sign in the freshly created user
+      await signIn(email, password);
+    } finally {
+      setQuickLoading(null);
     }
   };
 
@@ -331,6 +377,25 @@ const Auth = () => {
                 </form>
               </TabsContent>
             </Tabs>
+
+            {/* Developer Quick Login */}
+            <div className="mt-6">
+              <div className="flex items-center gap-2 text-sm font-medium mb-2">
+                <Sparkles className="w-4 h-4 text-primary" /> Developer Quick Login
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <Button variant="outline" className="w-full" onClick={() => quickLogin('customer')} disabled={!!quickLoading}>
+                  {quickLoading === 'customer' ? 'Loading…' : 'Customer'}
+                </Button>
+                <Button variant="outline" className="w-full" onClick={() => quickLogin('delivery_partner')} disabled={!!quickLoading}>
+                  {quickLoading === 'delivery_partner' ? 'Loading…' : 'Delivery Partner'}
+                </Button>
+                <Button variant="outline" className="w-full" onClick={() => quickLogin('admin')} disabled={!!quickLoading}>
+                  {quickLoading === 'admin' ? 'Loading…' : 'Admin'}
+                </Button>
+              </div>
+              <div className="text-xs text-muted-foreground mt-2">Creates demo user if missing, then signs in instantly.</div>
+            </div>
           </CardContent>
         </Card>
       </div>
