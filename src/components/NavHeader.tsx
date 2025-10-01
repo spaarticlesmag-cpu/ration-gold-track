@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
+import { MobileSidebar } from "@/components/MobileSidebar";
 
 interface NavHeaderProps {
   userName?: string;
@@ -33,6 +34,28 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
       default: return "User";
     }
   };
+
+  const getRoleBranding = () => {
+    switch (displayRole) {
+      case "delivery_partner": 
+        return {
+          color: "text-red-600",
+          subtitle: "Delivery Partners"
+        };
+      case "admin":
+        return {
+          color: "text-amber-800",
+          subtitle: "Admin Panel"
+        };
+      default:
+        return {
+          color: "gradient-gold bg-clip-text text-transparent",
+          subtitle: "Smart Ration Delivery Service"
+        };
+    }
+  };
+
+  const branding = getRoleBranding();
 
   const handleLogout = async () => {
     try {
@@ -60,11 +83,11 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                 <ArrowLeft className="icon-lg" />
               </Button>
             )}
-            <Link to="/" className="text-2xl font-bold gradient-gold bg-clip-text text-transparent">
+            <Link to="/" className={`text-2xl font-bold ${branding.color}`}>
               JADAYU
             </Link>
             <div className="hidden md:block text-sm text-muted-foreground">
-              Smart Ration Delivery Service
+              {branding.subtitle}
             </div>
           </div>
 
@@ -195,63 +218,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden tap-target">
-                  <Menu className="icon-lg" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                {displayRole === 'customer' && (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link to="/shop">Shop</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/cart">Cart</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/quota">Quota</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/track">Track</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/history">History</Link>
-                    </DropdownMenuItem>
-                  </>
-                )}
-                {displayRole === 'delivery_partner' && (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link to="/track">Track</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/qr-scanner">QR Scanner</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/history">History</Link>
-                    </DropdownMenuItem>
-                  </>
-                )}
-                {displayRole === 'admin' && (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link to="/track">Track</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/beneficiaries">Beneficiaries</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/incoming-orders">Incoming Orders</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to="/history">History</Link>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <MobileSidebar userName={displayName} userRole={displayRole} />
           </div>
         </div>
       </div>
