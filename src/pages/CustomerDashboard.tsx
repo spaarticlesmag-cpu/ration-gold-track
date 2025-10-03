@@ -70,7 +70,7 @@ const CustomerDashboard = () => {
         <CardContent className="space-y-4">
           <div className="text-center">
             <p className="text-lg text-muted-foreground mb-4">
-              How was your ration delivery experience?
+              How was your ration delivery?
             </p>
             
             <div className="flex justify-center gap-2 mb-4">
