@@ -149,22 +149,22 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
 
           {/* Footer Actions */}
           <div className="p-6 border-t border-border space-y-3">
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-lg tap-target"
+            <Link
+              to="/incoming-orders"
               onClick={() => setOpen(false)}
+              className="flex items-center w-full justify-start text-lg tap-target p-2 rounded-md hover:bg-muted"
             >
               <Bell className="icon-lg mr-3" />
-              Notifications
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-lg tap-target"
+              <span>Notifications</span>
+            </Link>
+            <Link
+              to="/profile"
               onClick={() => setOpen(false)}
+              className="flex items-center w-full justify-start text-lg tap-target p-2 rounded-md hover:bg-muted"
             >
               <User className="icon-lg mr-3" />
-              Profile
-            </Button>
+              <span>Profile</span>
+            </Link>
             <Button
               variant="ghost"
               className="w-full justify-start text-lg text-destructive hover:text-destructive tap-target"

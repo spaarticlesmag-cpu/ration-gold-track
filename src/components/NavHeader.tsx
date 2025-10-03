@@ -163,60 +163,62 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative tap-target">
-                  <Bell className="icon-lg" />
-                  {notifications > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {notifications}
-                    </span>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-72">
-                <div className="px-3 py-2 text-sm font-medium">Notifications</div>
-                <div className="px-3 pb-2 text-xs text-muted-foreground">Incoming and delivered orders</div>
-                <div className="max-h-60 overflow-auto">
-                  {/* TODO: Replace with live data from Supabase */}
-                  <div className="px-3 py-2 hover:bg-muted/50 cursor-default">
-                    <div className="text-sm">Order #ORD001 is incoming</div>
-                    <div className="text-xs text-muted-foreground">2 min ago</div>
+            {/* Hide notification/profile on small screens to reduce clutter */}
+            <div className="hidden md:flex items-center space-x-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative tap-target">
+                    <Bell className="icon-lg" />
+                    {notifications > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {notifications}
+                      </span>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-72">
+                  <div className="px-3 py-2 text-sm font-medium">Notifications</div>
+                  <div className="px-3 pb-2 text-xs text-muted-foreground">Incoming and delivered orders</div>
+                  <div className="max-h-60 overflow-auto">
+                    <div className="px-3 py-2 hover:bg-muted/50 cursor-default">
+                      <div className="text-sm">Order #ORD001 is incoming</div>
+                      <div className="text-xs text-muted-foreground">2 min ago</div>
+                    </div>
+                    <div className="px-3 py-2 hover:bg-muted/50 cursor-default">
+                      <div className="text-sm">Order #ORD003 delivered successfully</div>
+                      <div className="text-xs text-muted-foreground">12 min ago</div>
+                    </div>
                   </div>
-                  <div className="px-3 py-2 hover:bg-muted/50 cursor-default">
-                    <div className="text-sm">Order #ORD003 delivered successfully</div>
-                    <div className="text-xs text-muted-foreground">12 min ago</div>
+                  <div className="px-3 py-2 text-center text-xs">
+                    <Link to="/incoming-orders" className="text-primary hover:underline">View Incoming Orders</Link>
                   </div>
-                </div>
-                <div className="px-3 py-2 text-center text-xs">
-                  <Link to="/incoming-orders" className="text-primary hover:underline">View Incoming Orders</Link>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 tap-target">
-                  <User className="icon-lg" />
-                  <div className="hidden md:block text-left">
-                    <div className="text-sm font-medium">{displayName}</div>
-                    <div className="text-xs text-muted-foreground">{getRoleDisplay()}</div>
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link to="/profile" className="flex items-center">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center space-x-2 tap-target">
+                    <User className="icon-lg" />
+                    <div className="hidden md:block text-left">
+                      <div className="text-sm font-medium">{displayName}</div>
+                      <div className="text-xs text-muted-foreground">{getRoleDisplay()}</div>
+                    </div>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
             <MobileSidebar userName={displayName} userRole={displayRole} />
           </div>
