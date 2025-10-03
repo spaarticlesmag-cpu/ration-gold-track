@@ -86,7 +86,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
           <Menu className="icon-lg" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-80 p-0">
+      <SheetContent side="left" className="w-64 p-0">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="p-6 border-b border-border">
@@ -103,14 +103,6 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
                   Smart Ration Delivery Service
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setOpen(false)}
-                className="tap-target"
-              >
-                <X className="icon-lg" />
-              </Button>
             </div>
           </div>
 
