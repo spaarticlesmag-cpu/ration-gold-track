@@ -31,6 +31,17 @@ const Auth = () => {
     address: '',
     role: 'customer',
   });
+
+  // Ration Card Data State
+  const [rationCardData, setRationCardData] = useState({
+    ration_card_type: 'pink' as 'yellow' | 'pink' | 'blue' | 'white',
+    ration_card_number: '',
+    household_members: 1,
+    aadhaar_number: '',
+    government_id: '',
+    card_issue_date: '',
+    card_expiry_date: '',
+  });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [aadhaarUrl, setAadhaarUrl] = useState<string>('');
@@ -62,31 +73,21 @@ const Auth = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
+    const cardData = signUpData.role === 'customer' ? {
+      ...rationCardData,
+      aadhaar_document_url: aadhaarUrl || undefined,
+      ration_card_document_url: rationUrl || undefined,
+    } : undefined;
+    
     await signUp(
       signUpData.email,
       signUpData.password,
       signUpData.fullName,
       signUpData.mobile,
       signUpData.address,
-      signUpData.role
+      signUpData.role,
+      cardData
     );
-    // If a session exists immediately (e.g., email confirmation disabled), persist uploaded doc URLs
-    try {
-      const userId = session?.user?.id;
-      if (userId && (aadhaarUrl || rationUrl)) {
-        await supabase.from('profiles').upsert({
-          user_id: userId,
-          full_name: signUpData.fullName,
-          mobile_number: signUpData.mobile,
-          address: signUpData.address,
-          role: signUpData.role,
-          aadhaar_document_url: aadhaarUrl || null,
-          ration_card_document_url: rationUrl || null,
-        }, { onConflict: 'user_id' });
-      }
-    } catch (err) {
-      console.error('Failed to persist document URLs on signup', err);
-    }
 
     setIsSubmitting(false);
   };
@@ -275,6 +276,128 @@ const Auth = () => {
                       required
                     />
                   </div>
+
+                  {signUpData.role === 'customer' && (
+                    <>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm font-medium">
+                          <IdCard className="w-4 h-4" /> Ration Card Information
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="ration-card-type">Card Type</Label>
+                            <Select
+                              value={rationCardData.ration_card_type}
+                              onValueChange={(value) => setRationCardData({ ...rationCardData, ration_card_type: value as 'yellow' | 'pink' | 'blue' | 'white' })}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select card type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="yellow">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    Yellow (AAY) - Poorest of the poor
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="pink">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-pink-500"></div>
+                                    Pink (Priority/BPL) - Below Poverty Line
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="blue">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                                    Blue (APL Subsidy) - Above Poverty Line with subsidy
+                                  </div>
+                                </SelectItem>
+                                <SelectItem value="white">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-gray-300 border"></div>
+                                    White (APL Non-Priority) - Above Poverty Line
+                                  </div>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="ration-card-number">Ration Card Number</Label>
+                            <Input
+                              id="ration-card-number"
+                              type="text"
+                              placeholder="Enter ration card number"
+                              value={rationCardData.ration_card_number}
+                              onChange={(e) => setRationCardData({ ...rationCardData, ration_card_number: e.target.value })}
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="household-members">Household Members</Label>
+                            <Input
+                              id="household-members"
+                              type="number"
+                              min="1"
+                              max="12"
+                              placeholder="Number of family members"
+                              value={rationCardData.household_members}
+                              onChange={(e) => setRationCardData({ ...rationCardData, household_members: parseInt(e.target.value) || 1 })}
+                              required
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="aadhaar-number">Aadhaar Number</Label>
+                            <Input
+                              id="aadhaar-number"
+                              type="text"
+                              placeholder="Enter Aadhaar number"
+                              value={rationCardData.aadhaar_number}
+                              onChange={(e) => setRationCardData({ ...rationCardData, aadhaar_number: e.target.value })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="government-id">Government ID</Label>
+                            <Input
+                              id="government-id"
+                              type="text"
+                              placeholder="Enter government ID"
+                              value={rationCardData.government_id}
+                              onChange={(e) => setRationCardData({ ...rationCardData, government_id: e.target.value })}
+                            />
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="card-issue-date">Card Issue Date</Label>
+                            <Input
+                              id="card-issue-date"
+                              type="date"
+                              value={rationCardData.card_issue_date}
+                              onChange={(e) => setRationCardData({ ...rationCardData, card_issue_date: e.target.value })}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="card-expiry-date">Card Expiry Date</Label>
+                          <Input
+                            id="card-expiry-date"
+                            type="date"
+                            value={rationCardData.card_expiry_date}
+                            onChange={(e) => setRationCardData({ ...rationCardData, card_expiry_date: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                   
                   <div className="space-y-2">
                     <Label htmlFor="signup-password">Password</Label>

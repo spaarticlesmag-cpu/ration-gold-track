@@ -3,10 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import { NavHeader } from '@/components/NavHeader';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, MapPin, Phone, IdCard, Search } from 'lucide-react';
+import { Users, MapPin, Phone, IdCard, Search, CheckCircle } from 'lucide-react';
+import VerificationDialog from '@/components/VerificationDialog';
 
 interface BeneficiaryProfile {
   id: string;
@@ -17,6 +19,13 @@ interface BeneficiaryProfile {
   aadhaar_number: string | null;
   ration_card_number: string | null;
   ration_card_type?: 'yellow' | 'pink' | 'blue' | 'white' | null;
+  household_members?: number | null;
+  verification_status?: 'pending' | 'verified' | 'rejected' | 'expired' | null;
+  verification_notes?: string | null;
+  verified_at?: string | null;
+  government_id?: string | null;
+  card_issue_date?: string | null;
+  card_expiry_date?: string | null;
   role: 'customer' | 'delivery_partner' | 'admin';
 }
 
@@ -25,6 +34,8 @@ const Beneficiaries = () => {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<BeneficiaryProfile[]>([]);
   const [search, setSearch] = useState('');
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState<BeneficiaryProfile | null>(null);
+  const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchBeneficiaries();
@@ -44,6 +55,15 @@ const Beneficiaries = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleVerifyBeneficiary = (beneficiary: BeneficiaryProfile) => {
+    setSelectedBeneficiary(beneficiary);
+    setIsVerificationDialogOpen(true);
+  };
+
+  const handleVerificationComplete = () => {
+    fetchBeneficiaries(); // Refresh the list
   };
 
   // Demo beneficiaries if none come from server
@@ -115,6 +135,10 @@ const Beneficiaries = () => {
                     <TableHead>Address</TableHead>
                     <TableHead>Aadhaar</TableHead>
                     <TableHead>Ration Card</TableHead>
+                    <TableHead>Card Type</TableHead>
+                    <TableHead>Members</TableHead>
+                    <TableHead>Status</TableHead>
+                    {profile?.role === 'admin' && <TableHead>Actions</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -140,16 +164,58 @@ const Beneficiaries = () => {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Badge variant="outline">{p.ration_card_number || '—'}</Badge>
-                          {p.ration_card_type && (
-                            <Badge variant="secondary">{p.ration_card_type}</Badge>
-                          )}
                         </div>
                       </TableCell>
+                      <TableCell>
+                        {p.ration_card_type && (
+                          <div className="flex items-center gap-2">
+                            <div className={`w-3 h-3 rounded-full ${
+                              p.ration_card_type === 'yellow' ? 'bg-yellow-500' :
+                              p.ration_card_type === 'pink' ? 'bg-pink-500' :
+                              p.ration_card_type === 'blue' ? 'bg-blue-500' :
+                              'bg-gray-300 border'
+                            }`}></div>
+                            <span className="text-sm capitalize">{p.ration_card_type}</span>
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{p.household_members || '—'}</span>
+                      </TableCell>
+                      <TableCell>
+                        {p.verification_status && (
+                          <Badge 
+                            variant={
+                              p.verification_status === 'verified' ? 'default' :
+                              p.verification_status === 'pending' ? 'secondary' :
+                              'destructive'
+                            }
+                            className={
+                              p.verification_status === 'verified' ? 'bg-green-500' : ''
+                            }
+                          >
+                            {p.verification_status}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      {profile?.role === 'admin' && (
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleVerifyBeneficiary(p)}
+                            className="flex items-center gap-1"
+                          >
+                            <CheckCircle className="w-3 h-3" />
+                            Verify
+                          </Button>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))}
                   {filtered.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground">
+                      <TableCell colSpan={profile?.role === 'admin' ? 9 : 8} className="text-center text-muted-foreground">
                         No beneficiaries found.
                       </TableCell>
                     </TableRow>
@@ -160,6 +226,19 @@ const Beneficiaries = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Verification Dialog */}
+      {selectedBeneficiary && (
+        <VerificationDialog
+          isOpen={isVerificationDialogOpen}
+          onClose={() => {
+            setIsVerificationDialogOpen(false);
+            setSelectedBeneficiary(null);
+          }}
+          beneficiary={selectedBeneficiary}
+          onVerificationComplete={handleVerificationComplete}
+        />
+      )}
     </div>
   );
 };

@@ -3,6 +3,18 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+interface RationCardData {
+  ration_card_type: 'yellow' | 'pink' | 'blue' | 'white';
+  ration_card_number: string;
+  household_members: number;
+  aadhaar_number?: string;
+  government_id?: string;
+  card_issue_date?: string;
+  card_expiry_date?: string;
+  aadhaar_document_url?: string;
+  ration_card_document_url?: string;
+}
+
 interface Profile {
   id: string;
   user_id: string;
@@ -13,6 +25,16 @@ interface Profile {
   aadhaar_number?: string;
   ration_card_number?: string;
   ration_card_type?: 'yellow' | 'pink' | 'blue' | 'white';
+  household_members?: number;
+  verification_status?: 'pending' | 'verified' | 'rejected' | 'expired';
+  verification_notes?: string;
+  verified_at?: string;
+  verified_by?: string;
+  aadhaar_document_url?: string;
+  ration_card_document_url?: string;
+  government_id?: string;
+  card_issue_date?: string;
+  card_expiry_date?: string;
 }
 
 interface AuthContextType {
@@ -21,7 +43,7 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string, mobile: string, address: string, role?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, mobile: string, address: string, role?: string, rationCardData?: RationCardData) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   devSignIn: (role: 'customer' | 'delivery_partner' | 'admin', opts?: { ration_card_type?: 'yellow' | 'pink' | 'blue' | 'white' }) => void;
@@ -129,7 +151,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     fullName: string, 
     mobile: string, 
     address: string, 
-    role: string = 'customer'
+    role: string = 'customer',
+    rationCardData?: RationCardData
   ) => {
     const redirectUrl = `${window.location.origin}/`;
     
@@ -143,6 +166,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           mobile_number: mobile,
           address: address,
           role: role,
+          ...(rationCardData && {
+            ration_card_type: rationCardData.ration_card_type,
+            ration_card_number: rationCardData.ration_card_number,
+            household_members: rationCardData.household_members,
+            aadhaar_number: rationCardData.aadhaar_number,
+            government_id: rationCardData.government_id,
+            card_issue_date: rationCardData.card_issue_date,
+            card_expiry_date: rationCardData.card_expiry_date,
+            aadhaar_document_url: rationCardData.aadhaar_document_url,
+            ration_card_document_url: rationCardData.ration_card_document_url,
+          })
         }
       }
     });
