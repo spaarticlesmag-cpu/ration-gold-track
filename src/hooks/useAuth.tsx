@@ -94,10 +94,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    let didResolve = false;
+
+    // Safety timeout to avoid blocking UI if network stalls
+    const safetyTimeout = setTimeout(() => {
+      if (!didResolve) {
+        setLoading(false);
+      }
+    }, 4000);
+
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (devMode) return; // Ignore Supabase auth changes in dev mode
+        didResolve = true;
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
@@ -112,20 +122,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!devMode) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-          }, 0);
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (!devMode) {
+          didResolve = true;
+          setSession(session);
+          setUser(session?.user ?? null);
+          if (session?.user) {
+            setTimeout(() => {
+              fetchProfile(session.user.id);
+            }, 0);
+          }
         }
-      }
-      setLoading(false);
-    });
+        setLoading(false);
+      })
+      .catch(() => {
+        // Network or API failure: do not block UI
+        setLoading(false);
+      });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(safetyTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {

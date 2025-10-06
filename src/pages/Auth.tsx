@@ -8,9 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
-import { Eye, EyeOff, Crown, Truck, Users, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Crown, Truck, Users, Image as ImageIcon, Sparkles, IdCard } from 'lucide-react';
 import DocumentUpload from '@/components/DocumentUpload';
-import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
   const { user, session, loading, signIn, signUp, devSignIn } = useAuth();

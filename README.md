@@ -60,6 +60,39 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Local development
+
+Install deps and run the dev server:
+
+```bash
+npm i
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+## Vercel deployment
+
+This repo includes `vercel.json` to enable SPA rewrites so client routes work when refreshing or deep linking. Ensure your build outputs to `dist` (Vite default).
+
+## Firebase (optional migration)
+
+If you prefer Firebase over Supabase, add these environment variables (Vite format) in your local `.env` and in Vercel Project Settings → Environment Variables:
+
+- VITE_FIREBASE_API_KEY
+- VITE_FIREBASE_AUTH_DOMAIN
+- VITE_FIREBASE_PROJECT_ID
+- VITE_FIREBASE_STORAGE_BUCKET
+- VITE_FIREBASE_MESSAGING_SENDER_ID
+- VITE_FIREBASE_APP_ID
+- VITE_FIREBASE_MEASUREMENT_ID (optional)
+
+A minimal Firebase client is scaffolded at `src/integrations/firebase/client.ts`. Wiring auth, profile storage, and document uploads to Firebase requires replacing Supabase usage in `src/hooks/useAuth.tsx`, `src/components/DocumentUpload.tsx`, and pages that query `profiles` with Firestore and Firebase Auth equivalents.
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/ab4ae2f9-2cdb-4d5d-a568-cf5b96cac09f) and click on Share -> Publish.
