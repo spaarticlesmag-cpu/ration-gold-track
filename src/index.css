@@ -180,4 +180,16 @@ All colors MUST be HSL.
     min-width: 44px;
     min-height: 44px;
   }
+
+  /* Ensure maps stay within their container and below overlays */
+  .map-wrapper {
+    position: relative;
+    isolation: isolate;
+  }
+  .map-wrapper .leaflet-container,
+  .map-wrapper .leaflet-pane,
+  .map-wrapper .leaflet-top,
+  .map-wrapper .leaflet-bottom {
+    z-index: 0 !important;
+  }
 }

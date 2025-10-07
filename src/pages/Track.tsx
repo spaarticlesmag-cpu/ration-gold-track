@@ -67,7 +67,7 @@ export default function Track() {
           <div className="text-sm text-muted-foreground">ETA: <span className="font-semibold text-foreground">{etaMinutes} min</span></div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="w-full h-[380px] md:h-[460px] rounded-lg overflow-hidden border border-border">
+          <div className="map-wrapper w-full h-[380px] md:h-[460px] rounded-lg overflow-hidden border border-border">
             <MapContainer center={pickup} zoom={12} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
               <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
