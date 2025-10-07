@@ -78,6 +78,18 @@ const AdminDashboard = () => {
     image_url: '',
   });
 
+  // Demo fallbacks when backend is empty/unavailable
+  const demoItems: RationItem[] = [
+    { id: 'demo-rice', name: 'Rice', price_per_kg: 25.5, stock_quantity: 240, image_url: '' },
+    { id: 'demo-wheat', name: 'Wheat', price_per_kg: 18.75, stock_quantity: 160, image_url: '' },
+    { id: 'demo-sugar', name: 'Sugar', price_per_kg: 35.0, stock_quantity: 80, image_url: '' },
+  ];
+  const demoRecentOrders: Order[] = [
+    { id: 'DEMO-ORD-1001', customer_id: 'demo-c1', total_amount: 420.0, status: 'delivered', created_at: new Date().toISOString(), profiles: { full_name: 'Anita Devi', mobile_number: '+91 90000 11111' } },
+    { id: 'DEMO-ORD-1002', customer_id: 'demo-c2', total_amount: 260.0, status: 'approved', created_at: new Date(Date.now() - 86400000).toISOString(), profiles: { full_name: 'Vijay Kumar', mobile_number: '+91 90000 22222' } },
+    { id: 'DEMO-ORD-1003', customer_id: 'demo-c3', total_amount: 780.0, status: 'out_for_delivery', created_at: new Date(Date.now() - 2*86400000).toISOString(), profiles: { full_name: 'Roshni', mobile_number: '+91 90000 33333' } },
+  ];
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -102,9 +114,12 @@ const AdminDashboard = () => {
         .order('name');
 
       if (error) throw error;
-      setItems(data || []);
+      const rows = data || [];
+      setItems(rows.length > 0 ? rows : demoItems);
     } catch (error) {
       console.error('Error fetching items:', error);
+      // fallback to demo data on failure
+      setItems(demoItems);
     }
   };
 
@@ -123,9 +138,12 @@ const AdminDashboard = () => {
         .limit(10);
 
       if (error) throw error;
-      setOrders((data || []) as Order[]);
+      const rows = (data || []) as Order[];
+      setOrders(rows.length > 0 ? rows : demoRecentOrders);
     } catch (error) {
       console.error('Error fetching orders:', error);
+      // fallback to demo data on failure
+      setOrders(demoRecentOrders);
     }
   };
 
@@ -136,8 +154,8 @@ const AdminDashboard = () => {
         .from('orders')
         .select('total_amount, status');
 
-      const totalOrders = orderStats?.length || 0;
-      const totalRevenue = orderStats?.reduce((sum, order) => sum + parseFloat(order.total_amount.toString()), 0) || 0;
+      const totalOrders = (orderStats?.length || 0) || demoRecentOrders.length;
+      const totalRevenue = (orderStats?.reduce((sum, order) => sum + parseFloat(order.total_amount.toString()), 0) || 0) || demoRecentOrders.reduce((s, o) => s + o.total_amount, 0);
 
       // Fetch active customers count
       const { count: activeCustomers } = await supabase
@@ -146,16 +164,24 @@ const AdminDashboard = () => {
         .eq('role', 'customer');
 
       // Calculate inventory value
-      const inventoryValue = items.reduce((sum, item) => sum + (item.price_per_kg * item.stock_quantity), 0);
+      const sourceItems = items.length > 0 ? items : demoItems;
+      const inventoryValue = sourceItems.reduce((sum, item) => sum + (item.price_per_kg * item.stock_quantity), 0);
 
       setStats({
-        totalOrders,
+        totalOrders: totalOrders || demoRecentOrders.length,
         totalRevenue,
-        activeCustomers: activeCustomers || 0,
+        activeCustomers: (activeCustomers || 0) || 128,
         inventoryValue,
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
+      // demo fallback
+      setStats({
+        totalOrders: demoRecentOrders.length,
+        totalRevenue: demoRecentOrders.reduce((s, o) => s + o.total_amount, 0),
+        activeCustomers: 128,
+        inventoryValue: demoItems.reduce((sum, item) => sum + (item.price_per_kg * item.stock_quantity), 0),
+      });
     }
   };
 

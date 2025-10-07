@@ -39,12 +39,12 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
     switch (displayRole) {
       case "delivery_partner": 
         return {
-          color: "text-red-600",
+          color: "gradient-gold bg-clip-text text-transparent",
           subtitle: "Delivery Partners"
         };
       case "admin":
         return {
-          color: "text-amber-800",
+          color: "gradient-gold bg-clip-text text-transparent",
           subtitle: "Admin Panel"
         };
       default:
