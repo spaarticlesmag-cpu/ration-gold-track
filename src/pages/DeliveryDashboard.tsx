@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface Order {
   id: string;
@@ -95,6 +96,12 @@ const DeliveryDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showMap, setShowMap] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [scannedCode, setScannedCode] = useState<string | null>(null);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     // Using demo orders instead of fetching from database
@@ -166,6 +173,65 @@ const DeliveryDashboard = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const openScanner = (order: Order) => {
+    setSelectedOrder(order);
+    setShowScanner(true);
+    setScannedCode(null);
+    setScanError(null);
+  };
+
+  const closeScanner = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setScanning(false);
+    setShowScanner(false);
+    setScannedCode(null);
+    setScanError(null);
+  };
+
+  const startScanning = async () => {
+    try {
+      setScanError(null);
+      setScanning(true);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      toast({ title: 'Scanner Ready', description: 'Point camera at customer QR' });
+    } catch (err) {
+      setScanning(false);
+      setScanError('Camera access denied. Please grant permission.');
+      toast({ title: 'Camera Error', description: 'Unable to access camera', variant: 'destructive' });
+    }
+  };
+
+  const simulateScan = () => {
+    if (!selectedOrder) return;
+    setScannedCode(selectedOrder.id);
+    setScanning(false);
+    toast({ title: 'QR Scanned', description: `Scanned code matches Order #${selectedOrder.id}` });
+  };
+
+  const confirmDeliveryAfterScan = async () => {
+    if (!selectedOrder) return;
+    if (!scannedCode) {
+      setScanError('No QR code scanned yet.');
+      return;
+    }
+    // In production, compare scanned payload to secure qr_code value
+    const expected = selectedOrder.qr_code || selectedOrder.id;
+    if (scannedCode !== expected) {
+      setScanError('QR mismatch. Please scan customer QR shown in their app.');
+      return;
+    }
+    await updateOrderStatus(selectedOrder.id, 'delivered');
+    closeScanner();
   };
 
   const getStatusBadge = (status: string) => {
@@ -468,11 +534,11 @@ const DeliveryDashboard = () => {
                         Navigate
                       </Button>
                       <Button 
-                        onClick={() => updateOrderStatus(order.id, 'delivered')}
+                        onClick={() => openScanner(order)}
                         className="flex-1 bg-green-500 hover:bg-green-600 text-white"
                       >
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Mark Delivered
+                        <QrCode className="w-4 h-4 mr-2" />
+                        Scan QR & Deliver
                       </Button>
                     </div>
                   </div>
@@ -548,6 +614,55 @@ const DeliveryDashboard = () => {
                   <Navigation className="w-4 h-4 mr-2" />
                   Open in Maps
                 </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* QR Scanner Dialog */}
+        <Dialog open={showScanner} onOpenChange={(o) => { if (!o) closeScanner(); }}>
+          <DialogContent className="max-w-xl p-0">
+            <DialogHeader className="p-6 pb-0">
+              <DialogTitle className="flex items-center gap-2">
+                <QrCode className="w-5 h-5" />
+                Scan Customer QR — Order #{selectedOrder?.id}
+              </DialogTitle>
+              <DialogDescription>
+                Ask the customer to show their QR in their app; scan to authenticate delivery.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="p-6 pt-0 space-y-4">
+              {scanError && (
+                <Alert variant="destructive">
+                  <AlertDescription>{scanError}</AlertDescription>
+                </Alert>
+              )}
+              <div className="map-wrapper w-full h-[320px] rounded-lg overflow-hidden border border-border bg-black/80 flex items-center justify-center">
+                <video ref={videoRef} className="w-full h-full object-cover" muted playsInline />
+                {!scanning && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <QrCode className="w-12 h-12 text-white/70 mx-auto mb-3" />
+                      <div className="text-white/80 text-sm">Start scanner to scan customer QR</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="flex gap-3">
+                {!scanning ? (
+                  <Button onClick={startScanning} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+                    <Camera className="w-4 h-4 mr-2" /> Start Scanner
+                  </Button>
+                ) : (
+                  <Button onClick={() => { if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; } setScanning(false); }} variant="outline" className="flex-1">
+                    Stop Scanner
+                  </Button>
+                )}
+                <Button onClick={simulateScan} variant="secondary" className="flex-1">Simulate Scan</Button>
+              </div>
+              <div className="flex gap-3">
+                <Button onClick={closeScanner} variant="outline" className="flex-1">Cancel</Button>
+                <Button onClick={confirmDeliveryAfterScan} className="flex-1 bg-green-600 hover:bg-green-700 text-white" disabled={!scannedCode}>Confirm Delivery</Button>
               </div>
             </div>
           </DialogContent>
