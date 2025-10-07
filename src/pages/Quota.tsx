@@ -12,20 +12,20 @@ type CardType = "yellow" | "pink" | "blue" | "white";
 
 const CARD_META: Record<CardType, { label: string; description: string; }> = {
   yellow: {
-    label: "Yellow (AAY)",
-    description: "Antyodaya Anna Yojana • Poorest households"
+    label: "AAY (Yellow)",
+    description: "Antyodaya: 35 kg/month at Rs.3/2 under NFSA"
   },
   pink: {
-    label: "Pink (Priority/BPL)",
-    description: "Below Poverty Line • Priority households"
+    label: "PHH (Pink)",
+    description: "Priority HH: 5 kg/member at Rs.3/2 under NFSA"
   },
   blue: {
-    label: "Blue (APL Subsidy)",
-    description: "Above Poverty Line with subsidy"
+    label: "Non-Priority (Subsidy)",
+    description: "State-subsidy entitlements (e.g., rice ~Rs.4/kg)"
   },
   white: {
-    label: "White (APL Non-Priority)",
-    description: "Above Poverty Line"
+    label: "Non-Priority (Non-Subsidy)",
+    description: "General: near-market rates"
   },
 };
 
@@ -106,32 +106,26 @@ export default function Quota() {
     // Demo quota logic based on the shared info
     if (cardType === 'yellow') {
       return [
-        { name: 'Rice', allocated: 20, used: 3, unit: 'kg', is_subsidized: true },
-        { name: 'Wheat', allocated: 15, used: 2, unit: 'kg', is_subsidized: true },
-        { name: 'Sugar', allocated: 2, used: 0.5, unit: 'kg', is_subsidized: true },
+        { name: 'Rice (Rs.3/kg)', allocated: 20, used: 3, unit: 'kg', price_per_unit: 3, is_subsidized: true },
+        { name: 'Wheat (Rs.2/kg)', allocated: 15, used: 2, unit: 'kg', price_per_unit: 2, is_subsidized: true },
       ];
     }
     if (cardType === 'pink') {
       const ricePerMember = 4;
       const wheatPerMember = 1;
       return [
-        { name: 'Rice', allocated: ricePerMember * members, used: Math.min(3, ricePerMember * members / 2), unit: 'kg', is_subsidized: true },
-        { name: 'Wheat', allocated: wheatPerMember * members, used: Math.min(2, wheatPerMember * members / 2), unit: 'kg', is_subsidized: true },
-        { name: 'Sugar', allocated: 2, used: 0.5, unit: 'kg', is_subsidized: true },
+        { name: 'Rice (Rs.3/kg)', allocated: ricePerMember * members, used: Math.min(3, ricePerMember * members / 2), unit: 'kg', price_per_unit: 3, is_subsidized: true },
+        { name: 'Wheat (Rs.2/kg)', allocated: wheatPerMember * members, used: Math.min(2, wheatPerMember * members / 2), unit: 'kg', price_per_unit: 2, is_subsidized: true },
       ];
     }
     if (cardType === 'blue') {
       return [
-        { name: 'Rice (Rs.2/kg)', allocated: 9, used: 2, unit: 'kg', price_per_unit: 2, is_subsidized: true },
-        { name: 'Wheat (Rs.6.7/kg)', allocated: 2, used: 0.5, unit: 'kg', price_per_unit: 6.7, is_subsidized: true },
-        { name: 'Sugar', allocated: 1, used: 0.25, unit: 'kg', is_subsidized: true },
+        { name: 'Rice (Rs.4/kg)', allocated: 2 * members, used: Math.min(1, members / 2), unit: 'kg', price_per_unit: 4, is_subsidized: true },
       ];
     }
     // white
     return [
-      { name: 'Rice', allocated: 2 * members, used: Math.min(1, members), unit: 'kg', is_subsidized: false },
-      { name: 'Wheat', allocated: Math.max(0, members - 1), used: 0, unit: 'kg', is_subsidized: false },
-      { name: 'Sugar', allocated: 1, used: 0.25, unit: 'kg', is_subsidized: false },
+      { name: 'Rice (₹10.90/kg)', allocated: 5, used: 1, unit: 'kg', price_per_unit: 10.90, is_subsidized: false },
     ];
   };
 

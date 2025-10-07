@@ -328,10 +328,10 @@ const Profile = () => {
                       <SelectValue placeholder="Select card type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="yellow">Yellow (AAY)</SelectItem>
-                      <SelectItem value="pink">Pink (Priority/BPL)</SelectItem>
-                      <SelectItem value="blue">Blue (APL Subsidy)</SelectItem>
-                      <SelectItem value="white">White (APL Non-Priority)</SelectItem>
+                      <SelectItem value="yellow">AAY (Yellow) — Antyodaya</SelectItem>
+                      <SelectItem value="pink">PHH (Pink) — Priority Household</SelectItem>
+                      <SelectItem value="blue">Non-Priority (Subsidy)</SelectItem>
+                      <SelectItem value="white">Non-Priority (Non-Subsidy)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

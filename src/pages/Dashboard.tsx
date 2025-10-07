@@ -67,26 +67,31 @@ export default function Dashboard() {
     if (!t) return rationItemsBase;
     const copy = rationItemsBase.map(i => ({ ...i }));
     if (t === 'yellow') {
-      // Large free allocation example
+      // AAY: show NFSA prices and full fixed allocation preview
       copy.find(i => i.id === 'rice')!.available = 20;
       copy.find(i => i.id === 'wheat')!.available = 15;
-      copy.forEach(i => { if (i.id !== 'sugar') i.price = 0; });
-    } else if (t === 'pink') {
-      // Per-member handled in Quota; here show subsidized prices
-      copy.find(i => i.id === 'rice')!.price = 2;
+      copy.find(i => i.id === 'rice')!.price = 3;
       copy.find(i => i.id === 'wheat')!.price = 2;
+    } else if (t === 'pink') {
+      // PHH: per-member handled in Quota; show NFSA prices
+      copy.find(i => i.id === 'rice')!.price = 3;
+      copy.find(i => i.id === 'wheat')!.price = 2;
+      // availability preview: 4kg rice + 1kg wheat per member (assume 2 members demo)
       copy.find(i => i.id === 'rice')!.available = 8;
       copy.find(i => i.id === 'wheat')!.available = 2;
     } else if (t === 'blue') {
       // Subsidy pricing
-      copy.find(i => i.id === 'rice')!.price = 2;
-      copy.find(i => i.id === 'wheat')!.price = 6.7;
-      copy.find(i => i.id === 'rice')!.available = 9;
-      copy.find(i => i.id === 'wheat')!.available = 2;
-    } else if (t === 'white') {
-      // Minimal free allocation
-      copy.find(i => i.id === 'rice')!.available = 2;
+      copy.find(i => i.id === 'rice')!.price = 4;
+      // Only rice subsidized; limit per-person handled on Quota
+      copy.find(i => i.id === 'wheat')!.price = 18.75;
+      copy.find(i => i.id === 'rice')!.available = 4; // demo 2 members × 2kg
       copy.find(i => i.id === 'wheat')!.available = 0;
+    } else if (t === 'white') {
+      // Non-subsidy: near-market pricing
+      copy.find(i => i.id === 'rice')!.price = 10.90;
+      copy.find(i => i.id === 'rice')!.available = 5; // fixed per card
+      copy.find(i => i.id === 'wheat')!.price = 18.75; // near-market
+      copy.find(i => i.id === 'wheat')!.available = 0; // fewer/no wheat
     }
     return copy;
   }, [profile]);

@@ -1,3 +1,77 @@
+-- Align ration_quotas with specified benefits and pricing
+-- Yellow: 35kg free essentials (20kg rice + 15kg wheat)
+-- Pink: 5kg/member free (4kg rice + 1kg wheat)
+-- Blue: Rice at ~₹4/kg (2kg per person) under state subsidy
+-- White: Rice at ~₹10.90/kg fixed quantity per card; minimal/no wheat subsidy
+
+-- Ensure ration_card_type exists (handled in earlier migration)
+
+-- Upsert AAY (Yellow) quotas: 35kg (20 rice + 15 wheat) at NFSA prices
+INSERT INTO public.ration_quotas (card_type, item_name, quantity_per_member, fixed_quantity, unit, price_per_unit, is_subsidized)
+VALUES
+  ('yellow', 'Rice', 0, 20, 'kg', 3, true),
+  ('yellow', 'Wheat', 0, 15, 'kg', 2, true)
+ON CONFLICT (card_type, item_name)
+DO UPDATE SET
+  quantity_per_member = EXCLUDED.quantity_per_member,
+  fixed_quantity = EXCLUDED.fixed_quantity,
+  unit = EXCLUDED.unit,
+  price_per_unit = EXCLUDED.price_per_unit,
+  is_subsidized = EXCLUDED.is_subsidized,
+  updated_at = now();
+
+-- Upsert PHH (Pink) quotas: 5kg/member (4 rice + 1 wheat) at NFSA prices
+INSERT INTO public.ration_quotas (card_type, item_name, quantity_per_member, fixed_quantity, unit, price_per_unit, is_subsidized)
+VALUES
+  ('pink', 'Rice', 4, 0, 'kg', 3, true),
+  ('pink', 'Wheat', 1, 0, 'kg', 2, true)
+ON CONFLICT (card_type, item_name)
+DO UPDATE SET
+  quantity_per_member = EXCLUDED.quantity_per_member,
+  fixed_quantity = EXCLUDED.fixed_quantity,
+  unit = EXCLUDED.unit,
+  price_per_unit = EXCLUDED.price_per_unit,
+  is_subsidized = EXCLUDED.is_subsidized,
+  updated_at = now();
+
+-- Upsert Blue quotas
+-- Only rice is explicitly specified: 2kg per person at ~₹4/kg, subsidized
+INSERT INTO public.ration_quotas (card_type, item_name, quantity_per_member, fixed_quantity, unit, price_per_unit, is_subsidized)
+VALUES
+  ('blue', 'Rice', 2, 0, 'kg', 4, true)
+ON CONFLICT (card_type, item_name)
+DO UPDATE SET
+  quantity_per_member = EXCLUDED.quantity_per_member,
+  fixed_quantity = EXCLUDED.fixed_quantity,
+  unit = EXCLUDED.unit,
+  price_per_unit = EXCLUDED.price_per_unit,
+  is_subsidized = EXCLUDED.is_subsidized,
+  updated_at = now();
+
+-- Optionally set Blue wheat to zero allocation (if previously present)
+UPDATE public.ration_quotas
+SET quantity_per_member = 0, fixed_quantity = 0, price_per_unit = 0, is_subsidized = true, updated_at = now()
+WHERE card_type = 'blue' AND item_name = 'Wheat';
+
+-- Upsert White quotas
+-- Use a fixed per-card allocation; set to 5kg rice at ~₹10.90/kg, non-subsidized
+INSERT INTO public.ration_quotas (card_type, item_name, quantity_per_member, fixed_quantity, unit, price_per_unit, is_subsidized)
+VALUES
+  ('white', 'Rice', 0, 5, 'kg', 10.90, false)
+ON CONFLICT (card_type, item_name)
+DO UPDATE SET
+  quantity_per_member = EXCLUDED.quantity_per_member,
+  fixed_quantity = EXCLUDED.fixed_quantity,
+  unit = EXCLUDED.unit,
+  price_per_unit = EXCLUDED.price_per_unit,
+  is_subsidized = EXCLUDED.is_subsidized,
+  updated_at = now();
+
+-- Optionally set White wheat to zero or remove subsidized entries
+UPDATE public.ration_quotas
+SET quantity_per_member = 0, fixed_quantity = 0, price_per_unit = 0, is_subsidized = false, updated_at = now()
+WHERE card_type = 'white' AND item_name = 'Wheat';
+
 -- Create enums only if they don't exist
 DO $$ BEGIN
     CREATE TYPE public.user_role AS ENUM ('customer', 'delivery_partner', 'admin');

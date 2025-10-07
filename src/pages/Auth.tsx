@@ -297,25 +297,25 @@ const Auth = () => {
                                 <SelectItem value="yellow">
                                   <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                    Yellow (AAY) - Poorest of the poor
+                                    AAY (Yellow) - Antyodaya (NFSA)
                                   </div>
                                 </SelectItem>
                                 <SelectItem value="pink">
                                   <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full bg-pink-500"></div>
-                                    Pink (Priority/BPL) - Below Poverty Line
+                                    PHH (Pink) - Priority Household (NFSA)
                                   </div>
                                 </SelectItem>
                                 <SelectItem value="blue">
                                   <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                                    Blue (APL Subsidy) - Above Poverty Line with subsidy
+                                    Non-Priority (Subsidy)
                                   </div>
                                 </SelectItem>
                                 <SelectItem value="white">
                                   <div className="flex items-center gap-2">
                                     <div className="w-3 h-3 rounded-full bg-gray-300 border"></div>
-                                    White (APL Non-Priority) - Above Poverty Line
+                                    Non-Priority (Non-Subsidy)
                                   </div>
                                 </SelectItem>
                               </SelectContent>
