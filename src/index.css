@@ -138,6 +138,13 @@ All colors MUST be HSL.
   .gradient-premium {
     background: var(--gradient-premium);
   }
+  /* Role-specific brand gradients */
+  .gradient-red {
+    background: linear-gradient(135deg, hsl(0 85% 55%), hsl(12 88% 48%));
+  }
+  .gradient-brown {
+    background: linear-gradient(135deg, hsl(40 70% 42%), hsl(28 65% 34%));
+  }
   
   .shadow-gold {
     box-shadow: var(--shadow-gold);
