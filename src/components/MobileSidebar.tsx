@@ -86,8 +86,8 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
           <Menu className="icon-lg" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 p-0">
-        <div className="flex flex-col h-full">
+      <SheetContent side="left" className="w-64 p-0 overflow-y-auto">
+        <div className="flex flex-col h-full min-h-0">
           {/* Header */}
           <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between">
@@ -122,7 +122,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
           </div>
 
           {/* Navigation */}
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-6 overflow-y-auto">
             <nav className="space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -133,13 +133,13 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
                     key={item.to}
                     to={item.to}
                     onClick={() => setOpen(false)}
-                    className={`flex items-center space-x-3 p-4 rounded-lg text-lg font-medium transition-colors tap-target ${
+                    className={`flex items-center space-x-3 p-3 rounded-lg text-base font-medium transition-colors tap-target ${
                       isActive 
                         ? 'bg-primary text-primary-foreground' 
                         : 'hover:bg-muted'
                     }`}
                   >
-                    <Icon className="icon-lg" />
+                    <Icon className="w-5 h-5" />
                     <span>{item.label}</span>
                   </Link>
                 );
@@ -152,25 +152,25 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
             <Link
               to="/incoming-orders"
               onClick={() => setOpen(false)}
-              className="flex items-center w-full justify-start text-lg tap-target p-2 rounded-md hover:bg-muted"
+              className="flex items-center w-full justify-start text-base tap-target p-2 rounded-md hover:bg-muted"
             >
-              <Bell className="icon-lg mr-3" />
+              <Bell className="w-5 h-5 mr-3" />
               <span>Notifications</span>
             </Link>
             <Link
               to="/profile"
               onClick={() => setOpen(false)}
-              className="flex items-center w-full justify-start text-lg tap-target p-2 rounded-md hover:bg-muted"
+              className="flex items-center w-full justify-start text-base tap-target p-2 rounded-md hover:bg-muted"
             >
-              <User className="icon-lg mr-3" />
+              <User className="w-5 h-5 mr-3" />
               <span>Profile</span>
             </Link>
             <Button
               variant="ghost"
-              className="w-full justify-start text-lg text-destructive hover:text-destructive tap-target"
+              className="w-full justify-start text-base text-destructive hover:text-destructive tap-target"
               onClick={handleLogout}
             >
-              <LogOut className="icon-lg mr-3" />
+              <LogOut className="w-5 h-5 mr-3" />
               Sign Out
             </Button>
           </div>

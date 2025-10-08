@@ -9,6 +9,8 @@ import Dashboard from "./Dashboard";
 
 const CustomerDashboard = () => {
   const { profile } = useAuth();
+  const cardType = profile?.ration_card_type as 'yellow' | 'pink' | 'blue' | 'white' | undefined;
+  const members = profile?.household_members || 1;
   const [showReview, setShowReview] = useState(false);
   const [rating, setRating] = useState<number | null>(null);
   const [reviewText, setReviewText] = useState("");
@@ -57,6 +59,50 @@ const CustomerDashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Card details summary */}
+      {cardType && (
+        <Card className="shadow-soft">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Badge variant="outline">Card: {cardType.toUpperCase()}</Badge>
+              {typeof profile?.verification_status === 'string' && (
+                <Badge variant={profile.verification_status === 'verified' ? 'default' : profile.verification_status === 'pending' ? 'secondary' : 'destructive'}>
+                  {profile.verification_status.charAt(0).toUpperCase() + profile.verification_status.slice(1)}
+                </Badge>
+              )}
+              <span className="text-sm text-muted-foreground ml-2">Members: {members}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {(() => {
+                const items: Array<{ name: string; qty: number; unit: string; priceText?: string } > = [];
+                if (cardType === 'yellow') {
+                  items.push({ name: 'Rice', qty: 20, unit: 'kg', priceText: '₹3/kg' });
+                  items.push({ name: 'Wheat', qty: 15, unit: 'kg', priceText: '₹2/kg' });
+                } else if (cardType === 'pink') {
+                  items.push({ name: 'Rice', qty: 4 * members, unit: 'kg', priceText: '₹3/kg' });
+                  items.push({ name: 'Wheat', qty: 1 * members, unit: 'kg', priceText: '₹2/kg' });
+                } else if (cardType === 'blue') {
+                  items.push({ name: 'Rice', qty: 2 * members, unit: 'kg', priceText: '₹4/kg' });
+                } else if (cardType === 'white') {
+                  items.push({ name: 'Rice', qty: 5, unit: 'kg', priceText: '₹10.90/kg' });
+                }
+                return items.map((it, idx) => (
+                  <div key={idx} className="border border-border rounded-lg p-3 flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">{it.name}</div>
+                      <div className="text-xs text-muted-foreground">{it.priceText || 'Market/State price'}</div>
+                    </div>
+                    <div className="text-sm font-semibold">{it.qty} {it.unit}</div>
+                  </div>
+                ));
+              })()}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Dashboard />
       
       {/* Review Section */}

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { ShoppingCart, MapPin, QrCode, History } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { ShoppingCart, MapPin, QrCode, History, Shield, CheckCircle, AlertCircle } from "lucide-react";
 import { NavHeader } from "@/components/NavHeader";
 import { QuotaCard } from "@/components/QuotaCard";
 import { RationItem } from "@/components/RationItem";
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import templeBg from "@/assets/temple-bg.jpg";
 import riceImg from "@/assets/rice.jpg";
 import wheatImg from "@/assets/wheat.jpg";
@@ -14,6 +16,7 @@ import sugarImg from "@/assets/sugar.jpg";
 import { useCart } from "@/hooks/useCart";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import QRCodeLib from 'qrcode';
 
 interface CartItem {
   id: string;
@@ -24,6 +27,10 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { lines, add, remove, totalItems, totalAmount } = useCart();
   const { profile } = useAuth();
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [authStep, setAuthStep] = useState<'card' | 'aadhaar' | 'complete'>('card');
+  const [authStatus, setAuthStatus] = useState<'pending' | 'success' | 'failed'>('pending');
 
   const quotaData = [
     { name: "Rice", allocated: 10, used: 3, unit: "kg" },
@@ -127,6 +134,48 @@ export default function Dashboard() {
     return lines.find(l => l.id === id)?.quantity || 0;
   };
 
+  // Generate QR code for user
+  useEffect(() => {
+    const generateQR = async () => {
+      if (profile?.user_id) {
+        const qrData = JSON.stringify({
+          userId: profile.user_id,
+          cardType: profile.ration_card_type,
+          cardNumber: profile.ration_card_number,
+          timestamp: Date.now()
+        });
+        try {
+          const dataUrl = await QRCodeLib.toDataURL(qrData, { width: 200 });
+          setQrCodeDataUrl(dataUrl);
+        } catch (error) {
+          console.error('Error generating QR code:', error);
+        }
+      }
+    };
+    generateQR();
+  }, [profile]);
+
+  const simulateAuth = async (step: 'card' | 'aadhaar') => {
+    setAuthStatus('pending');
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Simulate success (in real app, this would verify against government databases)
+    setAuthStatus('success');
+    if (step === 'card') {
+      setAuthStep('aadhaar');
+    } else {
+      setAuthStep('complete');
+    }
+  };
+
+  const handlePlaceOrder = () => {
+    if (totalItems === 0) return;
+    setShowAuthDialog(true);
+    setAuthStep('card');
+    setAuthStatus('pending');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Temple Background */}
@@ -223,7 +272,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                       
-                      <Button variant="premium" className="w-full" onClick={() => navigate('/cart')}>
+                      <Button variant="premium" className="w-full" onClick={handlePlaceOrder}>
                         Place Order
                       </Button>
                     </CardContent>
@@ -239,9 +288,17 @@ export default function Dashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-center">
-                      <div className="w-32 h-32 bg-muted rounded-lg mx-auto mb-3 flex items-center justify-center">
-                        <QrCode className="w-16 h-16 text-muted-foreground" />
-                      </div>
+                      {qrCodeDataUrl ? (
+                        <img 
+                          src={qrCodeDataUrl} 
+                          alt="User QR Code" 
+                          className="w-32 h-32 mx-auto mb-3 rounded-lg border"
+                        />
+                      ) : (
+                        <div className="w-32 h-32 bg-muted rounded-lg mx-auto mb-3 flex items-center justify-center">
+                          <QrCode className="w-16 h-16 text-muted-foreground" />
+                        </div>
+                      )}
                       <p className="text-sm text-muted-foreground">
                         Show this QR code to confirm delivery
                       </p>
@@ -306,6 +363,108 @@ export default function Dashboard() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Authentication Dialog */}
+        <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Shield className="w-5 h-5" />
+                Identity Verification Required
+              </DialogTitle>
+              <DialogDescription>
+                Please verify your ration card and Aadhaar to place an order
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {authStep === 'card' && (
+                <div className="space-y-4">
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Verifying your ration card details...
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <div className="text-center space-y-2">
+                    <div className="text-sm text-muted-foreground">
+                      Card Type: {profile?.ration_card_type?.toUpperCase()}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Card Number: {profile?.ration_card_number || 'DEMO-1234'}
+                    </div>
+                  </div>
+
+                  {authStatus === 'pending' && (
+                    <div className="flex justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    </div>
+                  )}
+
+                  {authStatus === 'success' && (
+                    <div className="flex items-center justify-center text-green-600">
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Ration Card Verified
+                    </div>
+                  )}
+
+                  {authStatus === 'success' && (
+                    <Button 
+                      onClick={() => simulateAuth('aadhaar')} 
+                      className="w-full"
+                    >
+                      Continue to Aadhaar Verification
+                    </Button>
+                  )}
+                </div>
+              )}
+
+              {authStep === 'aadhaar' && (
+                <div className="space-y-4">
+                  <Alert>
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Verifying your Aadhaar details...
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <div className="text-center space-y-2">
+                    <div className="text-sm text-muted-foreground">
+                      Aadhaar: {profile?.aadhaar_number || 'XXXX-XXXX-1234'}
+                    </div>
+                  </div>
+
+                  {authStatus === 'pending' && (
+                    <div className="flex justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    </div>
+                  )}
+
+                  {authStatus === 'success' && (
+                    <div className="flex items-center justify-center text-green-600">
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      Aadhaar Verified
+                    </div>
+                  )}
+
+                  {authStatus === 'success' && (
+                    <Button 
+                      onClick={() => {
+                        setAuthStep('complete');
+                        setShowAuthDialog(false);
+                        navigate('/cart');
+                      }} 
+                      className="w-full"
+                    >
+                      Proceed to Checkout
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
