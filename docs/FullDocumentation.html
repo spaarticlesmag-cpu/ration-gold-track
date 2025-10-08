@@ -1,0 +1,177 @@
+<h1>JADAYU – Smart Ration Delivery: Full Documentation</h1>
+<p>This document consolidates the project’s overview, features, usage, routes, and public APIs (hooks, components, utilities, and integrations) with examples.</p>
+<h2>Overview</h2>
+<ul>
+<li>Product: JADAYU – Smart Ration Delivery Service</li>
+<li>Audience: Developers and operators integrating or extending the app</li>
+<li>Stack: Vite, React 18, TypeScript, Tailwind CSS, shadcn-ui, React Router v6, TanStack Query, Supabase</li>
+</ul>
+<h2>Features</h2>
+<ul>
+<li>Customers/Beneficiaries<ul>
+<li>View ration quota by card type and household size</li>
+<li>Shop subsidized items, manage cart, place orders</li>
+<li>Live delivery tracking map and order history</li>
+<li>Profile management; upload Aadhaar and ration card documents</li>
+<li>Personal QR for secure delivery verification</li>
+</ul>
+</li>
+<li>Delivery Partners<ul>
+<li>View approved and assigned orders</li>
+<li>Navigate to delivery address, scan customer QR, confirm delivery</li>
+<li>Earnings summary (demo)</li>
+</ul>
+</li>
+<li>Admin/Shop Owner<ul>
+<li>Inventory management for ration items (CRUD)</li>
+<li>Review incoming orders; approve/reject; update statuses</li>
+<li>Dashboard with stats (orders, revenue, customers, inventory value)</li>
+</ul>
+</li>
+</ul>
+<h2>How to Use (Role-based)</h2>
+<ul>
+<li>Customer<ol>
+<li>Sign up/sign in (<code>/auth</code>)</li>
+<li>Complete profile and upload docs in <code>Profile</code></li>
+<li>Check <code>Quota</code>, browse <code>Shop</code>, add items to cart</li>
+<li>Place order (identity verification dialog simulates checks)</li>
+<li>Track delivery in <code>Track</code> or see <code>History</code></li>
+</ol>
+</li>
+<li>Delivery Partner<ol>
+<li>Sign in → <code>DeliveryDashboard</code></li>
+<li>Accept orders, navigate, scan QR, confirm delivery</li>
+</ol>
+</li>
+<li>Admin<ol>
+<li>Sign in → <code>AdminDashboard</code></li>
+<li>Manage inventory and approve/reject orders</li>
+</ol>
+</li>
+</ul>
+<h2>Route Map</h2>
+<ul>
+<li><code>/auth</code>: authentication</li>
+<li><code>/</code>: role router → <code>AdminDashboard</code> | <code>DeliveryDashboard</code> | <code>CustomerDashboard</code></li>
+<li><code>/shop</code>, <code>/quota</code>, <code>/track</code>, <code>/history</code>, <code>/cart</code>, <code>/payment</code>, <code>/profile</code></li>
+<li><code>/incoming-orders</code> (admin), <code>/beneficiaries</code> (admin), <code>/qr-scanner</code> (delivery demo)</li>
+<li><code>/verify/:id</code>: delivery verification view</li>
+</ul>
+<h2>Hooks API</h2>
+<h3><code>useAuth</code> and <code>AuthProvider</code></h3>
+<ul>
+<li>State: <code>user</code>, <code>session</code>, <code>profile</code>, <code>loading</code></li>
+<li>Actions: <code>signIn</code>, <code>signUp</code>, <code>signOut</code>, <code>refreshProfile</code>, <code>devSignIn</code>, <code>devSignOut</code></li>
+</ul>
+<p>Example</p>
+<pre><code class="language-tsx">import { AuthProvider, useAuth } from &quot;@/hooks/useAuth&quot;;
+
+export function AppShell() {
+  return (
+    &lt;AuthProvider&gt;
+      &lt;MyRoutes /&gt;
+    &lt;/AuthProvider&gt;
+  );
+}
+
+function ProfileButton() {
+  const { user, signOut } = useAuth();
+  if (!user) return null;
+  return &lt;button onClick={signOut}&gt;Sign out&lt;/button&gt;;
+}
+</code></pre>
+<h3><code>useCart</code></h3>
+<ul>
+<li>State: <code>lines</code>, <code>totalItems</code>, <code>totalAmount</code></li>
+<li>Actions: <code>add</code>, <code>remove</code>, <code>clear</code></li>
+</ul>
+<p>Example</p>
+<pre><code class="language-tsx">import { CartProvider, useCart } from &quot;@/hooks/useCart&quot;;
+
+function Root() {
+  return (
+    &lt;CartProvider&gt;
+      &lt;Shop /&gt;
+    &lt;/CartProvider&gt;
+  );
+}
+
+function AddToCart({ item }) {
+  const { add } = useCart();
+  return (
+    &lt;button onClick={() =&gt; add({ id: item.id, name: item.name, unit: item.unit, price: item.price }, 1)}&gt;
+      Add
+    &lt;/button&gt;
+  );
+}
+</code></pre>
+<h3><code>useIsMobile</code></h3>
+<pre><code class="language-tsx">import { useIsMobile } from &quot;@/hooks/use-mobile&quot;;
+const isMobile = useIsMobile();
+</code></pre>
+<h3><code>useToast</code> and <code>toast</code></h3>
+<pre><code class="language-tsx">import { useToast } from &quot;@/hooks/use-toast&quot;;
+const { toast } = useToast();
+toast({ title: &#39;Saved&#39;, description: &#39;Your changes were saved.&#39; });
+</code></pre>
+<h2>Components API</h2>
+<h3>Layout and Navigation</h3>
+<ul>
+<li><code>MainLayout({ children })</code>: shell with header and mobile bottom nav</li>
+<li><code>NavHeader({ userName?, userRole? })</code>: role-aware navigation</li>
+<li><code>MobileSidebar({ userName?, userRole? })</code>: mobile sheet navigation</li>
+</ul>
+<h3>Shopping and Quota</h3>
+<ul>
+<li><code>RationItem({ id, name, price, image, available, unit, subsidized?, onAddToCart, onRemoveFromCart, cartQuantity? })</code></li>
+<li><code>QuotaCard({ quotaItems: { name, allocated, used, unit }[], cardNumber, validUntil })</code></li>
+<li><code>DocumentUpload({ userId, bucket, folder, label, accept?, currentUrl?, onUploaded? })</code></li>
+<li><code>VerificationDialog({ isOpen, onClose, beneficiary, onVerificationComplete })</code></li>
+</ul>
+<p>Examples</p>
+<pre><code class="language-tsx">&lt;RationItem id=&quot;rice&quot; name=&quot;Rice&quot; price={25.5} image={url} available={5} unit=&quot;kg&quot;
+  onAddToCart={(id,q)=&gt;{}} onRemoveFromCart={(id,q)=&gt;{}} cartQuantity={2} /&gt;
+
+&lt;QuotaCard quotaItems={[{ name:&#39;Rice&#39;, allocated:10, used:3, unit:&#39;kg&#39;}]}
+  cardNumber=&quot;XXXX-XXXX-1234&quot; validUntil=&quot;Dec 2024&quot; /&gt;
+
+&lt;DocumentUpload userId={uid} bucket=&quot;documents&quot; folder=&quot;aadhaar&quot; label=&quot;Upload Aadhaar&quot;
+  onUploaded={(url)=&gt;setUrl(url)} /&gt;
+
+&lt;VerificationDialog isOpen={open} onClose={()=&gt;setOpen(false)} beneficiary={b}
+  onVerificationComplete={()=&gt;refetch()} /&gt;
+</code></pre>
+<h3>UI Kit</h3>
+<ul>
+<li>Import shadcn-ui components from <code>@/components/ui/...</code> (e.g., <code>Button</code>, <code>Card</code>, <code>Dialog</code>, <code>Tabs</code>, <code>Table</code>, <code>Progress</code>)</li>
+</ul>
+<h2>Utilities</h2>
+<h3><code>cn(...inputs)</code></h3>
+<pre><code class="language-ts">import { cn } from &quot;@/lib/utils&quot;;
+&lt;div className={cn(&#39;p-4&#39;, isActive &amp;&amp; &#39;bg-primary&#39;, &#39;text-foreground&#39;)} /&gt;
+</code></pre>
+<h2>Integrations</h2>
+<h3>Supabase</h3>
+<ul>
+<li>Client: <code>@/integrations/supabase/client</code></li>
+<li>Use for auth (<code>useAuth</code>), storage (<code>DocumentUpload</code>), and DB queries (orders, profiles, ration_items)</li>
+<li>RPCs referenced: <code>verify_ration_card</code>, <code>get_user_ration_quota</code></li>
+</ul>
+<pre><code class="language-ts">import { supabase } from &quot;@/integrations/supabase/client&quot;;
+const { data, error } = await supabase.from(&#39;profiles&#39;).select(&#39;*&#39;);
+</code></pre>
+<p>Security</p>
+<ul>
+<li>Replace anon key and URL</li>
+<li>Set RLS policies for <code>profiles</code>, <code>orders</code>, <code>ration_items</code></li>
+</ul>
+<h3>Firebase (optional)</h3>
+<ul>
+<li>Scaffold: <code>@/integrations/firebase/client</code> → <code>getFirebase()</code> returns <code>{ app, auth, db, storage }</code></li>
+<li>Env vars: <code>VITE_FIREBASE_*</code></li>
+</ul>
+<p>Migration tip</p>
+<ul>
+<li>Replace Supabase usage in <code>useAuth</code>, <code>DocumentUpload</code>, and DB calls with Firebase equivalents if migrating.</li>
+</ul>
