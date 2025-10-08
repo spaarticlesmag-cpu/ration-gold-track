@@ -44,7 +44,7 @@ const demoOrders: Order[] = [
     customer_id: 'cust_001',
     total_amount: 450,
     status: 'approved',
-    delivery_address: '123 MG Road, Bangalore, Karnataka 560001',
+    delivery_address: '123 MG Road, Angamaly, Kerala 683572',
     created_at: new Date().toISOString(),
     profiles: {
       full_name: 'Rajesh Kumar',
@@ -60,7 +60,7 @@ const demoOrders: Order[] = [
     customer_id: 'cust_002',
     total_amount: 320,
     status: 'approved',
-    delivery_address: '456 Brigade Road, Bangalore, Karnataka 560025',
+    delivery_address: '456 Market Road, Angamaly, Kerala 683572',
     created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
     profiles: {
       full_name: 'Priya Sharma',
@@ -76,7 +76,7 @@ const demoOrders: Order[] = [
     customer_id: 'cust_003',
     total_amount: 580,
     status: 'out_for_delivery',
-    delivery_address: '789 Indiranagar, Bangalore, Karnataka 560038',
+    delivery_address: '789 Railway Station Road, Angamaly, Kerala 683572',
     created_at: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
     profiles: {
       full_name: 'Amit Patel',
@@ -296,8 +296,8 @@ const DeliveryDashboard = () => {
                 <div className="text-2xl font-bold text-green-600">₹{orders.reduce((sum, order) => sum + (order.delivery_fee || 0), 0)}</div>
                 <div className="text-sm text-gray-500">Today's Earnings</div>
               </div>
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                <Truck className="w-6 h-6 text-orange-600" />
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <Truck className="w-6 h-6 text-red-600" />
               </div>
             </div>
           </div>
@@ -307,11 +307,11 @@ const DeliveryDashboard = () => {
       <div className="container mx-auto px-4 py-6">
         <Tabs defaultValue="available" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 lg:w-fit bg-white shadow-sm">
-            <TabsTrigger value="available" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+            <TabsTrigger value="available" className="flex items-center gap-2 data-[state=active]:bg-red-500 data-[state=active]:text-white">
               <Package className="w-4 h-4" />
               New Orders ({availableOrders.length})
             </TabsTrigger>
-            <TabsTrigger value="assigned" className="flex items-center gap-2 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+            <TabsTrigger value="assigned" className="flex items-center gap-2 data-[state=active]:bg-red-500 data-[state=active]:text-white">
               <Truck className="w-4 h-4" />
               Active Deliveries ({assignedOrders.length})
             </TabsTrigger>
@@ -330,10 +330,10 @@ const DeliveryDashboard = () => {
               availableOrders.map((order) => (
                 <div key={order.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                   {/* Order Header */}
-                  <div className="bg-orange-50 px-6 py-4 border-b border-orange-100">
+                  <div className="bg-red-50 px-6 py-4 border-b border-red-100">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
                           <Package className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -392,7 +392,7 @@ const DeliveryDashboard = () => {
                           <div className="space-y-1">
                             {order.items?.map((item, index) => (
                               <div key={index} className="text-sm text-gray-600 flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
                                 {item}
                               </div>
                             ))}
@@ -411,16 +411,8 @@ const DeliveryDashboard = () => {
                     {/* Action Buttons */}
                     <div className="flex gap-3 mt-6">
                       <Button 
-                        onClick={() => openMap(order)}
-                        variant="outline" 
-                        className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >
-                        <Navigation className="w-4 h-4 mr-2" />
-                        View on Map
-                      </Button>
-                      <Button 
                         onClick={() => updateOrderStatus(order.id, 'out_for_delivery')}
-                        className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                        className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                       >
                         <Truck className="w-4 h-4 mr-2" />
                         Accept Order
@@ -514,10 +506,10 @@ const DeliveryDashboard = () => {
                           </div>
                         </div>
 
-                        <div className="bg-orange-50 p-3 rounded-lg">
+                        <div className="bg-red-50 p-3 rounded-lg">
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-900">Delivery Fee</span>
-                            <span className="text-lg font-bold text-orange-600">₹{order.delivery_fee}</span>
+                            <span className="text-lg font-bold text-red-600">₹{order.delivery_fee}</span>
                           </div>
                         </div>
                       </div>
@@ -580,7 +572,7 @@ const DeliveryDashboard = () => {
                 </div>
                 
                 {/* Mock route line */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-1 bg-orange-500 opacity-30"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-1 bg-red-500 opacity-30"></div>
                 
                 {/* Current location marker */}
                 <div className="absolute top-4 left-4 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">

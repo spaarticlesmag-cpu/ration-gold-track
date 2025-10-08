@@ -182,7 +182,7 @@ export default function Quota() {
               <Select 
                 value={cardType} 
                 onValueChange={(v) => setCardType(v as CardType)}
-                disabled={profile?.verification_status === 'verified'}
+                disabled={true}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select card type" />
@@ -204,7 +204,7 @@ export default function Quota() {
                 max={12} 
                 value={members}
                 onChange={(e) => setMembers(Math.max(1, Math.min(12, Number(e.target.value) || 1)))}
-                disabled={profile?.verification_status === 'verified'}
+                disabled={true}
               />
               <div className="text-xs text-muted-foreground">Used for per-member quotas.</div>
             </div>
@@ -214,7 +214,7 @@ export default function Quota() {
                 value={cardNumber} 
                 onChange={(e) => setCardNumber(e.target.value)} 
                 placeholder="Enter card number"
-                disabled={profile?.verification_status === 'verified'}
+                disabled={true}
               />
               <div className="text-xs text-muted-foreground">
                 {profile?.verification_status === 'verified' 

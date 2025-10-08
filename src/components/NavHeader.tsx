@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
+import { useCart } from "@/hooks/useCart";
 import { MobileSidebar } from "@/components/MobileSidebar";
 
 interface NavHeaderProps {
@@ -18,6 +19,7 @@ interface NavHeaderProps {
 
 export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
   const { profile, signOut } = useAuth();
+  const { totalItems } = useCart();
   const [notifications] = useState(3);
   const navigate = useNavigate();
   const location = useLocation();
@@ -95,27 +97,22 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
             {/* Show different navigation items based on user role */}
             {displayRole === 'customer' && (
               <>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/shop' ? 'default' : 'ghost'}>
                   <Link to="/shop" className="flex items-center gap-2">
                     <ShoppingCart className="icon-lg" /> Shop
                   </Link>
                 </Button>
-                <Button asChild variant="ghost">
-                  <Link to="/cart" className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-primary" /> Cart
-                  </Link>
-                </Button>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/quota' ? 'default' : 'ghost'}>
                   <Link to="/quota" className="flex items-center gap-2">
                     <BadgePercent className="icon-lg" /> Quota
                   </Link>
                 </Button>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/track' ? 'default' : 'ghost'}>
                   <Link to="/track" className="flex items-center gap-2">
                     <MapPin className="icon-lg" /> Track
                   </Link>
                 </Button>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                   <Link to="/history" className="flex items-center gap-2">
                     <History className="icon-lg" /> History
                   </Link>
@@ -124,17 +121,17 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
             )}
             {displayRole === 'delivery_partner' && (
               <>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/track' ? 'default' : 'ghost'}>
                   <Link to="/track" className="flex items-center gap-2">
                     <MapPin className="icon-lg" /> Track
                   </Link>
                 </Button>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/qr-scanner' ? 'default' : 'ghost'}>
                   <Link to="/qr-scanner" className="flex items-center gap-2">
                     <QrCode className="icon-lg" /> QR Scanner
                   </Link>
                 </Button>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                   <Link to="/history" className="flex items-center gap-2">
                     <History className="icon-lg" /> History
                   </Link>
@@ -143,17 +140,17 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
             )}
             {displayRole === 'admin' && (
               <>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/track' ? 'default' : 'ghost'}>
                   <Link to="/track" className="flex items-center gap-2">
                     <MapPin className="icon-lg" /> Track
                   </Link>
                 </Button>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/beneficiaries' ? 'default' : 'ghost'}>
                   <Link to="/beneficiaries" className="flex items-center gap-2">
                     <Users className="icon-lg" /> Beneficiaries
                   </Link>
                 </Button>
-                <Button asChild variant="ghost">
+                <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                   <Link to="/history" className="flex items-center gap-2">
                     <History className="icon-lg" /> History
                   </Link>
@@ -163,6 +160,18 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
           </nav>
 
           <div className="flex items-center space-x-4">
+            {/* Cart Icon */}
+            <Button asChild variant="ghost" size="icon" className="relative tap-target">
+              <Link to="/cart">
+                <ShoppingCart className="icon-lg" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
+            </Button>
+
             {/* Hide notification/profile on small screens to reduce clutter */}
             <div className="hidden md:flex items-center space-x-4">
               <DropdownMenu>

@@ -17,7 +17,10 @@ import {
   Edit,
   Trash2,
   Eye,
-  Crown
+  Crown,
+  CheckCircle,
+  Truck,
+  Clock
 } from 'lucide-react';
 import { NavHeader } from '@/components/NavHeader';
 import {
@@ -69,6 +72,8 @@ const AdminDashboard = () => {
     inventoryValue: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [receiptPrinting, setReceiptPrinting] = useState(false);
+  const [selectedPrinter, setSelectedPrinter] = useState('default');
   const [selectedItem, setSelectedItem] = useState<RationItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -440,9 +445,69 @@ const AdminDashboard = () => {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-            </div>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Live Receipt Printing Component */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Crown className="icon-lg" />
+              Live Receipt Printing
+            </CardTitle>
+            <CardDescription>
+              Configure automatic receipt printing for completed orders
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label htmlFor="receipt-printing">Enable Receipt Printing</Label>
+                <p className="text-sm text-muted-foreground">
+                  Automatically print receipts when orders are completed
+                </p>
+              </div>
+              <Button
+                variant={receiptPrinting ? "default" : "outline"}
+                onClick={() => setReceiptPrinting(!receiptPrinting)}
+                className="min-w-[100px]"
+              >
+                {receiptPrinting ? "Enabled" : "Disabled"}
+              </Button>
+            </div>
+            
+            {receiptPrinting && (
+              <div className="space-y-3 p-4 border border-border rounded-lg bg-muted/50">
+                <div className="space-y-2">
+                  <Label htmlFor="printer-select">Select Printer</Label>
+                  <select
+                    id="printer-select"
+                    value={selectedPrinter}
+                    onChange={(e) => setSelectedPrinter(e.target.value)}
+                    className="w-full p-2 border border-border rounded-md bg-background"
+                  >
+                    <option value="default">Default Printer</option>
+                    <option value="thermal">Thermal Printer (POS)</option>
+                    <option value="laser">Laser Printer</option>
+                    <option value="inkjet">Inkjet Printer</option>
+                  </select>
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span>Receipt printing is active</span>
+                </div>
+                
+                <div className="text-xs text-muted-foreground">
+                  <p>• Receipts will be printed automatically for completed orders</p>
+                  <p>• Includes order details, customer info, and payment summary</p>
+                  <p>• Compatible with thermal and standard printers</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {items.map((item) => (
                 <Card key={item.id} className="shadow-soft">
                   <CardHeader>

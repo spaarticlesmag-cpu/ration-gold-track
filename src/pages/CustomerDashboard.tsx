@@ -58,52 +58,58 @@ const CustomerDashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Card details summary */}
-      {cardType && (
-        <Card className="shadow-soft">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Badge variant="outline">Card: {cardType.toUpperCase()}</Badge>
-              {typeof profile?.verification_status === 'string' && (
-                <Badge variant={profile.verification_status === 'verified' ? 'default' : profile.verification_status === 'pending' ? 'secondary' : 'destructive'}>
-                  {profile.verification_status.charAt(0).toUpperCase() + profile.verification_status.slice(1)}
-                </Badge>
-              )}
-              <span className="text-sm text-muted-foreground ml-2">Members: {members}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {(() => {
-                const items: Array<{ name: string; qty: number; unit: string; priceText?: string } > = [];
-                if (cardType === 'yellow') {
-                  items.push({ name: 'Rice', qty: 20, unit: 'kg', priceText: '₹3/kg' });
-                  items.push({ name: 'Wheat', qty: 15, unit: 'kg', priceText: '₹2/kg' });
-                } else if (cardType === 'pink') {
-                  items.push({ name: 'Rice', qty: 4 * members, unit: 'kg', priceText: '₹3/kg' });
-                  items.push({ name: 'Wheat', qty: 1 * members, unit: 'kg', priceText: '₹2/kg' });
-                } else if (cardType === 'blue') {
-                  items.push({ name: 'Rice', qty: 2 * members, unit: 'kg', priceText: '₹4/kg' });
-                } else if (cardType === 'white') {
-                  items.push({ name: 'Rice', qty: 5, unit: 'kg', priceText: '₹10.90/kg' });
-                }
-                return items.map((it, idx) => (
-                  <div key={idx} className="border border-border rounded-lg p-3 flex items-center justify-between">
-                    <div>
-                      <div className="font-medium">{it.name}</div>
-                      <div className="text-xs text-muted-foreground">{it.priceText || 'Market/State price'}</div>
+    <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream">
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        {/* Card details summary */}
+        {cardType && (
+          <Card className="shadow-soft">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Badge variant="outline">Card: {cardType.toUpperCase()}</Badge>
+                {typeof profile?.verification_status === 'string' && (
+                  <Badge variant={profile.verification_status === 'verified' ? 'default' : profile.verification_status === 'pending' ? 'secondary' : 'destructive'}>
+                    {profile.verification_status.charAt(0).toUpperCase() + profile.verification_status.slice(1)}
+                  </Badge>
+                )}
+                <span className="text-sm text-muted-foreground ml-2">Members: {members}</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {(() => {
+                  const items: Array<{ name: string; qty: number; unit: string; priceText?: string; description?: string } > = [];
+                  if (cardType === 'yellow') {
+                    items.push({ name: 'Rice', qty: 20, unit: 'kg', priceText: '₹3/kg', description: 'Premium quality rice' });
+                    items.push({ name: 'Wheat', qty: 15, unit: 'kg', priceText: '₹2/kg', description: 'Whole wheat flour' });
+                    items.push({ name: 'Sugar', qty: 2, unit: 'kg', priceText: 'Free', description: 'White sugar' });
+                  } else if (cardType === 'pink') {
+                    items.push({ name: 'Rice', qty: 4 * members, unit: 'kg', priceText: '₹3/kg', description: 'Per family member' });
+                    items.push({ name: 'Wheat', qty: 1 * members, unit: 'kg', priceText: '₹2/kg', description: 'Per family member' });
+                    items.push({ name: 'Sugar', qty: 2, unit: 'kg', priceText: 'Free', description: 'Family allocation' });
+                  } else if (cardType === 'blue') {
+                    items.push({ name: 'Rice', qty: 2 * members, unit: 'kg', priceText: '₹4/kg', description: 'Subsidized rate' });
+                    items.push({ name: 'Wheat', qty: 1, unit: 'kg', priceText: 'Market rate', description: 'Limited quantity' });
+                  } else if (cardType === 'white') {
+                    items.push({ name: 'Rice', qty: 5, unit: 'kg', priceText: '₹10.90/kg', description: 'Fixed allocation' });
+                    items.push({ name: 'Wheat', qty: 1, unit: 'kg', priceText: 'Market rate', description: 'Limited quantity' });
+                  }
+                  return items.map((it, idx) => (
+                    <div key={idx} className="border border-border rounded-lg p-4 flex flex-col space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="font-medium">{it.name}</div>
+                        <div className="text-sm font-semibold">{it.qty} {it.unit}</div>
+                      </div>
+                      <div className="text-xs text-muted-foreground">{it.description}</div>
+                      <div className="text-sm font-medium text-primary">{it.priceText}</div>
                     </div>
-                    <div className="text-sm font-semibold">{it.qty} {it.unit}</div>
-                  </div>
-                ));
-              })()}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                  ));
+                })()}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-      <Dashboard />
+        <Dashboard />
       
       {/* Review Section */}
       <Card className="shadow-soft">
