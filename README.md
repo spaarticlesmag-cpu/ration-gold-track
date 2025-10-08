@@ -107,5 +107,5 @@ Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-trick
 
 ## Documentation
 
-- Start here: [docs/README.md](docs/README.md)
-- Includes features overview, role-based usage guides, route map, and API docs for hooks, components, integrations, and utilities with examples.
+- Start here: [docs/FullDocumentation.md](docs/FullDocumentation.md)
+- For modular references, see: [docs/README.md](docs/README.md)
