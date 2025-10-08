@@ -110,6 +110,7 @@ const CustomerDashboard = () => {
         )}
 
         <Dashboard />
+      </div>
       
       {/* Review Section */}
       <Card className="shadow-soft">

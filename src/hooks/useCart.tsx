@@ -28,13 +28,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setLines(JSON.parse(raw));
-    } catch {}
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+    }
   }, []);
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
-    } catch {}
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+    }
   }, [lines]);
 
   const add: CartContextValue["add"] = (line, qty = 1) => {
