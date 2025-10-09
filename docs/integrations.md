@@ -18,6 +18,20 @@ Security notes
 - Restrict RLS policies appropriately for `profiles`, `orders`, and `ration_items` tables.
 - RPC used: `verify_ration_card`, `get_user_ration_quota` (implement on your DB or remove calls).
 
+### Examples
+```ts
+import { supabase } from "@/integrations/supabase/client";
+
+// Get current session
+const { data: sessionData } = await supabase.auth.getSession();
+
+// Insert order
+const { data, error } = await supabase.from('orders').insert({
+  customer_id: 'uuid',
+  status: 'pending'
+}).select();
+```
+
 ## Firebase (optional)
 
 - Client scaffold: `src/integrations/firebase/client.ts`
@@ -33,3 +47,11 @@ Security notes
 
 To migrate to Firebase
 - Replace Supabase usage in `useAuth`, `DocumentUpload`, and any DB queries with Firebase Auth, Firestore, and Storage alternatives.
+
+### Example
+```ts
+import { getFirebase } from "@/integrations/firebase/client";
+
+const { auth, db, storage } = getFirebase();
+// Use Firebase Auth / Firestore / Storage as needed
+```

@@ -16,3 +16,16 @@ import { cn } from "@/lib/utils";
 
 <div className={cn('p-4', isActive && 'bg-primary', 'text-foreground')} />
 ```
+
+### Advanced examples
+```tsx
+// Arrays and objects are flattened/merged
+<div
+  className={cn(
+    'p-4',
+    isActive && 'bg-primary',
+    ['rounded', condition ? 'shadow' : null],
+    { 'opacity-50': disabled }
+  )}
+/>
+```
