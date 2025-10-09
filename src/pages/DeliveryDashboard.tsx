@@ -213,9 +213,10 @@ const DeliveryDashboard = () => {
 
   const simulateScan = () => {
     if (!selectedOrder) return;
-    setScannedCode(selectedOrder.id);
+    const payload = selectedOrder.qr_code || JSON.stringify({ orderId: selectedOrder.id, exp: Date.now() + 1 });
+    setScannedCode(payload);
     setScanning(false);
-    toast({ title: 'QR Scanned', description: `Scanned code matches Order #${selectedOrder.id}` });
+    toast({ title: 'QR Scanned', description: `Scanned a code for Order #${selectedOrder.id}` });
   };
 
   const confirmDeliveryAfterScan = async () => {
@@ -224,10 +225,19 @@ const DeliveryDashboard = () => {
       setScanError('No QR code scanned yet.');
       return;
     }
-    // In production, compare scanned payload to secure qr_code value
-    const expected = selectedOrder.qr_code || selectedOrder.id;
-    if (scannedCode !== expected) {
-      setScanError('QR mismatch. Please scan customer QR shown in their app.');
+    // Validate QR payload and expiry
+    try {
+      const parsed = JSON.parse(scannedCode);
+      if (parsed.orderId !== selectedOrder.id) {
+        setScanError('QR mismatch. Please scan the correct order QR.');
+        return;
+      }
+      if (typeof parsed.exp !== 'number' || Date.now() > parsed.exp) {
+        setScanError('QR expired. Ask customer to refresh their orders.');
+        return;
+      }
+    } catch {
+      setScanError('Invalid QR payload.');
       return;
     }
     await updateOrderStatus(selectedOrder.id, 'delivered');

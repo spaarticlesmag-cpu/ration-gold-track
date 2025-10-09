@@ -2,7 +2,8 @@ import MainLayout from "@/components/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Navigation, Package } from "lucide-react";
+import { MapPin, Clock, Navigation, Package, QrCode } from "lucide-react";
+import QRCodeLib from 'qrcode';
 import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet';
 import L, { LatLngExpression } from 'leaflet';
 import { useMemo, useRef, useState, useEffect } from 'react';
@@ -47,6 +48,8 @@ export default function OrdersCustomer() {
   const [position, setPosition] = useState<LatLngExpression>(pickup);
   const [etaMinutes, setEtaMinutes] = useState<number>(18);
   const progressRef = useRef<number>(0);
+  const [orders, setOrders] = useState<any[]>(demoOrders);
+  const [qrMap, setQrMap] = useState<Record<string, string>>({});
 
   const generatedRoute = useMemo(() => {
     const [lat1, lon1] = pickup as [number, number];
@@ -76,6 +79,31 @@ export default function OrdersCustomer() {
     return () => clearInterval(interval);
   }, [route, showLiveTracking]);
 
+  // Load orders from localStorage (demo) and generate QR images
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('orders') || '[]');
+      if (Array.isArray(stored) && stored.length) {
+        setOrders(stored);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const map: Record<string, string> = {};
+      for (const o of orders) {
+        const payload = o.qr_code || JSON.stringify({ orderId: o.id, exp: Date.now() + 1 });
+        try {
+          map[o.id] = await QRCodeLib.toDataURL(payload, { width: 180 });
+        } catch (e) {
+          console.error('QR gen failed', e);
+        }
+      }
+      setQrMap(map);
+    })();
+  }, [orders]);
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -88,8 +116,20 @@ export default function OrdersCustomer() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {demoOrders.map((order) => (
+              {orders.map((order) => (
                 <div key={order.id} className="border border-border rounded-lg p-4 space-y-3">
+                  {order.qr_expires_at && (
+                    <div className="flex items-center justify-between bg-muted/40 p-3 rounded-md">
+                      <div className="text-xs text-muted-foreground">
+                        Show this QR to delivery partner. Expires: {new Date(order.qr_expires_at).toLocaleTimeString()}
+                      </div>
+                      {qrMap[order.id] ? (
+                        <img src={qrMap[order.id]} alt="Order QR" className="h-24 w-24" />
+                      ) : (
+                        <QrCode className="w-6 h-6" />
+                      )}
+                    </div>
+                  )}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Badge variant={order.status === 'out_for_delivery' ? 'default' : 'secondary'}>

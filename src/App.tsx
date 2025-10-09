@@ -67,6 +67,22 @@ const RoleBasedRoute = () => {
   }
 };
 
+// Customer-only Route Component
+const CustomerOnlyRoute = ({ children }: { children: React.ReactNode }) => {
+  const { profile, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+  if (profile?.role !== 'customer') {
+    return <Navigate to="/orders" replace />;
+  }
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -144,7 +160,9 @@ const App = () => (
               path="/cart"
               element={
                 <ProtectedRoute>
-                  <Cart />
+                  <CustomerOnlyRoute>
+                    <Cart />
+                  </CustomerOnlyRoute>
                 </ProtectedRoute>
               }
             />
@@ -152,7 +170,9 @@ const App = () => (
               path="/payment"
               element={
                 <ProtectedRoute>
-                  <Payment />
+                  <CustomerOnlyRoute>
+                    <Payment />
+                  </CustomerOnlyRoute>
                 </ProtectedRoute>
               }
             />

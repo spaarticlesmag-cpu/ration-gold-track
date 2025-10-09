@@ -3,17 +3,46 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function Payment() {
   const { totalAmount, clear } = useCart();
+  const { profile } = useAuth();
   const [processing, setProcessing] = useState(false);
+  const navigate = useNavigate();
 
   const handlePay = async () => {
     setProcessing(true);
     await new Promise(r => setTimeout(r, 1200));
+    // Create demo order with per-order QR payload and 3-hour expiry
+    const orderId = `ORD-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+    const expiresAt = Date.now() + 3 * 60 * 60 * 1000; // 3 hours
+    const qrPayload = {
+      orderId,
+      userId: profile?.user_id || "demo-user",
+      exp: expiresAt,
+    };
+    try {
+      const existing = JSON.parse(localStorage.getItem("orders") || "[]");
+      const newOrder = {
+        id: orderId,
+        customer_id: profile?.user_id || "demo-user",
+        total_amount: totalAmount,
+        status: 'approved',
+        delivery_address: profile?.address || 'Your saved address',
+        created_at: new Date().toISOString(),
+        qr_code: JSON.stringify(qrPayload),
+        qr_expires_at: new Date(expiresAt).toISOString(),
+        items: [],
+      };
+      localStorage.setItem("orders", JSON.stringify([newOrder, ...existing]));
+    } catch (e) {
+      console.error('Failed to store order locally', e);
+    }
     clear();
     setProcessing(false);
-    alert("Payment successful (demo). Order placed!");
+    navigate('/orders');
   };
 
   return (
