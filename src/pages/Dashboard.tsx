@@ -364,104 +364,36 @@ export default function Dashboard() {
           </TabsContent>
         </Tabs>
 
-        {/* Authentication Dialog */}
+        {/* Authentication Dialog (Demo) */}
         <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Shield className="w-5 h-5" />
-                Identity Verification Required
+                Identity Verification (Demo)
               </DialogTitle>
               <DialogDescription>
-                Please verify your ration card and Aadhaar to place an order
+                This is a demo verification. Tap the button below to continue.
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4">
-              {authStep === 'card' && (
-                <div className="space-y-4">
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Verifying your ration card details...
-                    </AlertDescription>
-                  </Alert>
-                  
-                  <div className="text-center space-y-2">
-                    <div className="text-sm text-muted-foreground">
-                      Card Type: {profile?.ration_card_type?.toUpperCase()}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Card Number: {profile?.ration_card_number || 'DEMO-1234'}
-                    </div>
-                  </div>
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Simulated verification: no real data is checked.
+                </AlertDescription>
+              </Alert>
 
-                  {authStatus === 'pending' && (
-                    <div className="flex justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                    </div>
-                  )}
-
-                  {authStatus === 'success' && (
-                    <div className="flex items-center justify-center text-green-600">
-                      <CheckCircle className="w-5 h-5 mr-2" />
-                      Ration Card Verified
-                    </div>
-                  )}
-
-                  {authStatus === 'success' && (
-                    <Button 
-                      onClick={() => simulateAuth('aadhaar')} 
-                      className="w-full"
-                    >
-                      Continue to Aadhaar Verification
-                    </Button>
-                  )}
-                </div>
-              )}
-
-              {authStep === 'aadhaar' && (
-                <div className="space-y-4">
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Verifying your Aadhaar details...
-                    </AlertDescription>
-                  </Alert>
-                  
-                  <div className="text-center space-y-2">
-                    <div className="text-sm text-muted-foreground">
-                      Aadhaar: {profile?.aadhaar_number || 'XXXX-XXXX-1234'}
-                    </div>
-                  </div>
-
-                  {authStatus === 'pending' && (
-                    <div className="flex justify-center">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                    </div>
-                  )}
-
-                  {authStatus === 'success' && (
-                    <div className="flex items-center justify-center text-green-600">
-                      <CheckCircle className="w-5 h-5 mr-2" />
-                      Aadhaar Verified
-                    </div>
-                  )}
-
-                  {authStatus === 'success' && (
-                    <Button 
-                      onClick={() => {
-                        setAuthStep('complete');
-                        setShowAuthDialog(false);
-                        navigate('/cart');
-                      }} 
-                      className="w-full"
-                    >
-                      Proceed to Checkout
-                    </Button>
-                  )}
-                </div>
-              )}
+              <Button
+                className="w-full"
+                onClick={() => {
+                  setShowAuthDialog(false);
+                  navigate('/cart');
+                }}
+              >
+                Simulate Verification & Continue
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
