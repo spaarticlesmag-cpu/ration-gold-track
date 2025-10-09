@@ -99,7 +99,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant={location.pathname === '/shop' ? 'default' : 'ghost'}>
                   <Link to="/shop" className="flex items-center gap-2">
-                    <ShoppingCart className="icon-lg" /> Shop
+                    <Store className="icon-lg" /> Shop
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/quota' ? 'default' : 'ghost'}>
