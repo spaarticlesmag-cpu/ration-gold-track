@@ -7,7 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Quota from "./pages/Quota";
-import Track from "./pages/Track";
+import Orders from "./pages/Orders";
 import History from "./pages/History";
 import Cart from "./pages/Cart";
 import Payment from "./pages/Payment";
@@ -101,10 +101,10 @@ const App = () => (
               }
             />
             <Route
-              path="/track"
+              path="/orders"
               element={
                 <ProtectedRoute>
-                  <Track />
+                  <Orders />
                 </ProtectedRoute>
               }
             />

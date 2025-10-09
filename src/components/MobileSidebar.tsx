@@ -57,18 +57,18 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
           { to: "/shop", label: "Shop", icon: ShoppingCart },
           { to: "/cart", label: "Cart", icon: ShoppingCart },
           { to: "/quota", label: "Quota", icon: BadgePercent },
-          { to: "/track", label: "Track", icon: MapPin },
+          { to: "/orders", label: "Orders", icon: MapPin },
           { to: "/history", label: "History", icon: History },
         ];
       case 'delivery_partner':
         return [
-          { to: "/track", label: "Track", icon: MapPin },
+          { to: "/orders", label: "Orders", icon: MapPin },
           { to: "/qr-scanner", label: "QR Scanner", icon: QrCode },
           { to: "/history", label: "History", icon: History },
         ];
       case 'admin':
         return [
-          { to: "/track", label: "Track", icon: MapPin },
+          { to: "/orders", label: "Orders", icon: MapPin },
           { to: "/beneficiaries", label: "Beneficiaries", icon: Users },
           { to: "/history", label: "History", icon: History },
         ];

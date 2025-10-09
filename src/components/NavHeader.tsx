@@ -107,9 +107,9 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                     <BadgePercent className="icon-lg" /> Quota
                   </Link>
                 </Button>
-                <Button asChild variant={location.pathname === '/track' ? 'default' : 'ghost'}>
-                  <Link to="/track" className="flex items-center gap-2">
-                    <MapPin className="icon-lg" /> Track
+                <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
+                  <Link to="/orders" className="flex items-center gap-2">
+                    <MapPin className="icon-lg" /> Orders
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
@@ -121,9 +121,9 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
             )}
             {displayRole === 'delivery_partner' && (
               <>
-                <Button asChild variant={location.pathname === '/track' ? 'default' : 'ghost'}>
-                  <Link to="/track" className="flex items-center gap-2">
-                    <MapPin className="icon-lg" /> Track
+                <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
+                  <Link to="/orders" className="flex items-center gap-2">
+                    <MapPin className="icon-lg" /> Orders
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/qr-scanner' ? 'default' : 'ghost'}>
@@ -140,9 +140,9 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
             )}
             {displayRole === 'admin' && (
               <>
-                <Button asChild variant={location.pathname === '/track' ? 'default' : 'ghost'}>
-                  <Link to="/track" className="flex items-center gap-2">
-                    <MapPin className="icon-lg" /> Track
+                <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
+                  <Link to="/orders" className="flex items-center gap-2">
+                    <MapPin className="icon-lg" /> Orders
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/beneficiaries' ? 'default' : 'ghost'}>
