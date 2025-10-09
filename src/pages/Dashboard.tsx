@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { ShoppingCart, MapPin, QrCode, History, Shield, CheckCircle, AlertCircle } from "lucide-react";
+import { ShoppingCart, MapPin, QrCode, History, Shield, CheckCircle, AlertCircle, Store } from "lucide-react";
 import { NavHeader } from "@/components/NavHeader";
 import { QuotaCard } from "@/components/QuotaCard";
 import { RationItem } from "@/components/RationItem";
@@ -201,7 +201,7 @@ export default function Dashboard() {
         <Tabs defaultValue="shop" className="space-y-6">
           <TabsList className="grid grid-cols-4 max-w-md mx-auto">
             <TabsTrigger value="shop" className="flex items-center space-x-1">
-              <ShoppingCart className="w-4 h-4" />
+              <Store className="w-4 h-4" />
               <span className="hidden sm:inline">Shop</span>
             </TabsTrigger>
             <TabsTrigger value="quota" className="flex items-center space-x-1">

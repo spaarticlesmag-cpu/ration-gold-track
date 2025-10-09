@@ -14,7 +14,8 @@ import {
   Users, 
   User,
   LogOut,
-  Bell
+  Bell,
+  Store
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -54,7 +55,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
     switch (displayRole) {
       case 'customer':
         return [
-          { to: "/shop", label: "Shop", icon: ShoppingCart },
+          { to: "/shop", label: "Shop", icon: Store },
           { to: "/cart", label: "Cart", icon: ShoppingCart },
           { to: "/quota", label: "Quota", icon: BadgePercent },
           { to: "/orders", label: "Orders", icon: MapPin },

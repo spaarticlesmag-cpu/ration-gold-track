@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode, Users, ArrowLeft } from "lucide-react";
+import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode, Users, ArrowLeft, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
