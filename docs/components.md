@@ -97,3 +97,23 @@ Usage
 ## UI Kit
 
 Re-exports from `src/components/ui/*` follow shadcn-ui patterns, e.g. `Button`, `Card`, `Dialog`, `Tabs`, `Table`, `Progress`, etc. Import from `@/components/ui/...` and see TypeScript for prop types.
+
+More examples and component coverage live in [ui.md](ui.md).
+
+## Pages (route components)
+
+These are exported as default React components and are meant to be used by the router. Props are route-driven.
+
+- `AdminDashboard`, `CustomerDashboard`, `DeliveryDashboard`
+- `Shop`, `Quota`, `Cart`, `Orders`, `OrdersAdmin`, `OrdersCustomer`, `OrdersDelivery`
+- `Track`, `History`, `Payment`, `Profile`, `Beneficiaries`, `IncomingOrders`, `QRScanner`, `Verify`, `Index`, `NotFound`
+
+Example route usage
+```tsx
+import { createBrowserRouter } from 'react-router-dom';
+import Shop from '@/pages/Shop';
+
+export const router = createBrowserRouter([
+  { path: '/shop', element: <Shop /> },
+]);
+```

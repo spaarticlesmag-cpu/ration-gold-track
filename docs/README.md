@@ -63,6 +63,7 @@ Welcome to the documentation for the JADAYU Smart Ration Delivery Service.
 See module docs:
 - Hooks: [hooks.md](hooks.md)
 - Components: [components.md](components.md)
+- UI Kit: [ui.md](ui.md)
 - Utilities: [utilities.md](utilities.md)
 - Integrations: [integrations.md](integrations.md)
 
