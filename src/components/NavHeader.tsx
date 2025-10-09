@@ -160,17 +160,19 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
           </nav>
 
           <div className="flex items-center space-x-4">
-            {/* Cart Icon */}
-            <Button asChild variant="ghost" size="icon" className="relative tap-target">
-              <Link to="/cart">
-                <ShoppingCart className="icon-lg" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
-            </Button>
+            {/* Cart Icon - only for customers */}
+            {displayRole === 'customer' && (
+              <Button asChild variant="ghost" size="icon" className="relative tap-target">
+                <Link to="/cart">
+                  <ShoppingCart className="icon-lg" />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
+                </Link>
+              </Button>
+            )}
 
             {/* Hide notification/profile on small screens to reduce clutter */}
             <div className="hidden md:flex items-center space-x-4">
