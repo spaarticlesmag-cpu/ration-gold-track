@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, type ReactNode } from "react";
 import { ShoppingCart, MapPin, QrCode, History, Shield, CheckCircle, AlertCircle } from "lucide-react";
 import { NavHeader } from "@/components/NavHeader";
 import { QuotaCard } from "@/components/QuotaCard";
@@ -23,7 +23,11 @@ interface CartItem {
   quantity: number;
 }
 
-export default function Dashboard() {
+interface DashboardProps {
+  afterHero?: ReactNode;
+}
+
+export default function Dashboard({ afterHero }: DashboardProps) {
   const navigate = useNavigate();
   const { lines, add, remove, totalItems, totalAmount } = useCart();
   const { profile } = useAuth();
@@ -177,7 +181,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       {/* Hero Section with Temple Background */}
       <div 
         className="relative h-64 bg-cover bg-center"
@@ -195,6 +199,13 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
+
+      {/* Optional content directly after hero (e.g., card details) */}
+      {afterHero && (
+        <div className="container mx-auto px-4 py-6">
+          {afterHero}
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">

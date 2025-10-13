@@ -124,6 +124,16 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
           {/* Navigation */}
           <div className="flex-1 p-6 overflow-y-auto">
             <nav className="space-y-2">
+              <Link
+                to="/app"
+                onClick={() => setOpen(false)}
+                className={`flex items-center space-x-3 p-3 rounded-lg text-base font-medium transition-colors tap-target ${
+                  location.pathname === '/app' ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+                }`}
+              >
+                <User className="w-5 h-5" />
+                <span>Home</span>
+              </Link>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.to;

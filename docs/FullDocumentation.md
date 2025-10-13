@@ -42,8 +42,9 @@ This document consolidates the project’s overview, features, usage, routes, an
 
 ## Route Map
 
+- `/`: public landing page (hero + CTAs)
 - `/auth`: authentication
-- `/`: role router → `AdminDashboard` | `DeliveryDashboard` | `CustomerDashboard`
+- `/app`: role router → `AdminDashboard` | `DeliveryDashboard` | `CustomerDashboard`
 - `/shop`, `/quota`, `/track`, `/history`, `/cart`, `/payment`, `/profile`
 - `/incoming-orders` (admin), `/beneficiaries` (admin), `/qr-scanner` (delivery demo)
 - `/verify/:id`: delivery verification view

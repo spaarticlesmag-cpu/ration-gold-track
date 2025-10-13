@@ -60,7 +60,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream flex items-center justify-center">
+      <div className="min-h-dvh bg-gradient-to-br from-gold-light/20 to-cream flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
       </div>
     );
@@ -145,13 +145,13 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream p-4">
+    <div className="min-h-dvh bg-gradient-to-br from-gold-light/20 to-cream p-4">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Button
             variant="outline"
             size="icon"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/app')}
             className="hover:bg-primary/10"
           >
             <ArrowLeft className="w-4 h-4" />
