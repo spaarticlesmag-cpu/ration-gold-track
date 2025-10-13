@@ -88,13 +88,13 @@ const QRScanner = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream">
+    <div className="min-h-dvh bg-gradient-to-br from-gold-light/20 to-cream">
       <NavHeader />
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+            <Link to="/app" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard
             </Link>

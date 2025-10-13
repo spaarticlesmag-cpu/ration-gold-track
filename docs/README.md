@@ -52,8 +52,9 @@ Welcome to the documentation for the JADAYU Smart Ration Delivery Service.
 
 ## Route Map
 
+- `/`: public landing page (hero + CTAs)
 - `/auth`: authentication screen
-- `/`: role router → `AdminDashboard` | `DeliveryDashboard` | `CustomerDashboard`
+- `/app`: role router → `AdminDashboard` | `DeliveryDashboard` | `CustomerDashboard`
 - `/shop`, `/quota`, `/track`, `/history`, `/cart`, `/payment`, `/profile`
 - `/incoming-orders` (admin), `/beneficiaries` (admin), `/qr-scanner` (delivery demo)
 - `/verify/:id`: delivery verification view

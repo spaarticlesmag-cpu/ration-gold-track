@@ -127,6 +127,7 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
     scroll-behavior: smooth;
+    overscroll-behavior-y: contain; /* prevent iOS/Android bounce causing layout jumps */
   }
 }
 
@@ -186,6 +187,11 @@ All colors MUST be HSL.
   .tap-target {
     min-width: 44px;
     min-height: 44px;
+  }
+
+  /* Prevent viewport jump when virtual keyboard opens */
+  .min-h-dvh {
+    min-height: 100dvh; /* modern dynamic viewport for mobile */
   }
 
   /* Ensure maps stay within their container and below overlays */

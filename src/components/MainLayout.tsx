@@ -7,9 +7,9 @@ interface MainLayoutProps {
 
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-dvh bg-background">
       <NavHeader />
-      <main className="container mx-auto px-4 py-6 pb-24">
+      <main className="container mx-auto px-4 py-4 pb-24 sm:py-6">
         {children}
       </main>
       {/* Bottom navigation for mobile */}

@@ -67,11 +67,11 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
   };
 
   return (
-    <header className="bg-background border-b border-border shadow-soft sticky top-0 z-50">
+    <header className="bg-background border-b border-border shadow-soft sticky top-0 z-50 supports-[height:100dvh]:[position:sticky]">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            {/* Back button: show on all pages except home ("/") */}
+            {/* Back button: show on all pages except landing ("/") */}
             {location.pathname !== "/" && (
               <Button
                 variant="ghost"
@@ -83,7 +83,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                 <ArrowLeft className="icon-lg" />
               </Button>
             )}
-            <Link to="/" className={`text-2xl font-bold ${branding.color}`}>
+            <Link to="/app" className={`text-2xl font-bold ${branding.color}`}>
               JADAYU
             </Link>
             <div className="hidden md:block text-sm text-muted-foreground">
