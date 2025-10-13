@@ -94,7 +94,7 @@ const QRScanner = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+            <Link to="/app" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard
             </Link>

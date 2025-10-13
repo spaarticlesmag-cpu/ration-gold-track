@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
 import Shop from "./pages/Shop";
 import Quota from "./pages/Quota";
 import Track from "./pages/Track";
@@ -75,9 +76,14 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            {/* Public landing page */}
+            <Route path="/" element={<Landing />} />
+
             <Route path="/auth" element={<Auth />} />
+
+            {/* Authenticated application entry */}
             <Route
-              path="/"
+              path="/app"
               element={
                 <ProtectedRoute>
                   <RoleBasedRoute />

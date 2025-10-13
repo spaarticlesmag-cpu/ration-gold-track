@@ -300,7 +300,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream">
+    <div className="min-h-[100svh] bg-gradient-to-br from-gold-light/20 to-cream">
       <NavHeader />
       
       <div className="container mx-auto px-4 py-8">
@@ -360,13 +360,13 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="inventory" className="space-y-6">
-          <TabsList>
+          <TabsList className="w-full overflow-x-auto">
             <TabsTrigger value="inventory">Inventory Management</TabsTrigger>
             <TabsTrigger value="orders">Recent Orders</TabsTrigger>
           </TabsList>
 
           <TabsContent value="inventory" className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-2xl font-bold">Inventory Management</h2>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
@@ -442,7 +442,7 @@ const AdminDashboard = () => {
               </Dialog>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {items.map((item) => (
                 <Card key={item.id} className="shadow-soft">
                   <CardHeader>
@@ -459,11 +459,11 @@ const AdminDashboard = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <span className="text-sm text-muted-foreground">
                         Total Value: ₹{(item.price_per_kg * item.stock_quantity).toFixed(2)}
                       </span>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap sm:flex-nowrap justify-end">
                         <Button
                           size="sm"
                           variant="outline"
@@ -493,7 +493,7 @@ const AdminDashboard = () => {
               {orders.map((order) => (
                 <Card key={order.id} className="shadow-soft">
                   <CardContent className="pt-6">
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                       <div className="space-y-2">
                         <div className="flex items-center gap-3">
                           <h3 className="font-medium">Order #{order.id.slice(0, 8)}</h3>

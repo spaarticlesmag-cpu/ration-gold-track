@@ -83,7 +83,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                 <ArrowLeft className="icon-lg" />
               </Button>
             )}
-            <Link to="/" className={`text-2xl font-bold ${branding.color}`}>
+            <Link to="/app" className={`text-2xl font-bold ${branding.color}`}>
               JADAYU
             </Link>
             <div className="hidden md:block text-sm text-muted-foreground">

@@ -23,7 +23,11 @@ interface CartItem {
   quantity: number;
 }
 
-export default function Dashboard() {
+interface DashboardProps {
+  hideHero?: boolean;
+}
+
+export default function Dashboard({ hideHero = false }: DashboardProps) {
   const navigate = useNavigate();
   const { lines, add, remove, totalItems, totalAmount } = useCart();
   const { profile } = useAuth();
@@ -179,22 +183,24 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section with Temple Background */}
-      <div 
-        className="relative h-64 bg-cover bg-center"
-        style={{ backgroundImage: `url(${templeBg})` }}
-      >
-        <div className="absolute inset-0 bg-background/80" />
-        <NavHeader />
-        
-        <div className="relative container mx-auto px-4 py-8 text-center">
-          <h1 className="text-5xl md:text-6xl heading-premium mb-3">
-            Welcome to JADAYU
-          </h1>
-          <p className="subheading-muted">
-            Smart Ration Delivery Service • Traditional Values, Modern Technology
-          </p>
+      {!hideHero && (
+        <div 
+          className="relative h-64 bg-cover bg-center"
+          style={{ backgroundImage: `url(${templeBg})` }}
+        >
+          <div className="absolute inset-0 bg-background/80" />
+          <NavHeader />
+          
+          <div className="relative container mx-auto px-4 py-8 text-center">
+            <h1 className="text-5xl md:text-6xl heading-premium mb-3">
+              Welcome to JADAYU
+            </h1>
+            <p className="subheading-muted">
+              Smart Ration Delivery Service • Traditional Values, Modern Technology
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
