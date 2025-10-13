@@ -91,7 +91,7 @@ const IncomingOrders = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream">
+    <div className="min-h-[100svh] bg-gradient-to-br from-gold-light/20 to-cream">
       <NavHeader />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
@@ -103,7 +103,7 @@ const IncomingOrders = () => {
         </div>
 
         <Tabs defaultValue="pending" className="space-y-6">
-          <TabsList>
+          <TabsList className="w-full overflow-x-auto">
             <TabsTrigger value="pending">Pending ({pending.length})</TabsTrigger>
             <TabsTrigger value="approved">Approved ({approved.length})</TabsTrigger>
           </TabsList>
@@ -126,11 +126,11 @@ const IncomingOrders = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="flex items-center gap-2"><User className="w-4 h-4" /><span>{order.profiles?.full_name || 'Unknown'}</span></div>
                     <div className="flex items-center gap-2"><Phone className="w-4 h-4" /><span>{order.profiles?.mobile_number || '—'}</span></div>
-                    <div className="flex items-center gap-2"><MapPin className="w-4 h-4" /><span className="text-sm text-muted-foreground">{order.delivery_address}</span></div>
+                    <div className="flex items-center gap-2"><MapPin className="w-4 h-4" /><span className="text-sm text-muted-foreground break-words">{order.delivery_address}</span></div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-3">
                     <div className="text-sm text-muted-foreground flex items-center gap-2"><Clock className="w-4 h-4" />Placed {new Date(order.created_at).toLocaleDateString('en-IN')}</div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap sm:flex-nowrap justify-end">
                       <Button variant="outline" onClick={() => updateStatus(order.id, 'cancelled')}>
                         <XCircle className="w-4 h-4 mr-2" /> Reject
                       </Button>
@@ -162,11 +162,11 @@ const IncomingOrders = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="flex items-center gap-2"><User className="w-4 h-4" /><span>{order.profiles?.full_name || 'Unknown'}</span></div>
                     <div className="flex items-center gap-2"><Phone className="w-4 h-4" /><span>{order.profiles?.mobile_number || '—'}</span></div>
-                    <div className="flex items-center gap-2"><MapPin className="w-4 h-4" /><span className="text-sm text-muted-foreground">{order.delivery_address}</span></div>
+                    <div className="flex items-center gap-2"><MapPin className="w-4 h-4" /><span className="text-sm text-muted-foreground break-words">{order.delivery_address}</span></div>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-3">
                     <div className="text-sm text-muted-foreground">Ready for assignment</div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap sm:flex-nowrap justify-end">
                       <Button variant="outline" onClick={() => updateStatus(order.id, 'pending')}>Move to Pending</Button>
                       <Button onClick={() => updateStatus(order.id, 'out_for_delivery')}>Mark Out For Delivery</Button>
                     </div>

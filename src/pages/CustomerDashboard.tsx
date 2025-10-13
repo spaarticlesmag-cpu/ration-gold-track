@@ -59,7 +59,10 @@ const CustomerDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Card details summary */}
+      {/* Always show hero/nav first via Dashboard with hideHero=false (default) */}
+      <Dashboard />
+
+      {/* Card details summary below hero */}
       {cardType && (
         <Card className="shadow-soft">
           <CardHeader>
@@ -103,8 +106,7 @@ const CustomerDashboard = () => {
         </Card>
       )}
 
-      <Dashboard />
-      
+      {/* Rest of content */}
       {/* Review Section */}
       <Card className="shadow-soft">
         <CardHeader>

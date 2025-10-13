@@ -93,7 +93,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
             <div className="flex items-center justify-between">
               <div>
                 <Link 
-                  to="/" 
+                  to="/app" 
                   className="text-2xl font-bold gradient-gold bg-clip-text text-transparent"
                   onClick={() => setOpen(false)}
                 >
