@@ -3,6 +3,7 @@ import App from "./App.tsx";
 import "./index.css";
 import 'leaflet/dist/leaflet.css';
 import { CartProvider } from "./hooks/useCart";
+import './lib/i18n';
 
 // Register service worker for offline functionality
 if ('serviceWorker' in navigator) {

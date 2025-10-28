@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode, Users, ArrowLeft, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -11,14 +12,16 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { MobileSidebar } from "@/components/MobileSidebar";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { logger } from '@/lib/logger';
 
 interface NavHeaderProps {
   userName?: string;
-  userRole?: "customer" | "delivery" | "admin";
+  userRole?: "customer" | "delivery_partner" | "admin";
 }
 
 export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
+  const { t } = useTranslation();
   const { profile, signOut } = useAuth();
   const { totalItems } = useCart();
   const [notifications] = useState(3);
@@ -31,29 +34,29 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
 
   const getRoleDisplay = () => {
     switch (displayRole) {
-      case "customer": return "Beneficiary";
-      case "delivery_partner": return "Delivery Partner";
-      case "admin": return "Admin";
-      default: return "User";
+      case "customer": return t("roles.beneficiary");
+      case "delivery_partner": return t("roles.deliveryPartner");
+      case "admin": return t("roles.admin");
+      default: return t("user.user");
     }
   };
 
   const getRoleBranding = () => {
     switch (displayRole) {
-      case "delivery_partner": 
+      case "delivery_partner":
         return {
           color: "gradient-red bg-clip-text text-transparent",
-          subtitle: "Delivery Partners"
+          subtitle: t("roles.deliveryPartner")
         };
       case "admin":
         return {
           color: "gradient-brown bg-clip-text text-transparent",
-          subtitle: "Admin Panel"
+          subtitle: t("app.subtitle")
         };
       default:
         return {
           color: "gradient-gold bg-clip-text text-transparent",
-          subtitle: "Smart Ration Delivery Service"
+          subtitle: t("app.subtitle")
         };
     }
   };
@@ -100,22 +103,22 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant={location.pathname === '/shop' ? 'default' : 'ghost'}>
                   <Link to="/shop" className="flex items-center gap-2">
-                    <Store className="icon-lg" /> Shop
+                    <Store className="icon-lg" /> {t("nav.shop")}
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/quota' ? 'default' : 'ghost'}>
                   <Link to="/quota" className="flex items-center gap-2">
-                    <BadgePercent className="icon-lg" /> Quota
+                    <BadgePercent className="icon-lg" /> {t("nav.quota")}
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
                   <Link to="/orders" className="flex items-center gap-2">
-                    <MapPin className="icon-lg" /> Orders
+                    <MapPin className="icon-lg" /> {t("nav.orders")}
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                   <Link to="/history" className="flex items-center gap-2">
-                    <History className="icon-lg" /> History
+                    <History className="icon-lg" /> {t("nav.history")}
                   </Link>
                 </Button>
               </>
@@ -124,17 +127,17 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
                   <Link to="/orders" className="flex items-center gap-2">
-                    <MapPin className="icon-lg" /> Orders
+                    <MapPin className="icon-lg" /> {t("nav.orders")}
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/qr-scanner' ? 'default' : 'ghost'}>
                   <Link to="/qr-scanner" className="flex items-center gap-2">
-                    <QrCode className="icon-lg" /> QR Scanner
+                    <QrCode className="icon-lg" /> {t("nav.qrScanner")}
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                   <Link to="/history" className="flex items-center gap-2">
-                    <History className="icon-lg" /> History
+                    <History className="icon-lg" /> {t("nav.history")}
                   </Link>
                 </Button>
               </>
@@ -143,17 +146,17 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
                   <Link to="/orders" className="flex items-center gap-2">
-                    <MapPin className="icon-lg" /> Orders
+                    <MapPin className="icon-lg" /> {t("nav.orders")}
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/beneficiaries' ? 'default' : 'ghost'}>
                   <Link to="/beneficiaries" className="flex items-center gap-2">
-                    <Users className="icon-lg" /> Beneficiaries
+                    <Users className="icon-lg" /> {t("nav.beneficiaries")}
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                   <Link to="/history" className="flex items-center gap-2">
-                    <History className="icon-lg" /> History
+                    <History className="icon-lg" /> {t("nav.history")}
                   </Link>
                 </Button>
               </>
@@ -177,6 +180,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
 
             {/* Hide notification/profile on small screens to reduce clutter */}
             <div className="hidden md:flex items-center space-x-4">
+              <LanguageSwitcher />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative tap-target">

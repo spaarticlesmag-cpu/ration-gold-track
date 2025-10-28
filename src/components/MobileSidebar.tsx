@@ -22,7 +22,7 @@ import { logger } from '@/lib/logger';
 
 interface MobileSidebarProps {
   userName?: string;
-  userRole?: "customer" | "delivery" | "admin";
+  userRole?: "customer" | "delivery_partner" | "admin";
 }
 
 export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {

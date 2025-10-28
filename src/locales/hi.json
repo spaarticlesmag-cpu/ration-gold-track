@@ -1,0 +1,68 @@
+{
+  "app": {
+    "name": "जाडयु",
+    "subtitle": "स्मार्ट राशन डिलीवरी सेवा",
+    "version": "v1.0"
+  },
+  "nav": {
+    "shop": "दुकान",
+    "cart": "कार्ट",
+    "quota": "कोटा",
+    "orders": "आर्डर",
+    "history": "इतिहास",
+    "qrScanner": "QR स्कैनर",
+    "beneficiaries": "लाभार्थी",
+    "profile": "प्रofile",
+    "signOut": "साइन आउट",
+    "notifications": "सूचनाएँ",
+    "incomingOrders": "आने वाले आर्डर"
+  },
+  "roles": {
+    "beneficiary": "लाभार्थी",
+    "deliveryPartner": "डिलीवरी पार्टनर",
+    "admin": "एडमिन",
+    "customer": "ग्राहक"
+  },
+  "user": {
+    "user": "उपयोगकर्ता",
+    "welcome": "स्वागत है",
+    "goBack": "वापस जाएं"
+  },
+  "order": {
+    "order": "आर्डर",
+    "orderId": "आर्डर #",
+    "total": "कुल",
+    "status": {
+      "pending": "लंबित",
+      "outForDelivery": "डिलीवरी के लिए भेजा गया",
+      "approved": "स्वीकृत",
+      "delivered": "डिलीवर हो गया"
+    },
+    "customer": "ग्राहक",
+    "driver": "ड्राइवर",
+    "items": "वस्तुएँ",
+    "address": "पता",
+    "eta": "अनुमानित समय",
+    "contactDriver": "ड्राइवर से संपर्क करें",
+    "contactCustomer": "ग्राहक से संपर्क करें",
+    "navigate": "नेविगेट करें",
+    "deliveryProgress": "डिलीवरी प्रगति"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "success": "सफलता",
+    "cancel": "रद्द करें",
+    "save": "सेव करें",
+    "delete": "मिटाएँ",
+    "edit": "संपादित करें",
+    "add": "जोड़ें",
+    "remove": "हटाएँ",
+    "search": "खोजें",
+    "filter": "फिल्टर",
+    "sort": "सॉर्ट",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "ok": "ठीक है"
+  }
+}

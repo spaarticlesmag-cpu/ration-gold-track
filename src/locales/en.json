@@ -1,0 +1,74 @@
+{
+  "app": {
+    "name": "JADAYU",
+    "subtitle": "Smart Ration Delivery Service",
+    "version": "v1.0"
+  },
+  "nav": {
+    "shop": "Shop",
+    "cart": "Cart",
+    "quota": "Quota",
+    "orders": "Orders",
+    "history": "History",
+    "qrScanner": "QR Scanner",
+    "beneficiaries": "Beneficiaries",
+    "profile": "Profile",
+    "signOut": "Sign Out",
+    "notifications": "Notifications",
+    "incomingOrders": "Incoming Orders"
+  },
+  "roles": {
+    "beneficiary": "Beneficiary",
+    "deliveryPartner": "Delivery Partner",
+    "admin": "Admin",
+    "customer": "Customer"
+  },
+  "user": {
+    "user": "User",
+    "welcome": "Welcome",
+    "goBack": "Go back"
+  },
+  "order": {
+    "order": "Order",
+    "orderId": "Order #",
+    "total": "Total",
+    "status": {
+      "pending": "Pending",
+      "outForDelivery": "Out for Delivery",
+      "approved": "Approved",
+      "delivered": "Delivered"
+    },
+    "customer": "Customer",
+    "driver": "Driver",
+    "items": "Items",
+    "address": "Address",
+    "eta": "ETA",
+    "contactDriver": "Contact Driver",
+    "contactCustomer": "Contact Customer",
+    "navigate": "Navigate",
+    "deliveryProgress": "Delivery Progress"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK"
+  },
+  "notifications": {
+    "header": "Notifications",
+    "description": "Incoming and delivered orders",
+    "orderIncoming": "Order #{{orderId}} is incoming",
+    "orderDelivered": "Order #{{orderId}} delivered successfully"
+  }
+}

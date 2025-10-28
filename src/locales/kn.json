@@ -1,0 +1,68 @@
+{
+  "app": {
+    "name": "ಜಾಡಯು",
+    "subtitle": "ಸ್ಮಾರ್ಟ್ ರೇಷನ್ ಡೆಲಿವರಿ ಸೇವೆ",
+    "version": "v1.0"
+  },
+  "nav": {
+    "shop": "ಅಂಗಡಿ",
+    "cart": "ಕಾರ್ಟ್",
+    "quota": "ಕೋಟಾ",
+    "orders": "ಆದೇಶಗಳು",
+    "history": "ಇತಿಹಾಸ",
+    "qrScanner": "QR ಸ್ಕ್ಯಾನರ್",
+    "beneficiaries": "ನಿಯುಕ್ತರು",
+    "profile": "ಪ್ರೊಫೈಲ್",
+    "signOut": "ಸೈನ್ ಔಟ್",
+    "notifications": "ಅಧಿಸೂಚನೆಗಳು",
+    "incomingOrders": "ಬರ ಮಾರು ಆದೇಶಗಳು"
+  },
+  "roles": {
+    "beneficiary": "ನಿಯುಕ್ತ",
+    "deliveryPartner": "ಡೆಲಿವರಿ ಪಾಲುದಾರ",
+    "admin": "ನಿರ್ವಾಹಕ",
+    "customer": "ಗ್ರಾಹಕ"
+  },
+  "user": {
+    "user": "ಬಳಕೆದಾರ",
+    "welcome": "ಸ್ವಾಗತ",
+    "goBack": "ಹಿಂಜಾನು"
+  },
+  "order": {
+    "order": "ಆದೇಶ",
+    "orderId": "ಆದೇಶ #",
+    "total": "ಮುಷ್ಟಿ",
+    "status": {
+      "pending": "ಬಾಕಿ ಇದೆ",
+      "outForDelivery": "ಡೆಲಿವರಿಗೆ ಹೋಗಿದೆ",
+      "approved": "ಅನುಮೋದನೆ",
+      "delivered": "ಡೆಲಿವರಿ ಮಾಡಲಾಗಿದೆ"
+    },
+    "customer": "ಗ್ರಾಹಕ",
+    "driver": "ಚಾಲಕ",
+    "items": "ವಸ್ತುಗಳು",
+    "address": "ವಿಳಾಸ",
+    "eta": "ಅಂದಾಜು ಸಮಯ",
+    "contactDriver": "ಚಾಲಕನನ್ನು ಸಂಪರ್ಕಿಸಿ",
+    "contactCustomer": "ಗ್ರಾಹಕನ್ನು ಸಂಪರ್ಕಿಸಿ",
+    "navigate": "ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ",
+    "deliveryProgress": "ಡೆಲಿವರಿ ಪ್ರಗತಿ"
+  },
+  "common": {
+    "loading": "ಲೋಡ್ ಆಗುತ್ತಿದೆ...",
+    "error": "ದೋಷ",
+    "success": "ಯಶಸ್ಸು",
+    "cancel": "ರದ್ದುಗೊಳಿಸಿ",
+    "save": "ಉಳಿಸಿ",
+    "delete": "ಅಳಿಸಿ",
+    "edit": "ಸಂಪಾದಿಸಿ",
+    "add": "ಸೇರಿಸಿ",
+    "remove": "ತೆಗೆದುಹಾಕಿ",
+    "search": "ಹುಡುಕಿ",
+    "filter": "ಫಿಲ್ಟರ್",
+    "sort": "ವಿಂಗಡಿಸಿ",
+    "yes": "ಹೌದು",
+    "no": "ಇಲ್ಲ",
+    "ok": "ಸರಿ"
+  }
+}
