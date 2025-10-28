@@ -6,6 +6,7 @@ import hi from '../locales/hi.json';
 import ml from '../locales/ml.json';
 import kn from '../locales/kn.json';
 
+// Initialize i18n
 i18n
   .use(initReactI18next)
   .init({
@@ -23,11 +24,16 @@ i18n
         translation: kn,
       },
     },
-    lng: 'en',
+    lng: 'en', // default language
     fallbackLng: 'en',
+    debug: false, // set to true for debugging
     interpolation: {
-      escapeValue: false,
+      escapeValue: false, // React already does escaping
+    },
+    react: {
+      useSuspense: false, // Disable suspense for better error handling
     },
   });
 
+// Export the i18n instance
 export default i18n;

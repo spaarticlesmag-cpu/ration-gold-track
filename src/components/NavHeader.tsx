@@ -21,7 +21,7 @@ interface NavHeaderProps {
 }
 
 export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   const { profile, signOut } = useAuth();
   const { totalItems } = useCart();
   const [notifications] = useState(3);
@@ -34,10 +34,10 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
 
   const getRoleDisplay = () => {
     switch (displayRole) {
-      case "customer": return t("roles.beneficiary");
-      case "delivery_partner": return t("roles.deliveryPartner");
-      case "admin": return t("roles.admin");
-      default: return t("user.user");
+      case "customer": return "Beneficiary";
+      case "delivery_partner": return "Delivery Partner";
+      case "admin": return "Admin";
+      default: return "User";
     }
   };
 
@@ -46,17 +46,17 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
       case "delivery_partner":
         return {
           color: "gradient-red bg-clip-text text-transparent",
-          subtitle: t("roles.deliveryPartner")
+          subtitle: "Smart Ration Delivery Service"
         };
       case "admin":
         return {
           color: "gradient-brown bg-clip-text text-transparent",
-          subtitle: t("app.subtitle")
+          subtitle: "Smart Ration Delivery Service"
         };
       default:
         return {
           color: "gradient-gold bg-clip-text text-transparent",
-          subtitle: t("app.subtitle")
+          subtitle: "Smart Ration Delivery Service"
         };
     }
   };
@@ -84,7 +84,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                 size="icon"
                 className="tap-target mr-1"
                 onClick={() => navigate(-1)}
-                aria-label={t("user.goBack")}
+                aria-label="Go back"
               >
                 <ArrowLeft className="icon-lg" />
               </Button>
@@ -103,22 +103,22 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant={location.pathname === '/shop' ? 'default' : 'ghost'}>
                   <Link to="/shop" className="flex items-center gap-2">
-                    <Store className="icon-lg" /> {t("nav.shop")}
+                    <Store className="icon-lg" /> Shop
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/quota' ? 'default' : 'ghost'}>
                   <Link to="/quota" className="flex items-center gap-2">
-                    <BadgePercent className="icon-lg" /> {t("nav.quota")}
+                    <BadgePercent className="icon-lg" /> Quota
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
                   <Link to="/orders" className="flex items-center gap-2">
-                    <MapPin className="icon-lg" /> {t("nav.orders")}
+                    <MapPin className="icon-lg" /> Orders
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                   <Link to="/history" className="flex items-center gap-2">
-                    <History className="icon-lg" /> {t("nav.history")}
+                    <History className="icon-lg" /> History
                   </Link>
                 </Button>
               </>
@@ -127,17 +127,17 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
                   <Link to="/orders" className="flex items-center gap-2">
-                    <MapPin className="icon-lg" /> {t("nav.orders")}
+                    <MapPin className="icon-lg" /> Orders
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/qr-scanner' ? 'default' : 'ghost'}>
                   <Link to="/qr-scanner" className="flex items-center gap-2">
-                    <QrCode className="icon-lg" /> {t("nav.qrScanner")}
+                    <QrCode className="icon-lg" /> QR Scanner
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                   <Link to="/history" className="flex items-center gap-2">
-                    <History className="icon-lg" /> {t("nav.history")}
+                    <History className="icon-lg" /> History
                   </Link>
                 </Button>
               </>
@@ -146,17 +146,17 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
               <>
                 <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
                   <Link to="/orders" className="flex items-center gap-2">
-                    <MapPin className="icon-lg" /> {t("nav.orders")}
+                    <MapPin className="icon-lg" /> Orders
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/beneficiaries' ? 'default' : 'ghost'}>
                   <Link to="/beneficiaries" className="flex items-center gap-2">
-                    <Users className="icon-lg" /> {t("nav.beneficiaries")}
+                    <Users className="icon-lg" /> Beneficiaries
                   </Link>
                 </Button>
                 <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                   <Link to="/history" className="flex items-center gap-2">
-                    <History className="icon-lg" /> {t("nav.history")}
+                    <History className="icon-lg" /> History
                   </Link>
                 </Button>
               </>
@@ -180,7 +180,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
 
             {/* Hide notification/profile on small screens to reduce clutter */}
             <div className="hidden md:flex items-center space-x-4">
-              <LanguageSwitcher />
+              {/* <LanguageSwitcher /> */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative tap-target">
@@ -193,20 +193,20 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-72">
-                  <div className="px-3 py-2 text-sm font-medium">{t("notifications.header")}</div>
-                  <div className="px-3 pb-2 text-xs text-muted-foreground">{t("notifications.description")}</div>
+                  <div className="px-3 py-2 text-sm font-medium">Notifications</div>
+                  <div className="px-3 pb-2 text-xs text-muted-foreground">Incoming and delivered orders</div>
                   <div className="max-h-60 overflow-auto">
                     <div className="px-3 py-2 hover:bg-muted/50 cursor-default">
-                      <div className="text-sm">{t("notifications.orderIncoming", { orderId: "ORD001" })}</div>
+                      <div className="text-sm">Order ORD001 is incoming</div>
                       <div className="text-xs text-muted-foreground">2 min ago</div>
                     </div>
                     <div className="px-3 py-2 hover:bg-muted/50 cursor-default">
-                      <div className="text-sm">{t("notifications.orderDelivered", { orderId: "ORD003" })}</div>
+                      <div className="text-sm">Order ORD003 delivered successfully</div>
                       <div className="text-xs text-muted-foreground">12 min ago</div>
                     </div>
                   </div>
                   <div className="px-3 py-2 text-center text-xs">
-                    <Link to="/incoming-orders" className="text-primary hover:underline">{t("nav.incomingOrders")}</Link>
+                    <Link to="/incoming-orders" className="text-primary hover:underline">View Incoming Orders</Link>
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -225,12 +225,12 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      {t("nav.profile")}
+                      Profile
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
-                    {t("nav.signOut")}
+                    Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
