@@ -84,7 +84,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                 size="icon"
                 className="tap-target mr-1"
                 onClick={() => navigate(-1)}
-                aria-label="Go back"
+                aria-label={t("user.goBack")}
               >
                 <ArrowLeft className="icon-lg" />
               </Button>
@@ -193,20 +193,20 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-72">
-                  <div className="px-3 py-2 text-sm font-medium">Notifications</div>
-                  <div className="px-3 pb-2 text-xs text-muted-foreground">Incoming and delivered orders</div>
+                  <div className="px-3 py-2 text-sm font-medium">{t("notifications.header")}</div>
+                  <div className="px-3 pb-2 text-xs text-muted-foreground">{t("notifications.description")}</div>
                   <div className="max-h-60 overflow-auto">
                     <div className="px-3 py-2 hover:bg-muted/50 cursor-default">
-                      <div className="text-sm">Order #ORD001 is incoming</div>
+                      <div className="text-sm">{t("notifications.orderIncoming", { orderId: "ORD001" })}</div>
                       <div className="text-xs text-muted-foreground">2 min ago</div>
                     </div>
                     <div className="px-3 py-2 hover:bg-muted/50 cursor-default">
-                      <div className="text-sm">Order #ORD003 delivered successfully</div>
+                      <div className="text-sm">{t("notifications.orderDelivered", { orderId: "ORD003" })}</div>
                       <div className="text-xs text-muted-foreground">12 min ago</div>
                     </div>
                   </div>
                   <div className="px-3 py-2 text-center text-xs">
-                    <Link to="/incoming-orders" className="text-primary hover:underline">View Incoming Orders</Link>
+                    <Link to="/incoming-orders" className="text-primary hover:underline">{t("nav.incomingOrders")}</Link>
                   </div>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -225,12 +225,12 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      Profile
+                      {t("nav.profile")}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Sign Out
+                    {t("nav.signOut")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

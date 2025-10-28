@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Shield, Truck, Users, Smartphone, Clock, CheckCircle, Star, Download, Wifi, WifiOff } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { usePerformance } from '@/hooks/usePerformance';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 // Lazy load the background image with low quality placeholder
 const templeBg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiB2aWV3Qm94PSIwIDAgMTkyMCAxMDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiBmaWxsPSIjRkFGOUY2Ii8+Cjx0ZXh0IHg9Ijk2MCIgeT0iNTQwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDgiIGZpbGw9IiM5Q0E5QjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5KQURBWVUgU21hcnQgUmF0aW9uIFN5c3RlbTwvdGV4dD4KPC9zdmc+';
@@ -114,8 +115,14 @@ const Landing = () => {
       >
         <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
 
-        {/* Connection Status Indicator */}
-        <div className="absolute top-4 right-4 z-10">
+        {/* Top Navigation Bar */}
+        <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            {/* Language Switcher for Landing Page */}
+            <LanguageSwitcher />
+          </div>
+
+          {/* Connection Status Indicator */}
           <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
             isOnline
               ? 'bg-green-100 text-green-800 border border-green-200'

@@ -1,17 +1,18 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Menu, 
-  X, 
-  ShoppingCart, 
-  BadgePercent, 
-  MapPin, 
-  History, 
-  QrCode, 
-  Users, 
+import {
+  Menu,
+  X,
+  ShoppingCart,
+  BadgePercent,
+  MapPin,
+  History,
+  QrCode,
+  Users,
   User,
   LogOut,
   Bell,
@@ -27,6 +28,7 @@ interface MobileSidebarProps {
 
 export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
   const { profile, signOut } = useAuth();
   const location = useLocation();
 
@@ -36,10 +38,10 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
 
   const getRoleDisplay = () => {
     switch (displayRole) {
-      case "customer": return "Beneficiary";
-      case "delivery_partner": return "Delivery Partner";
-      case "admin": return "Admin";
-      default: return "User";
+      case "customer": return t("roles.beneficiary");
+      case "delivery_partner": return t("roles.deliveryPartner");
+      case "admin": return t("roles.admin");
+      default: return t("user.user");
     }
   };
 
@@ -56,23 +58,23 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
     switch (displayRole) {
       case 'customer':
         return [
-          { to: "/shop", label: "Shop", icon: Store },
-          { to: "/cart", label: "Cart", icon: ShoppingCart },
-          { to: "/quota", label: "Quota", icon: BadgePercent },
-          { to: "/orders", label: "Orders", icon: MapPin },
-          { to: "/history", label: "History", icon: History },
+          { to: "/shop", label: t("nav.shop"), icon: Store },
+          { to: "/cart", label: t("nav.cart"), icon: ShoppingCart },
+          { to: "/quota", label: t("nav.quota"), icon: BadgePercent },
+          { to: "/orders", label: t("nav.orders"), icon: MapPin },
+          { to: "/history", label: t("nav.history"), icon: History },
         ];
       case 'delivery_partner':
         return [
-          { to: "/orders", label: "Orders", icon: MapPin },
-          { to: "/qr-scanner", label: "QR Scanner", icon: QrCode },
-          { to: "/history", label: "History", icon: History },
+          { to: "/orders", label: t("nav.orders"), icon: MapPin },
+          { to: "/qr-scanner", label: t("nav.qrScanner"), icon: QrCode },
+          { to: "/history", label: t("nav.history"), icon: History },
         ];
       case 'admin':
         return [
-          { to: "/orders", label: "Orders", icon: MapPin },
-          { to: "/beneficiaries", label: "Beneficiaries", icon: Users },
-          { to: "/history", label: "History", icon: History },
+          { to: "/orders", label: t("nav.orders"), icon: MapPin },
+          { to: "/beneficiaries", label: t("nav.beneficiaries"), icon: Users },
+          { to: "/history", label: t("nav.history"), icon: History },
         ];
       default:
         return [];
@@ -102,7 +104,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
                   JADAYU
                 </Link>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Smart Ration Delivery Service
+                  {t("app.subtitle")}
                 </p>
               </div>
             </div>
@@ -157,7 +159,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
               className="flex items-center w-full justify-start text-base tap-target p-2 rounded-md hover:bg-muted"
             >
               <Bell className="w-5 h-5 mr-3" />
-              <span>Notifications</span>
+              <span>{t("nav.notifications")}</span>
             </Link>
             <Link
               to="/profile"
@@ -165,7 +167,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
               className="flex items-center w-full justify-start text-base tap-target p-2 rounded-md hover:bg-muted"
             >
               <User className="w-5 h-5 mr-3" />
-              <span>Profile</span>
+              <span>{t("nav.profile")}</span>
             </Link>
             <Button
               variant="ghost"
@@ -173,7 +175,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
               onClick={handleLogout}
             >
               <LogOut className="w-5 h-5 mr-3" />
-              Sign Out
+              {t("nav.signOut")}
             </Button>
           </div>
         </div>

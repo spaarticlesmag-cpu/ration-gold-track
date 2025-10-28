@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import MainLayout from "@/components/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -53,6 +54,8 @@ const demoOrders = [
 ];
 
 export default function OrdersAdmin() {
+  const { t } = useTranslation();
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -60,7 +63,7 @@ export default function OrdersAdmin() {
           <CardHeader className="gradient-gold text-white rounded-t-lg">
             <CardTitle className="flex items-center gap-2">
               <Package className="icon-lg" />
-              Orders
+              {t("nav.orders")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -70,9 +73,9 @@ export default function OrdersAdmin() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Badge variant={order.status === 'out_for_delivery' ? 'default' : 'secondary'}>
-                        {order.status === 'out_for_delivery' ? 'Out for Delivery' : 'Pending'}
+                        {order.status === 'out_for_delivery' ? t("order.status.outForDelivery") : t("order.status.pending")}
                       </Badge>
-                      <span className="text-sm text-muted-foreground">Order #{order.id}</span>
+                      <span className="text-sm text-muted-foreground">{t("order.orderId", { id: order.id })}</span>
                     </div>
                     <div className="text-sm font-semibold">₹{order.total}</div>
                   </div>
@@ -93,7 +96,7 @@ export default function OrdersAdmin() {
                     </div>
                     <div className="space-y-2">
                       <div className="text-sm">
-                        <span className="font-medium">Items:</span>
+                        <span className="font-medium">{t("order.items")}:</span>
                         <div className="grid grid-cols-2 gap-2 mt-1">
                           {order.items.map((item, idx) => (
                             <div key={idx} className="flex items-center gap-2 p-2 border rounded-md">
@@ -105,7 +108,7 @@ export default function OrdersAdmin() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Clock className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm">ETA: {order.eta}</span>
+                        <span className="text-sm">{t("order.eta")}: {order.eta}</span>
                       </div>
                     </div>
                     <div className="space-y-2">

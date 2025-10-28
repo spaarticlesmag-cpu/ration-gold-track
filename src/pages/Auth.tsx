@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
 import { Eye, EyeOff, Crown, Truck, Users, Image as ImageIcon, Sparkles, IdCard } from 'lucide-react';
 import DocumentUpload from '@/components/DocumentUpload';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 const Auth = () => {
   const { user, session, loading, signIn, signUp, devSignIn } = useAuth();
@@ -131,6 +132,11 @@ const Auth = () => {
             JADAYU
           </h1>
           <p className="text-muted-foreground mt-2">Smart Ration Delivery System</p>
+        </div>
+
+        {/* Language Switcher for Sign In/Sign Up page */}
+        <div className="mb-6 flex justify-center">
+          <LanguageSwitcher />
         </div>
 
         <Card className="shadow-premium border-0 bg-card/80 backdrop-blur-sm">
