@@ -11,6 +11,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { MobileSidebar } from "@/components/MobileSidebar";
+import { logger } from '@/lib/logger';
 
 interface NavHeaderProps {
   userName?: string;
@@ -64,7 +65,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
       await signOut();
       // The auth context will handle the redirect to /auth
     } catch (error) {
-      console.error('Logout failed:', error);
+      logger.error('Logout failed:', error);
     }
   };
 

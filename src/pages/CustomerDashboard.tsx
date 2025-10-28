@@ -25,7 +25,7 @@ const CustomerDashboard = () => {
   const handleSubmitReview = () => {
     if (rating && reviewText.trim()) {
       // In a real app, this would save to Supabase
-      console.log("Review submitted:", { rating, reviewText });
+      // TODO: Implement review submission to database
       setReviewText("");
       setRating(null);
       setShowReview(false);

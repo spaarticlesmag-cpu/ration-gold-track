@@ -5,6 +5,7 @@ import { useCart } from "@/hooks/useCart";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { logger } from "@/lib/logger";
 
 export default function Payment() {
   const { totalAmount, clear } = useCart();
@@ -38,7 +39,7 @@ export default function Payment() {
       };
       localStorage.setItem("orders", JSON.stringify([newOrder, ...existing]));
     } catch (e) {
-      console.error('Failed to store order locally', e);
+      logger.error('Failed to store order locally', e);
     }
     clear();
     setProcessing(false);
@@ -65,5 +66,3 @@ export default function Payment() {
     </MainLayout>
   );
 }
-
-

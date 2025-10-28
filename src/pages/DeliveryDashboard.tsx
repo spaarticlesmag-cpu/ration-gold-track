@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 import { Truck, Package, MapPin, Clock, CheckCircle, AlertCircle, QrCode, Navigation, Phone, Star, DollarSign, Timer, Camera } from 'lucide-react';
 import { NavHeader } from '@/components/NavHeader';
 import {
@@ -125,7 +126,7 @@ const DeliveryDashboard = () => {
       if (error) throw error;
       setOrders((data || []) as unknown as Order[]);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      logger.error('Error fetching orders:', error);
       toast({
         title: "Error",
         description: "Failed to load orders",
@@ -166,7 +167,7 @@ const DeliveryDashboard = () => {
         description: `Order ${orderId} status updated to ${newStatus}`,
       });
     } catch (error) {
-      console.error('Error updating order:', error);
+      logger.error('Error updating order:', error);
       toast({
         title: "Error",
         description: "Failed to update order status",

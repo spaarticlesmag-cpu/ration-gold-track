@@ -101,6 +101,17 @@ export type Database = {
           id: string
           mobile_number: string | null
           ration_card_number: string | null
+          ration_card_type: Database["public"]["Enums"]["ration_card_type"] | null
+          household_members: number | null
+          verification_status: Database["public"]["Enums"]["verification_status"] | null
+          verification_notes: string | null
+          verified_at: string | null
+          verified_by: string | null
+          aadhaar_document_url: string | null
+          ration_card_document_url: string | null
+          government_id: string | null
+          card_issue_date: string | null
+          card_expiry_date: string | null
           role: Database["public"]["Enums"]["user_role"]
           updated_at: string
           user_id: string
@@ -113,6 +124,17 @@ export type Database = {
           id?: string
           mobile_number?: string | null
           ration_card_number?: string | null
+          ration_card_type?: Database["public"]["Enums"]["ration_card_type"] | null
+          household_members?: number | null
+          verification_status?: Database["public"]["Enums"]["verification_status"] | null
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          aadhaar_document_url?: string | null
+          ration_card_document_url?: string | null
+          government_id?: string | null
+          card_issue_date?: string | null
+          card_expiry_date?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
           user_id: string
@@ -125,6 +147,16 @@ export type Database = {
           id?: string
           mobile_number?: string | null
           ration_card_number?: string | null
+          ration_card_type?: Database["public"]["Enums"]["ration_card_type"] | null
+          household_members?: number | null
+          verification_status?: Database["public"]["Enums"]["verification_status"] | null
+          verified_at?: string | null
+          verified_by?: string | null
+          aadhaar_document_url?: string | null
+          ration_card_document_url?: string | null
+          government_id?: string | null
+          card_issue_date?: string | null
+          card_expiry_date?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
           user_id?: string
@@ -176,6 +208,8 @@ export type Database = {
         | "delivered"
         | "cancelled"
       user_role: "customer" | "delivery_partner" | "admin"
+      ration_card_type: "yellow" | "pink" | "blue" | "white"
+      verification_status: "pending" | "verified" | "rejected" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -311,6 +345,8 @@ export const Constants = {
         "cancelled",
       ],
       user_role: ["customer", "delivery_partner", "admin"],
+      ration_card_type: ["yellow", "pink", "blue", "white"],
+      verification_status: ["pending", "verified", "rejected", "expired"],
     },
   },
 } as const

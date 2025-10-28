@@ -17,6 +17,7 @@ import { useCart } from "@/hooks/useCart";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import QRCodeLib from 'qrcode';
+import { logger } from '@/lib/logger';
 
 interface CartItem {
   id: string;
@@ -148,7 +149,7 @@ export default function Dashboard() {
           const dataUrl = await QRCodeLib.toDataURL(qrData, { width: 200 });
           setQrCodeDataUrl(dataUrl);
         } catch (error) {
-          console.error('Error generating QR code:', error);
+          logger.error('Error generating QR code:', error);
         }
       }
     };

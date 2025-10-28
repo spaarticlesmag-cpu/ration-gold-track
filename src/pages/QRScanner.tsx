@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { NavHeader } from '@/components/NavHeader';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 import { QrCode, Camera, CheckCircle, AlertCircle, ArrowLeft, ScanLine } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -38,7 +39,7 @@ const QRScanner = () => {
         description: "Point your camera at a QR code to scan",
       });
     } catch (err) {
-      console.error('Error accessing camera:', err);
+      logger.error('Error accessing camera:', err);
       setError('Unable to access camera. Please ensure you have granted camera permissions.');
       setScanning(false);
       toast({

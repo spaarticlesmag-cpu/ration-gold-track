@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NavHeader } from '@/components/NavHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 import { Package, CheckCircle, XCircle, User, Phone, MapPin, Clock } from 'lucide-react';
 
 interface Order {
@@ -47,7 +48,7 @@ const IncomingOrders = () => {
       if (error) throw error;
       setOrders((data || []) as unknown as Order[]);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      logger.error('Error fetching orders:', error);
     } finally {
       setLoading(false);
     }
@@ -63,7 +64,7 @@ const IncomingOrders = () => {
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
       toast({ title: 'Order Updated', description: `Order ${orderId} marked ${status}` });
     } catch (error) {
-      console.error('Error updating order status', error);
+      logger.error('Error updating order status', error);
       toast({ title: 'Error', description: 'Failed to update order status', variant: 'destructive' });
     }
   };
@@ -182,5 +183,3 @@ const IncomingOrders = () => {
 };
 
 export default IncomingOrders;
-
-

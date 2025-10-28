@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { logger } from "@/lib/logger";
 
 type CardType = "yellow" | "pink" | "blue" | "white";
 
@@ -74,7 +75,7 @@ export default function Quota() {
       });
 
       if (error) {
-        console.error('Error fetching quota:', error);
+        logger.error('Error fetching quota:', error);
         setError('Failed to fetch quota data');
         return;
       }
@@ -94,7 +95,7 @@ export default function Quota() {
         setQuotaData(getDemoQuotaData());
       }
     } catch (err) {
-      console.error('Error in fetchUserQuota:', err);
+      logger.error('Error in fetchUserQuota:', err);
       setError('Failed to fetch quota data');
       setQuotaData(getDemoQuotaData());
     } finally {
@@ -253,5 +254,3 @@ export default function Quota() {
     </MainLayout>
   );
 }
-
-

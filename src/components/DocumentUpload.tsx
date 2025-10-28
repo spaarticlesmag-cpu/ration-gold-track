@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { logger } from '@/lib/logger';
 
 interface DocumentUploadProps {
   userId: string;
@@ -32,7 +33,7 @@ export function DocumentUpload({ userId, bucket, folder, label, accept = 'image/
       const publicUrl = publicData.publicUrl;
       onUploaded?.(publicUrl);
     } catch (err) {
-      console.error('Upload failed', err);
+      logger.error('Upload failed', err);
     } finally {
       setIsUploading(false);
       setFile(null);
@@ -60,5 +61,3 @@ export function DocumentUpload({ userId, bucket, folder, label, accept = 'image/
 }
 
 export default DocumentUpload;
-
-

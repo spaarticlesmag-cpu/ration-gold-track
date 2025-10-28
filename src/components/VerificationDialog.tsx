@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 import { CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react';
 
 interface VerificationDialogProps {
@@ -65,7 +66,7 @@ const VerificationDialog = ({ isOpen, onClose, beneficiary, onVerificationComple
       onVerificationComplete();
       onClose();
     } catch (error) {
-      console.error('Error updating verification:', error);
+      logger.error('Error updating verification:', error);
       toast({
         title: "Verification Failed",
         description: "Failed to update verification status. Please try again.",

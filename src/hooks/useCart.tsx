@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { logger } from '@/lib/logger';
 
 export interface CartLine {
   id: string;
@@ -29,7 +30,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setLines(JSON.parse(raw));
     } catch (error) {
-      console.error('Error loading cart from localStorage:', error);
+      logger.error('Error loading cart from localStorage:', error);
     }
   }, []);
 
@@ -37,7 +38,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
     } catch (error) {
-      console.error('Error loading cart from localStorage:', error);
+      logger.error('Error loading cart from localStorage:', error);
     }
   }, [lines]);
 
@@ -73,5 +74,3 @@ export function useCart() {
   if (!ctx) throw new Error("useCart must be used within CartProvider");
   return ctx;
 }
-
-

@@ -7,6 +7,7 @@ import QRCodeLib from 'qrcode';
 import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet';
 import L, { LatLngExpression } from 'leaflet';
 import { useMemo, useRef, useState, useEffect } from 'react';
+import { logger } from '@/lib/logger';
 
 // Demo coordinates (Angamaly area approximation)
 const pickup: LatLngExpression = [10.1988, 76.3869];
@@ -97,7 +98,7 @@ export default function OrdersCustomer() {
         try {
           map[o.id] = await QRCodeLib.toDataURL(payload, { width: 180 });
         } catch (e) {
-          console.error('QR gen failed', e);
+          logger.error('QR gen failed', e);
         }
       }
       setQrMap(map);
@@ -209,5 +210,3 @@ export default function OrdersCustomer() {
     </MainLayout>
   );
 }
-
-

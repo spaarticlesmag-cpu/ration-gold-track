@@ -11,6 +11,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { QRCodeSVG } from 'qrcode.react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
+import { z } from 'zod';
 import { User, Phone, MapPin, CreditCard, FileText, Save, ArrowLeft, Crown, Truck, Users, Image as ImageIcon, IdCard } from 'lucide-react';
 import DocumentUpload from '@/components/DocumentUpload';
 import { useNavigate } from 'react-router-dom';
@@ -70,21 +72,41 @@ const Profile = () => {
     return <Navigate to="/auth" replace />;
   }
 
+  // Validation schema
+  const profileSchema = z.object({
+    full_name: z.string().min(1, 'Full name is required').max(100, 'Name too long'),
+    mobile_number: z.string().regex(/^[\+]?[0-9\-\s\(\)]{10,15}$/, 'Invalid mobile number format'),
+    address: z.string().min(1, 'Address is required').max(500, 'Address too long'),
+    aadhaar_number: z.string().regex(/^\d{12}$/, 'Aadhaar number must be 12 digits').optional().or(z.literal('')),
+    ration_card_number: z.string().min(1, 'Ration card number is required').max(50, 'Card number too long'),
+    ration_card_type: z.enum(['yellow', 'pink', 'blue', 'white']),
+  });
+
   const handleSave = async () => {
     if (!profile) return;
-    
+
     setIsSaving(true);
-    
+
     try {
+      // Validate form data
+      const validatedData = profileSchema.parse({
+        full_name: formData.full_name,
+        mobile_number: formData.mobile_number,
+        address: formData.address,
+        aadhaar_number: formData.aadhaar_number,
+        ration_card_number: formData.ration_card_number,
+        ration_card_type: formData.ration_card_type,
+      });
+
       const { error } = await supabase
         .from('profiles')
         .update({
-          full_name: formData.full_name,
-          mobile_number: formData.mobile_number,
-          address: formData.address,
-          aadhaar_number: formData.aadhaar_number,
-          ration_card_number: formData.ration_card_number,
-          ration_card_type: formData.ration_card_type,
+          full_name: validatedData.full_name,
+          mobile_number: validatedData.mobile_number,
+          address: validatedData.address,
+          aadhaar_number: validatedData.aadhaar_number || null,
+          ration_card_number: validatedData.ration_card_number,
+          ration_card_type: validatedData.ration_card_type,
           aadhaar_document_url: formData.aadhaar_document_url,
           ration_card_document_url: formData.ration_card_document_url,
         })
@@ -94,18 +116,26 @@ const Profile = () => {
 
       await refreshProfile();
       setIsEditing(false);
-      
+
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
       });
     } catch (error) {
-      console.error('Error updating profile:', error);
-      toast({
-        title: "Update Failed",
-        description: "Failed to update profile. Please try again.",
-        variant: "destructive",
-      });
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Validation Error",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+      } else {
+        logger.error('Error updating profile:', error);
+        toast({
+          title: "Update Failed",
+          description: "Failed to update profile. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSaving(false);
     }

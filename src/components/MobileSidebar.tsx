@@ -18,6 +18,7 @@ import {
   Store
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { logger } from '@/lib/logger';
 
 interface MobileSidebarProps {
   userName?: string;
@@ -47,7 +48,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
       await signOut();
       setOpen(false);
     } catch (error) {
-      console.error('Logout failed:', error);
+      logger.error('Logout failed:', error);
     }
   };
 
