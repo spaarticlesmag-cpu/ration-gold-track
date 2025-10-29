@@ -1,30 +1,72 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight, CheckCircle, Star, Wifi, WifiOff } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Shield, Truck, Users, Smartphone, Clock, CheckCircle, Star, Download, Wifi, WifiOff } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { usePerformance } from '@/hooks/usePerformance';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import templeBg from '@/assets/temple-bg.jpg';
 
-// Lazy load the background image with low quality placeholder
-const templeBg = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiB2aWV3Qm94PSIwIDAgMTkyMCAxMDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiBmaWxsPSIjRkFGOUY2Ii8+Cjx0ZXh0IHg9Ijk2MCIgeT0iNTQwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDgiIGZpbGw9IiM5Q0E5QjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5KQURBWVUgU21hcnQgUmF0aW9uIFN5c3RlbTwvdGV4dD4KPC9zdmc+';
+// Features data
+const features = [
+  {
+    icon: <CheckCircle className="w-8 h-8 text-green-500" />,
+    title: "Aadhaar Verification",
+    description: "Secure biometric and OTP-based verification for government compliance"
+  },
+  {
+    icon: <CheckCircle className="w-8 h-8 text-blue-500" />,
+    title: "Real-time Tracking",
+    description: "GPS-enabled delivery tracking with SMS notifications"
+  },
+  {
+    icon: <CheckCircle className="w-8 h-8 text-yellow-500" />,
+    title: "QR Code Validation",
+    description: "QR-based ration distribution with instant beneficiary confirmation"
+  },
+  {
+    icon: <CheckCircle className="w-8 h-8 text-purple-500" />,
+    title: "Multi-language Support",
+    description: "Available in 10+ regional languages for better accessibility"
+  }
+];
+
+// Benefits data
+const benefits = [
+  "Doorstep delivery within 24 hours",
+  "Transparent pricing with no hidden charges",
+  "Government-subsidized rates maintained",
+  "Quality assurance for all delivered items",
+  "Emergency ration delivery options",
+  "Digital receipts and transaction history"
+];
+
+// Testimonials data
+const testimonials = [
+  {
+    name: "Priya Sharma",
+    role: "Housewife",
+    rating: 5,
+    content: "JADAYU has made ration shopping so convenient. No more standing in long queues and the quality is amazing."
+  },
+  {
+    name: "Rajesh Kumar",
+    role: "Daily Wage Worker",
+    rating: 5,
+    content: "The delivery is always on time, and the verification process is smooth. Great government initiative!"
+  },
+  {
+    name: "Sunita Patel",
+    role: "Teacher",
+    rating: 5,
+    content: "As a working mother, this service saves me so much time. The real-time tracking gives me peace of mind."
+  }
+];
 
 const Landing = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
-  const { metrics, logPerformance } = usePerformance();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-
-  // Log performance metrics on mount
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      logPerformance();
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [logPerformance]);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -39,132 +81,69 @@ const Landing = () => {
     };
   }, []);
 
-  // Redirect if user is already logged in
-  useEffect(() => {
-    if (!loading && user) {
-      navigate('/');
-    }
-  }, [user, loading, navigate]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  const features = [
-    {
-      icon: <Shield className="w-8 h-8 text-primary" />,
-      title: "Secure & Verified",
-      description: "Government-verified ration card system with Aadhaar integration"
-    },
-    {
-      icon: <Truck className="w-8 h-8 text-primary" />,
-      title: "Doorstep Delivery",
-      description: "Get your ration delivered directly to your home"
-    },
-    {
-      icon: <Smartphone className="w-8 h-8 text-primary" />,
-      title: "Digital QR System",
-      description: "Contactless verification with QR codes for safe delivery"
-    },
-    {
-      icon: <Clock className="w-8 h-8 text-primary" />,
-      title: "Real-time Tracking",
-      description: "Track your orders in real-time with live updates"
-    }
-  ];
-
-  const benefits = [
-    "Subsidized rates for eligible beneficiaries",
-    "Multiple ration card types supported (AAY, PHH, etc.)",
-    "Easy document upload and verification",
-    "24/7 customer support",
-    "Offline-capable for low connectivity areas"
-  ];
-
-  const testimonials = [
-    {
-      name: "Priya Sharma",
-      role: "Beneficiary",
-      content: "JADAYU has made getting ration so much easier. No more standing in long queues!",
-      rating: 5
-    },
-    {
-      name: "Rajesh Kumar",
-      role: "Delivery Partner",
-      content: "Great platform for delivery partners. Easy to use and reliable payments.",
-      rating: 5
-    },
-    {
-      name: "Anita Devi",
-      role: "Shop Owner",
-      content: "Managing inventory and orders has never been this simple. Highly recommended!",
-      rating: 5
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-background">
+    <>
       {/* Hero Section */}
       <div
-        className="relative h-screen bg-cover bg-center"
+        className="relative min-h-screen bg-cover bg-center flex items-center overflow-hidden"
         style={{ backgroundImage: `url(${templeBg})` }}
       >
-        <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" />
+        {/* Animated background overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/80 to-primary/10" />
 
         {/* Top Navigation Bar */}
-        <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-center">
+        <div className="absolute top-6 left-6 right-6 z-20 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            {/* Language Switcher for Landing Page */}
             <LanguageSwitcher />
           </div>
 
           {/* Connection Status Indicator */}
-          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${
             isOnline
-              ? 'bg-green-100 text-green-800 border border-green-200'
-              : 'bg-red-100 text-red-800 border border-red-200'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-red-100 text-red-800'
           }`}>
             {isOnline ? <Wifi className="w-4 h-4" /> : <WifiOff className="w-4 h-4" />}
-            {isOnline ? 'Online' : 'Offline Mode'}
+            <span className="hidden sm:inline">{isOnline ? 'Online' : 'Offline Mode'}</span>
+            <span className="sm:hidden">{isOnline ? '🟢' : '🔴'}</span>
           </div>
         </div>
 
-        <div className="relative container mx-auto px-4 h-full flex items-center">
-          <div className="max-w-4xl mx-auto text-center">
-            <Badge variant="secondary" className="mb-4 px-4 py-2 text-sm">
-              🏛️ Government Approved • Aadhaar Verified
+        <div className="relative container mx-auto px-6 h-full flex items-center">
+          <div className="max-w-5xl mx-auto text-center">
+            <Badge
+              variant="secondary"
+              className="mb-6 px-6 py-3 text-base font-medium shadow-lg hover:shadow-premium transition-all duration-300 animate-fade-in"
+            >
+              🏛️ Government Approved • Aadhaar Verified • NFSA Certified
             </Badge>
 
-            <h1 className="text-6xl md:text-7xl font-extrabold mb-6 heading-premium leading-tight">
+            <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black mb-6 heading-premium leading-tight animate-fade-in-up animation-delay-200">
               JADAYU
             </h1>
 
-            <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground mb-6 max-w-3xl mx-auto font-medium animate-fade-in-up animation-delay-400">
               Smart Ration Delivery System
             </p>
 
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Traditional values meet modern technology. Get your entitled ration delivered safely to your doorstep with our secure, government-verified platform.
+            <p className="text-base sm:text-lg text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed animate-fade-in-up animation-delay-600">
+              Bridging traditional values with cutting-edge technology. Experience secure, government-verified ration delivery that brings India's essential commodities right to your doorstep.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 animate-fade-in-up animation-delay-800">
               <Button
                 size="lg"
-                className="gradient-gold hover:opacity-90 text-lg px-8 py-6 shadow-premium"
+                className="gradient-gold hover:scale-105 transform transition-all duration-300 text-lg px-10 py-8 shadow-premium hover:shadow-gold w-full sm:w-auto group"
                 onClick={() => navigate('/auth')}
               >
-                Get Started
-                <ArrowRight className="ml-2 w-5 h-5" />
+                Start Your Journey
+                <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
               </Button>
 
               <Button
                 variant="outline"
                 size="lg"
-                className="text-lg px-8 py-6 border-2 hover:bg-primary hover:text-primary-foreground"
+                className="text-lg px-10 py-8 border-2 hover:bg-primary hover:text-white transition-all duration-300 w-full sm:w-auto hover:scale-105"
                 onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Learn More
@@ -172,28 +151,29 @@ const Landing = () => {
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">10K+</div>
-                <div className="text-muted-foreground">Happy Families</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto animate-fade-in-up animation-delay-1000">
+              <div className="text-center group">
+                <div className="text-4xl font-bold text-primary mb-3 group-hover:scale-110 transition-transform duration-300">10K+</div>
+                <div className="text-base text-muted-foreground font-medium">Happy Families</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">500+</div>
-                <div className="text-muted-foreground">Delivery Partners</div>
+              <div className="text-center group">
+                <div className="text-4xl font-bold text-primary mb-3 group-hover:scale-110 transition-transform duration-300">500+</div>
+                <div className="text-base text-muted-foreground font-medium">Delivery Partners</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">50+</div>
-                <div className="text-muted-foreground">Cities Covered</div>
+              <div className="text-center group">
+                <div className="text-base text-muted-foreground font-medium">50+</div>
+                <div className="text-sm opacity-75">Cities Covered</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+
       {/* Features Section */}
       <section id="features" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 animate-fade-in-up">
             <h2 className="text-4xl font-bold mb-4 heading-premium">
               Why Choose JADAYU?
             </h2>
@@ -204,15 +184,27 @@ const Landing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-premium transition-all duration-300 border-0 bg-card/80 backdrop-blur-sm">
+              <Card
+                key={index}
+                className={`text-center hover:shadow-premium hover:scale-105 hover:-translate-y-1 transition-all duration-500 border-0 bg-card/80 backdrop-blur-sm group cursor-pointer ${
+                  index === 0 ? 'animate-fade-in-up' :
+                  index === 1 ? 'animate-fade-in-up animation-delay-200' :
+                  index === 2 ? 'animate-fade-in-up animation-delay-400' :
+                  'animate-fade-in-up animation-delay-600'
+                }`}
+              >
                 <CardHeader>
-                  <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-full w-fit">
-                    {feature.icon}
+                  <div className="mx-auto mb-4 p-4 bg-primary/10 rounded-full w-fit group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
+                    <div className="group-hover:scale-110 transition-transform duration-300">
+                      {feature.icon}
+                    </div>
                   </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  <CardTitle className="text-xl group-hover:text-primary transition-colors duration-300">
+                    {feature.title}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-base">
+                  <CardDescription className="text-base group-hover:text-foreground/80 transition-colors duration-300">
                     {feature.description}
                   </CardDescription>
                 </CardContent>
@@ -223,49 +215,60 @@ const Landing = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20">
+      <section className="py-20 animate-fade-in-up">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
+            <div className="space-y-6">
               <h2 className="text-4xl font-bold mb-6 heading-premium">
                 Your Benefits
               </h2>
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <CheckCircle className="w-6 h-6 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-lg text-muted-foreground">{benefit}</span>
+                  <div
+                    key={index}
+                    className={`flex items-start gap-4 p-4 rounded-lg hover:bg-muted/50 transition-all duration-300 group ${
+                      index === 0 ? 'animate-fade-in-up' :
+                      index === 1 ? 'animate-fade-in-up animation-delay-200' :
+                      index === 2 ? 'animate-fade-in-up animation-delay-400' :
+                      'animate-fade-in-up animation-delay-600'
+                    }`}
+                  >
+                    <div className="flex-shrink-0 mt-1">
+                      <CheckCircle className="w-6 h-6 text-green-500 group-hover:scale-110 transition-transform duration-300" />
+                    </div>
+                    <span className="text-lg text-muted-foreground leading-relaxed">{benefit}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="relative">
-              <Card className="shadow-premium border-0 bg-card/80 backdrop-blur-sm">
+              <Card className="shadow-premium border-0 bg-card/80 backdrop-blur-sm hover:shadow-gold transition-all duration-500">
                 <CardHeader>
-                  <CardTitle className="text-2xl text-center">Supported Ration Cards</CardTitle>
+                  <CardTitle className="text-2xl text-center heading-premium">Supported Ration Cards</CardTitle>
+                  <p className="text-center text-muted-foreground">All government-issued cards accepted</p>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-yellow-100 rounded-lg">
-                      <div className="w-8 h-8 bg-yellow-500 rounded-full mx-auto mb-2"></div>
-                      <div className="font-semibold">AAY (Yellow)</div>
-                      <div className="text-sm text-muted-foreground">Antyodaya</div>
+                    <div className="text-center p-4 bg-yellow-100 rounded-xl hover:bg-yellow-50 transition-all duration-300 hover:scale-105 hover:shadow-lg group cursor-pointer">
+                      <div className="w-10 h-10 bg-yellow-500 rounded-full mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"></div>
+                      <div className="font-semibold text-sm">AAY (Yellow)</div>
+                      <div className="text-xs text-muted-foreground mt-1">Antyodaya</div>
                     </div>
-                    <div className="text-center p-4 bg-pink-100 rounded-lg">
-                      <div className="w-8 h-8 bg-pink-500 rounded-full mx-auto mb-2"></div>
-                      <div className="font-semibold">PHH (Pink)</div>
-                      <div className="text-sm text-muted-foreground">Priority Household</div>
+                    <div className="text-center p-4 bg-pink-100 rounded-xl hover:bg-pink-50 transition-all duration-300 hover:scale-105 hover:shadow-lg group cursor-pointer">
+                      <div className="w-10 h-10 bg-pink-500 rounded-full mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"></div>
+                      <div className="font-semibold text-sm">PHH (Pink)</div>
+                      <div className="text-xs text-muted-foreground mt-1">Priority Household</div>
                     </div>
-                    <div className="text-center p-4 bg-blue-100 rounded-lg">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full mx-auto mb-2"></div>
-                      <div className="font-semibold">Blue</div>
-                      <div className="text-sm text-muted-foreground">Non-Priority</div>
+                    <div className="text-center p-4 bg-blue-100 rounded-xl hover:bg-blue-50 transition-all duration-300 hover:scale-105 hover:shadow-lg group cursor-pointer">
+                      <div className="w-10 h-10 bg-blue-500 rounded-full mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"></div>
+                      <div className="font-semibold text-sm">Blue</div>
+                      <div className="text-xs text-muted-foreground mt-1">Non-Priority</div>
                     </div>
-                    <div className="text-center p-4 bg-gray-100 rounded-lg">
-                      <div className="w-8 h-8 bg-gray-300 border rounded-full mx-auto mb-2"></div>
-                      <div className="font-semibold">White</div>
-                      <div className="text-sm text-muted-foreground">Non-Subsidy</div>
+                    <div className="text-center p-4 bg-gray-100 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 hover:shadow-lg group cursor-pointer">
+                      <div className="w-10 h-10 bg-gray-300 border border-gray-400 rounded-full mx-auto mb-3 group-hover:scale-110 transition-transform duration-300"></div>
+                      <div className="font-semibold text-sm">White</div>
+                      <div className="text-xs text-muted-foreground mt-1">Non-Subsidy</div>
                     </div>
                   </div>
                 </CardContent>
@@ -276,7 +279,7 @@ const Landing = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-muted/30 animate-fade-in-up">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4 heading-premium">
@@ -289,16 +292,25 @@ const Landing = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <Card key={index} className="hover:shadow-premium transition-all duration-300 border-0 bg-card/80 backdrop-blur-sm">
-                <CardContent className="pt-6">
-                  <div className="flex mb-4">
+              <Card
+                key={index}
+                className={`hover:shadow-premium hover:scale-105 hover:-translate-y-1 transition-all duration-500 border-0 bg-card/80 backdrop-blur-sm group animate-fade-in-up cursor-pointer ${
+                  index === 0 ? '' :
+                  index === 1 ? 'animation-delay-200' :
+                  'animation-delay-400'
+                }`}
+              >
+                <CardContent className="pt-8 pb-6 px-6">
+                  <div className="flex mb-6 justify-center">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                      <Star key={i} className="w-6 h-6 text-yellow-400 fill-current group-hover:scale-110 transition-transform duration-300" />
                     ))}
                   </div>
-                  <p className="text-muted-foreground mb-4 italic">"{testimonial.content}"</p>
-                  <div>
-                    <div className="font-semibold">{testimonial.name}</div>
+                  <p className="text-muted-foreground mb-6 italic text-center leading-relaxed group-hover:text-foreground transition-colors duration-300">
+                    "{testimonial.content}"
+                  </p>
+                  <div className="text-center border-t pt-4 group-hover:border-primary/20 transition-colors duration-300">
+                    <div className="font-bold text-lg group-hover:text-primary transition-colors duration-300">{testimonial.name}</div>
                     <div className="text-sm text-muted-foreground">{testimonial.role}</div>
                   </div>
                 </CardContent>
@@ -309,48 +321,52 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20">
+      <section className="py-20 bg-gradient-to-br from-primary/5 via-transparent to-gold-light/5 animate-fade-in-up">
         <div className="container mx-auto px-4 text-center">
+          <Badge variant="outline" className="mb-6 px-4 py-2 bg-primary/10 hover:bg-primary/20 transition-colors duration-300">
+            🚀 Join 10K+ Happy Families
+          </Badge>
+
           <h2 className="text-4xl font-bold mb-6 heading-premium">
             Ready to Get Started?
           </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed">
             Join thousands of families who trust JADAYU for their ration needs.
-            Sign up today and experience the difference.
+            Sign up today and experience the convenience of doorstep ration delivery.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
             <Button
               size="lg"
-              className="gradient-gold hover:opacity-90 text-lg px-8 py-6 shadow-premium"
+              className="gradient-gold hover:scale-105 transform transition-all duration-300 text-lg px-12 py-8 shadow-premium hover:shadow-gold w-full sm:w-auto group"
               onClick={() => navigate('/auth')}
             >
               Sign Up Now
-              <ArrowRight className="ml-2 w-5 h-5" />
+              <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Button>
 
             <Button
               variant="outline"
               size="lg"
-              className="text-lg px-8 py-6 border-2"
+              className="text-lg px-12 py-8 border-2 hover:bg-primary hover:text-white transition-all duration-500 w-full sm:w-auto hover:scale-105 hover:shadow-lg"
               onClick={() => navigate('/auth')}
             >
               Sign In
             </Button>
           </div>
 
-          <div className="mt-8 flex items-center justify-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              Free to use
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto animate-fade-in-up animation-delay-300">
+            <div className="flex items-center justify-center gap-3 p-4 rounded-xl bg-green-50 hover:bg-green-100 transition-all duration-300 group">
+              <CheckCircle className="w-5 h-5 text-green-500 group-hover:scale-110 transition-transform duration-300" />
+              <span className="text-sm font-medium text-green-800">Free to use</span>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              No hidden fees
+            <div className="flex items-center justify-center gap-3 p-4 rounded-xl bg-blue-50 hover:bg-blue-100 transition-all duration-300 group">
+              <CheckCircle className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform duration-300" />
+              <span className="text-sm font-medium text-blue-800">No hidden fees</span>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              Government approved
+            <div className="flex items-center justify-center gap-3 p-4 rounded-xl bg-yellow-50 hover:bg-yellow-100 transition-all duration-300 group">
+              <CheckCircle className="w-5 h-5 text-yellow-500 group-hover:scale-110 transition-transform duration-300" />
+              <span className="text-sm font-medium text-yellow-800">Government approved</span>
             </div>
           </div>
         </div>
@@ -413,7 +429,7 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 };
 

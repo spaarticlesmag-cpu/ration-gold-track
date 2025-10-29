@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +10,9 @@ import Landing from "./pages/Landing";
 import Shop from "./pages/Shop";
 import Quota from "./pages/Quota";
 import Orders from "./pages/Orders";
+import OrdersAdmin from "./pages/OrdersAdmin";
+import OrdersCustomer from "./pages/OrdersCustomer";
+import OrdersDelivery from "./pages/OrdersDelivery";
 import History from "./pages/History";
 import Cart from "./pages/Cart";
 import Payment from "./pages/Payment";
@@ -24,6 +28,11 @@ import Beneficiaries from "./pages/Beneficiaries";
 import IncomingOrders from "./pages/IncomingOrders";
 
 const queryClient = new QueryClient();
+
+// Public Route Component (accessible without authentication)
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  return <>{children}</>;
+};
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -84,123 +93,44 @@ const CustomerOnlyRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
         <AuthProvider>
-          <Routes>
-            <Route path="/landing" element={<Landing />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <RoleBasedRoute />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/shop"
-              element={
-                <ProtectedRoute>
-                  <Shop />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/quota"
-              element={
-                <ProtectedRoute>
-                  <Quota />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/orders"
-              element={
-                <ProtectedRoute>
-                  <Orders />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/history"
-              element={
-                <ProtectedRoute>
-                  <History />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/beneficiaries"
-              element={
-                <ProtectedRoute>
-                  <Beneficiaries />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/incoming-orders"
-              element={
-                <ProtectedRoute>
-                  <IncomingOrders />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/cart"
-              element={
-                <ProtectedRoute>
-                  <CustomerOnlyRoute>
-                    <Cart />
-                  </CustomerOnlyRoute>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/payment"
-              element={
-                <ProtectedRoute>
-                  <CustomerOnlyRoute>
-                    <Payment />
-                  </CustomerOnlyRoute>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/verify/:id"
-              element={
-                <ProtectedRoute>
-                  <Verify />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/qr-scanner"
-              element={
-                <ProtectedRoute>
-                  <QRScanner />
-                </ProtectedRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Toaster />
+          <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/landing" replace />} />
+          <Route path="/landing" element={<Landing />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard" element={<ProtectedRoute><RoleBasedRoute /></ProtectedRoute>} />
+              <Route path="/index" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+              <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
+              <Route path="/quota" element={<ProtectedRoute><Quota /></ProtectedRoute>} />
+              <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+              <Route path="/orders-admin" element={<ProtectedRoute><OrdersAdmin /></ProtectedRoute>} />
+              <Route path="/orders-customer" element={<ProtectedRoute><OrdersCustomer /></ProtectedRoute>} />
+              <Route path="/orders-delivery" element={<ProtectedRoute><OrdersDelivery /></ProtectedRoute>} />
+              <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+              <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+              <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+              <Route path="/verify" element={<ProtectedRoute><Verify /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/qr-scanner" element={<ProtectedRoute><QRScanner /></ProtectedRoute>} />
+              <Route path="/beneficiaries" element={<ProtectedRoute><Beneficiaries /></ProtectedRoute>} />
+              <Route path="/incoming-orders" element={<ProtectedRoute><IncomingOrders /></ProtectedRoute>} />
+              <Route path="/delivery-dashboard" element={<ProtectedRoute><DeliveryDashboard /></ProtectedRoute>} />
+              <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/customer-dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
         </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

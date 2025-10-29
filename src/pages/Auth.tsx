@@ -13,7 +13,7 @@ import DocumentUpload from '@/components/DocumentUpload';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 const Auth = () => {
-  const { user, session, loading, signIn, signUp, devSignIn } = useAuth();
+  const { user, session, loading, signIn, signUp, devSignIn, signOut } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   
   // Sign In Form State
@@ -57,7 +57,7 @@ const Auth = () => {
   }
 
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -133,6 +133,8 @@ const Auth = () => {
           </h1>
           <p className="text-muted-foreground mt-2">Smart Ration Delivery System</p>
         </div>
+
+
 
         {/* Language Switcher for Sign In/Sign Up page */}
         <div className="mb-6 flex justify-center">
