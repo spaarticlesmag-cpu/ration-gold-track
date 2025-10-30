@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import { Navigate, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,12 +8,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
-import { Eye, EyeOff, Crown, Truck, Users, Image as ImageIcon, Sparkles, IdCard } from 'lucide-react';
+import { Eye, EyeOff, Crown, Truck, Users, Image as ImageIcon, Sparkles, IdCard, Info } from 'lucide-react';
 import DocumentUpload from '@/components/DocumentUpload';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
 const Auth = () => {
-  const { user, session, loading, signIn, signUp, devSignIn, signOut } = useAuth();
+  console.log('Auth component rendered!');
+  const { user, session, loading, devMode, signIn, signUp, devSignIn, signOut } = useAuth();
+  const navigate = useNavigate();
+  console.log('Auth state:', { user, session, loading, devMode });
+
   const [showPassword, setShowPassword] = useState(false);
   
   // Sign In Form State
@@ -56,7 +64,7 @@ const Auth = () => {
     );
   }
 
-  if (user) {
+  if (user && !devMode) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -114,385 +122,393 @@ const Auth = () => {
     }
   };
 
-  const quickLogin = async (role: 'customer' | 'delivery_partner' | 'admin') => {
-    try {
-      setQuickLoading(role);
-      // Pure client-side mock auth
-      devSignIn(role, { ration_card_type: 'pink' });
-    } finally {
-      setQuickLoading(null);
-    }
+  const quickLogin = (role: 'customer' | 'delivery_partner' | 'admin') => {
+    console.log('Quick login clicked for role:', role);
+
+    // Get the target redirect path based on role
+    const getRedirectPath = () => {
+      switch (role) {
+        case 'customer': return '/user/dashboard';
+        case 'delivery_partner': return '/partner/dashboard';
+        case 'admin': return '/admin/dashboard';
+        default: return '/user/dashboard';
+      }
+    };
+
+    // Set loading state
+    setQuickLoading(role);
+
+    // Use devSignIn to set up the auth state
+    devSignIn(role);
+
+    // Navigate immediately without timeout or window.location (better UX)
+    const redirectPath = getRedirectPath();
+    console.log('Navigating to:', redirectPath);
+    navigate(redirectPath);
+
+    // Reset loading state
+    setQuickLoading(null);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-premium bg-clip-text text-transparent">
-            JADAYU
-          </h1>
-          <p className="text-muted-foreground mt-2">Smart Ration Delivery System</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream flex flex-col items-center justify-center py-12 px-4">
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold gradient-gold bg-clip-text text-transparent mb-2">
+          JADAYU
+        </h1>
+        <p className="text-muted-foreground">Smart Ration Delivery System</p>
+        <Badge variant="secondary" className="mt-4">
+          <Sparkles className="w-4 h-4 mr-1" />
+          Version 2.0 - Enhanced Authentication
+        </Badge>
+      </div>
 
+      <Card className="w-full max-w-lg">
+        <CardHeader className="text-center">
+          <CardTitle>Welcome Back</CardTitle>
+          <CardDescription>
+            Sign in to your account or create a new one
+          </CardDescription>
+        </CardHeader>
 
+        <CardContent>
+          {/* Quick Login Buttons for Development */}
+          <Alert className="mb-6 border-blue-200 bg-blue-50">
+            <Info className="h-4 w-4" />
+            <AlertDescription className="text-sm">
+              <strong>Development Mode:</strong> Click buttons below for instant login with test accounts
+            </AlertDescription>
+          </Alert>
 
-        {/* Language Switcher for Sign In/Sign Up page */}
-        <div className="mb-6 flex justify-center">
-          <LanguageSwitcher />
-        </div>
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <Button
+              onClick={() => quickLogin('customer')}
+              disabled={!!quickLoading}
+              variant="outline"
+              className="h-auto py-4 flex flex-col items-center gap-2 hover:border-green-300"
+            >
+              <Users className="w-5 h-5 text-green-600" />
+              <div className="text-center">
+                <div className="font-semibold text-sm">Customer</div>
+                <div className="text-xs text-muted-foreground">Beneficiary</div>
+              </div>
+            </Button>
 
-        <Card className="shadow-premium border-0 bg-card/80 backdrop-blur-sm">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Welcome</CardTitle>
-            <CardDescription>
-              Sign in to your account or create a new one
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
-            <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="signin" className="space-y-4">
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
+            <Button
+              onClick={() => quickLogin('delivery_partner')}
+              disabled={!!quickLoading}
+              variant="outline"
+              className="h-auto py-4 flex flex-col items-center gap-2 hover:border-blue-300"
+            >
+              <Truck className="w-5 h-5 text-blue-600" />
+              <div className="text-center">
+                <div className="font-semibold text-sm">Driver</div>
+                <div className="text-xs text-muted-foreground">Delivery Partner</div>
+              </div>
+            </Button>
+
+            <Button
+              onClick={() => quickLogin('admin')}
+              disabled={!!quickLoading}
+              variant="outline"
+              className="h-auto py-4 flex flex-col items-center gap-2 hover:border-amber-300"
+            >
+              <Crown className="w-5 h-5 text-amber-600" />
+              <div className="text-center">
+                <div className="font-semibold text-sm">Admin</div>
+                <div className="text-xs text-muted-foreground">Shop Owner</div>
+              </div>
+            </Button>
+          </div>
+
+          <Separator className="my-6" />
+
+          <Tabs defaultValue="signin" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="signin">Sign In</TabsTrigger>
+              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="signin" className="space-y-4">
+              <form onSubmit={handleSignIn} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signin-email">Email</Label>
+                  <Input
+                    id="signin-email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={signInData.email}
+                    onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signin-password">Password</Label>
+                  <div className="relative">
                     <Input
-                      id="signin-email"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={signInData.email}
-                      onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
+                      id="signin-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={signInData.password}
+                      onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                       required
                     />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="signin-password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="Enter your password"
-                        value={signInData.password}
-                        onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
-                        required
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <Button
-                    type="submit"
-                    className="w-full gradient-gold hover:opacity-90"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Signing In...' : 'Sign In'}
-                  </Button>
-                </form>
-              </TabsContent>
-              
-              <TabsContent value="signup" className="space-y-4">
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-role">Account Type</Label>
-                    <Select
-                      value={signUpData.role}
-                      onValueChange={(value) => setSignUpData({ ...signUpData, role: value })}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="customer">
-                          <div className="flex items-center gap-2">
-                            {getRoleIcon('customer')}
-                            {getRoleLabel('customer')}
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="delivery_partner">
-                          <div className="flex items-center gap-2">
-                            {getRoleIcon('delivery_partner')}
-                            {getRoleLabel('delivery_partner')}
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="admin">
-                          <div className="flex items-center gap-2">
-                            {getRoleIcon('admin')}
-                            {getRoleLabel('admin')}
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
                   </div>
-                  
+                </div>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Signing In..." : "Sign In"}
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="signup" className="space-y-4">
+              <form onSubmit={handleSignUp} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signup-name">Full Name</Label>
+                    <Label htmlFor="signup-fullname">Full Name</Label>
                     <Input
-                      id="signup-name"
-                      type="text"
-                      placeholder="Enter your full name"
+                      id="signup-fullname"
+                      placeholder="John Doe"
                       value={signUpData.fullName}
                       onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                       required
                     />
                   </div>
-                  
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">Email</Label>
                     <Input
                       id="signup-email"
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder="john@example.com"
                       value={signUpData.email}
                       onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                       required
                     />
                   </div>
-                  
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="signup-mobile">Mobile Number</Label>
                     <Input
                       id="signup-mobile"
                       type="tel"
-                      placeholder="Enter your mobile number"
+                      placeholder="+91 9876543210"
                       value={signUpData.mobile}
                       onChange={(e) => setSignUpData({ ...signUpData, mobile: e.target.value })}
                       required
                     />
                   </div>
-                  
                   <div className="space-y-2">
-                    <Label htmlFor="signup-address">Address</Label>
-                    <Textarea
-                      id="signup-address"
-                      placeholder="Enter your address"
-                      value={signUpData.address}
-                      onChange={(e) => setSignUpData({ ...signUpData, address: e.target.value })}
+                    <Label htmlFor="signup-role">Role</Label>
+                    <Select
+                      value={signUpData.role}
+                      onValueChange={(value) => setSignUpData({ ...signUpData, role: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="customer">
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4" />
+                            Customer/Beneficiary
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="delivery_partner">
+                          <div className="flex items-center gap-2">
+                            <Truck className="w-4 h-4" />
+                            Delivery Partner
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="admin">
+                          <div className="flex items-center gap-2">
+                            <Crown className="w-4 h-4" />
+                            Admin/Shop Owner
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="signup-address">Address</Label>
+                  <Textarea
+                    id="signup-address"
+                    placeholder="Enter your complete address"
+                    value={signUpData.address}
+                    onChange={(e) => setSignUpData({ ...signUpData, address: e.target.value })}
+                    required
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="signup-password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="signup-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create a strong password"
+                      value={signUpData.password}
+                      onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                       required
                     />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
                   </div>
+                </div>
 
-                  {signUpData.role === 'customer' && (
-                    <>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                          <IdCard className="w-4 h-4" /> Ration Card Information
-                        </div>
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="ration-card-type">Card Type</Label>
-                            <Select
-                              value={rationCardData.ration_card_type}
-                              onValueChange={(value) => setRationCardData({ ...rationCardData, ration_card_type: value as 'yellow' | 'pink' | 'blue' | 'white' })}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select card type" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="yellow">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                    AAY (Yellow) - Antyodaya (NFSA)
-                                  </div>
-                                </SelectItem>
-                                <SelectItem value="pink">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-pink-500"></div>
-                                    PHH (Pink) - Priority Household (NFSA)
-                                  </div>
-                                </SelectItem>
-                                <SelectItem value="blue">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                                    Non-Priority (Subsidy)
-                                  </div>
-                                </SelectItem>
-                                <SelectItem value="white">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-gray-300 border"></div>
-                                    Non-Priority (Non-Subsidy)
-                                  </div>
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="ration-card-number">Ration Card Number</Label>
-                            <Input
-                              id="ration-card-number"
-                              type="text"
-                              placeholder="Enter ration card number"
-                              value={rationCardData.ration_card_number}
-                              onChange={(e) => setRationCardData({ ...rationCardData, ration_card_number: e.target.value })}
-                              required
-                            />
-                          </div>
-                        </div>
+                {signUpData.role === 'customer' && (
+                  <>
+                    <Separator />
+                    <div className="space-y-4">
+                      <h4 className="text-sm font-medium flex items-center gap-2">
+                        <IdCard className="w-4 h-4" />
+                        Ration Card Details (Required for Beneficiaries)
+                      </h4>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="household-members">Household Members</Label>
-                            <Input
-                              id="household-members"
-                              type="number"
-                              min="1"
-                              max="12"
-                              placeholder="Number of family members"
-                              value={rationCardData.household_members}
-                              onChange={(e) => setRationCardData({ ...rationCardData, household_members: parseInt(e.target.value) || 1 })}
-                              required
-                            />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="aadhaar-number">Aadhaar Number</Label>
-                            <Input
-                              id="aadhaar-number"
-                              type="text"
-                              placeholder="Enter Aadhaar number"
-                              value={rationCardData.aadhaar_number}
-                              onChange={(e) => setRationCardData({ ...rationCardData, aadhaar_number: e.target.value })}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="government-id">Government ID</Label>
-                            <Input
-                              id="government-id"
-                              type="text"
-                              placeholder="Enter government ID"
-                              value={rationCardData.government_id}
-                              onChange={(e) => setRationCardData({ ...rationCardData, government_id: e.target.value })}
-                            />
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <Label htmlFor="card-issue-date">Card Issue Date</Label>
-                            <Input
-                              id="card-issue-date"
-                              type="date"
-                              value={rationCardData.card_issue_date}
-                              onChange={(e) => setRationCardData({ ...rationCardData, card_issue_date: e.target.value })}
-                            />
-                          </div>
-                        </div>
-
+                      <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="card-expiry-date">Card Expiry Date</Label>
+                          <Label htmlFor="card-type">Card Type</Label>
+                          <Select
+                            value={rationCardData.ration_card_type}
+                            onValueChange={(value: 'yellow' | 'pink' | 'blue' | 'white') =>
+                              setRationCardData({ ...rationCardData, ration_card_type: value })
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="yellow">Yellow Card</SelectItem>
+                              <SelectItem value="pink">Pink Card</SelectItem>
+                              <SelectItem value="blue">Blue Card</SelectItem>
+                              <SelectItem value="white">White Card</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="household-members">Household Members</Label>
                           <Input
-                            id="card-expiry-date"
+                            id="household-members"
+                            type="number"
+                            min="1"
+                            max="20"
+                            value={rationCardData.household_members}
+                            onChange={(e) => setRationCardData({
+                              ...rationCardData,
+                              household_members: parseInt(e.target.value) || 1
+                            })}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="card-number">Ration Card Number</Label>
+                        <Input
+                          id="card-number"
+                          placeholder="Enter 10-digit card number"
+                          value={rationCardData.ration_card_number}
+                          onChange={(e) => setRationCardData({
+                            ...rationCardData,
+                            ration_card_number: e.target.value
+                          })}
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="aadhaar">Aadhaar Number</Label>
+                        <Input
+                          id="aadhaar"
+                          placeholder="12-digit Aadhaar number"
+                          value={rationCardData.aadhaar_number}
+                          onChange={(e) => setRationCardData({
+                            ...rationCardData,
+                            aadhaar_number: e.target.value
+                          })}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Card Issue Date</Label>
+                          <Input
+                            type="date"
+                            value={rationCardData.card_issue_date}
+                            onChange={(e) => setRationCardData({
+                              ...rationCardData,
+                              card_issue_date: e.target.value
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Card Expiry Date</Label>
+                          <Input
                             type="date"
                             value={rationCardData.card_expiry_date}
-                            onChange={(e) => setRationCardData({ ...rationCardData, card_expiry_date: e.target.value })}
+                            onChange={(e) => setRationCardData({
+                              ...rationCardData,
+                              card_expiry_date: e.target.value
+                            })}
                           />
                         </div>
                       </div>
-                    </>
-                  )}
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
-                    <div className="relative">
-                      <Input
-                        id="signup-password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="Create a password"
-                        value={signUpData.password}
-                        onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
-                        required
-                        minLength={6}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {signUpData.role === 'customer' && (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm font-medium">
-                        <ImageIcon className="w-4 h-4" /> Documents
+
+                      <div className="space-y-2">
+                        <Label>Document Upload (Optional)</Label>
+                        <DocumentUpload
+                          onUpload={(urls) => {
+                            setAadhaarUrl(urls.aadhaar || '');
+                            setRationUrl(urls.ration || '');
+                          }}
+                          aadhaarUrl={aadhaarUrl}
+                          rationUrl={rationUrl}
+                        />
                       </div>
-                      {session?.user?.id ? (
-                        <div className="space-y-3">
-                          <DocumentUpload
-                            userId={session.user.id}
-                            bucket="documents"
-                            folder="aadhaar"
-                            label="Upload Aadhaar (image/pdf)"
-                            currentUrl={aadhaarUrl}
-                            onUploaded={(url) => setAadhaarUrl(url)}
-                          />
-                          <DocumentUpload
-                            userId={session.user.id}
-                            bucket="documents"
-                            folder="ration"
-                            label="Upload Ration Card (image/pdf)"
-                            currentUrl={rationUrl}
-                            onUploaded={(url) => setRationUrl(url)}
-                          />
-                        </div>
-                      ) : (
-                        <div className="text-xs text-muted-foreground">
-                          After creating your account and logging in, upload Aadhaar and Ration card photos from the Profile page.
-                        </div>
-                      )}
                     </div>
-                  )}
+                  </>
+                )}
 
-                  <Button
-                    type="submit"
-                    className="w-full gradient-gold hover:opacity-90"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Creating Account...' : 'Create Account'}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Creating Account..." : "Create Account"}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
 
-            {/* Developer Quick Login */}
-            <div className="mt-6">
-              <div className="flex items-center gap-2 text-sm font-medium mb-2">
-                <Sparkles className="w-4 h-4 text-primary" /> Developer Quick Login
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <Button variant="outline" className="w-full" onClick={() => quickLogin('customer')} disabled={!!quickLoading}>
-                  {quickLoading === 'customer' ? 'Loading…' : 'Customer'}
-                </Button>
-                <Button variant="outline" className="w-full" onClick={() => quickLogin('delivery_partner')} disabled={!!quickLoading}>
-                  {quickLoading === 'delivery_partner' ? 'Loading…' : 'Delivery Partner'}
-                </Button>
-                <Button variant="outline" className="w-full" onClick={() => quickLogin('admin')} disabled={!!quickLoading}>
-                  {quickLoading === 'admin' ? 'Loading…' : 'Admin'}
-                </Button>
-              </div>
-              <div className="text-xs text-muted-foreground mt-2">Creates demo user if missing, then signs in instantly.</div>
-            </div>
-          </CardContent>
-        </Card>
+          <div className="mt-6 text-center">
+            <Link
+              to="/landing"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              ← Back to Landing Page
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="mt-8 flex justify-center">
+        <LanguageSwitcher />
       </div>
     </div>
   );

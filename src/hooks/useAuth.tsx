@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { APP_CONFIG } from '@/lib/constants';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -43,8 +44,9 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, fullName: string, mobile: string, address: string, role?: string, rationCardData?: RationCardData) => Promise<{ error: any }>;
+  devMode: boolean;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, mobile: string, address: string, role?: string, rationCardData?: RationCardData) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   devSignIn: (role: 'customer' | 'delivery_partner' | 'admin', opts?: { ration_card_type?: 'yellow' | 'pink' | 'blue' | 'white' }) => void;
@@ -102,7 +104,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!didResolve) {
         setLoading(false);
       }
-    }, 4000);
+    }, APP_CONFIG.TIMEOUTS.AUTH_LOADING);
 
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -230,11 +232,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const devSignIn: AuthContextType["devSignIn"] = (role, opts) => {
     setDevMode(true);
-    const mockUser = {
+    const mockUser: Partial<User> = {
       id: `dev-${role}`,
       email: `dev+${role}@local.dev`,
-    } as unknown as User;
-    setUser(mockUser);
+    };
+    setUser(mockUser as User);
     setSession(null);
     setProfile({
       id: `dev-prof-${role}`,
@@ -243,10 +245,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       role,
       mobile_number: '9999999999',
       address: role === 'delivery_partner' ? 'Rider Hub, Kochi' : 'Demo Address, Kerala',
-      aadhaar_number: null as any,
+      aadhaar_number: null,
       ration_card_number: role === 'customer' ? 'KRL-DEV-0001' : undefined,
       ration_card_type: role === 'customer' ? (opts?.ration_card_type || 'pink') : undefined,
-    } as unknown as Profile);
+    });
     setLoading(false);
   };
 
@@ -262,6 +264,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     session,
     profile,
     loading,
+    devMode,
     signIn,
     signUp,
     signOut,

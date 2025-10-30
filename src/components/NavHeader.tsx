@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode, Users, ArrowLeft, Store } from "lucide-react";
+import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode, Users, ArrowLeft, Store, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -31,6 +31,15 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
   // Use auth data if available, otherwise fall back to props
   const displayName = profile?.full_name || userName || "User";
   const displayRole = profile?.role || userRole || "customer";
+
+  const getDashboardPath = () => {
+    switch (displayRole) {
+      case 'admin': return '/admin/dashboard';
+      case 'delivery_partner': return '/partner/dashboard';
+      case 'customer':
+      default: return '/user/dashboard';
+    }
+  };
 
   const getRoleDisplay = () => {
     switch (displayRole) {
@@ -101,6 +110,11 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
             {/* Show different navigation items based on user role */}
             {displayRole === 'customer' && (
               <>
+                <Button asChild variant={location.pathname === getDashboardPath() ? 'default' : 'ghost'}>
+                  <Link to={getDashboardPath()} className="flex items-center gap-2">
+                    <LayoutDashboard className="icon-lg" /> Dashboard
+                  </Link>
+                </Button>
                 <Button asChild variant={location.pathname === '/shop' ? 'default' : 'ghost'}>
                   <Link to="/shop" className="flex items-center gap-2">
                     <Store className="icon-lg" /> Shop
@@ -125,6 +139,11 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
             )}
             {displayRole === 'delivery_partner' && (
               <>
+                <Button asChild variant={location.pathname === getDashboardPath() ? 'default' : 'ghost'}>
+                  <Link to={getDashboardPath()} className="flex items-center gap-2">
+                    <LayoutDashboard className="icon-lg" /> Dashboard
+                  </Link>
+                </Button>
                 <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
                   <Link to="/orders" className="flex items-center gap-2">
                     <MapPin className="icon-lg" /> Orders
@@ -144,6 +163,11 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
             )}
             {displayRole === 'admin' && (
               <>
+                <Button asChild variant={location.pathname === getDashboardPath() ? 'default' : 'ghost'}>
+                  <Link to={getDashboardPath()} className="flex items-center gap-2">
+                    <LayoutDashboard className="icon-lg" /> Dashboard
+                  </Link>
+                </Button>
                 <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
                   <Link to="/orders" className="flex items-center gap-2">
                     <MapPin className="icon-lg" /> Orders

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+// import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import templeBg from '@/assets/temple-bg.jpg';
 
 // Features data
@@ -94,7 +94,7 @@ const Landing = () => {
         {/* Top Navigation Bar */}
         <div className="absolute top-6 left-6 right-6 z-20 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <LanguageSwitcher />
+            {/* <LanguageSwitcher /> - commented out to avoid Radix UI errors */}
           </div>
 
           {/* Connection Status Indicator */}
