@@ -474,16 +474,30 @@ const Auth = () => {
                         </div>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label>Document Upload (Optional)</Label>
-                        <DocumentUpload
-                          onUpload={(urls) => {
-                            setAadhaarUrl(urls.aadhaar || '');
-                            setRationUrl(urls.ration || '');
-                          }}
-                          aadhaarUrl={aadhaarUrl}
-                          rationUrl={rationUrl}
-                        />
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label>Aadhaar Document Upload (Optional)</Label>
+                          <DocumentUpload
+                            userId={signUpData.email}
+                            bucket="documents"
+                            folder="aadhaar"
+                            label="Upload Aadhaar Card"
+                            currentUrl={aadhaarUrl || null}
+                            onUploaded={setAadhaarUrl}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>Ration Card Document Upload (Optional)</Label>
+                          <DocumentUpload
+                            userId={signUpData.email}
+                            bucket="documents"
+                            folder="ration"
+                            label="Upload Ration Card"
+                            currentUrl={rationUrl || null}
+                            onUploaded={setRationUrl}
+                          />
+                        </div>
                       </div>
                     </div>
                   </>
