@@ -152,8 +152,7 @@ export default function App() {
                   <CartProvider>
                     <BrowserRouter>
                       <Routes>
-                        <Route path="/" element={<Navigate to="/auth" replace />} />
-                        <Route path="/landing" element={<Landing />} />
+                        <Route path="/" element={<Landing />} />
                         <Route path="/auth" element={<Auth />} />
                         <Route path="/dashboard" element={<ProtectedRoute><RoleBasedRoute /></ProtectedRoute>} />
                         <Route path="/index" element={<ProtectedRoute><Index /></ProtectedRoute>} />
