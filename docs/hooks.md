@@ -90,6 +90,33 @@ function Layout() {
 ```
 
 ## `useToast` and `toast`
+### Examples
+
+#### Sign up with ration data
+```tsx
+const { signUp } = useAuth();
+await signUp(
+  "user@example.com",
+  "password123",
+  "Asha",
+  "9999999999",
+  "Kochi, Kerala",
+  "customer",
+  { ration_card_type: "pink", ration_card_number: "KRL-1234", household_members: 4 }
+);
+```
+
+#### Add to cart and compute totals
+```tsx
+const { add, totalItems, totalAmount } = useCart();
+add({ id: "rice", name: "Rice", unit: "kg", price: 25 }, 2);
+```
+
+#### Trigger a toast
+```tsx
+const { toast } = useToast();
+toast({ title: "Saved", description: "Your changes were saved." });
+```
 
 Global toast system.
 
