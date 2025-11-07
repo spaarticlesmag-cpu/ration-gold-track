@@ -17,10 +17,8 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 const Auth = () => {
-  console.log('Auth component rendered!');
-  const { user, session, loading, devMode, signIn, signUp, devSignIn, signOut } = useAuth();
+  const { user, session, profile, loading, devMode, signIn, signUp, devSignIn, signOut } = useAuth();
   const navigate = useNavigate();
-  console.log('Auth state:', { user, session, loading, devMode });
 
   const [showPassword, setShowPassword] = useState(false);
   
@@ -64,8 +62,21 @@ const Auth = () => {
     );
   }
 
-  if (user && !devMode) {
-    return <Navigate to="/dashboard" replace />;
+  // Redirect authenticated users to their role-specific dashboard
+  if (user && profile && !devMode) {
+    const getRedirectPath = () => {
+      switch (profile.role) {
+        case 'customer':
+          return '/user/dashboard';
+        case 'delivery_partner':
+          return '/partner/dashboard';
+        case 'admin':
+          return '/admin/dashboard';
+        default:
+          return '/user/dashboard';
+      }
+    };
+    return <Navigate to={getRedirectPath()} replace />;
   }
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -123,8 +134,6 @@ const Auth = () => {
   };
 
   const quickLogin = (role: 'customer' | 'delivery_partner' | 'admin') => {
-    console.log('Quick login clicked for role:', role);
-
     // Get the target redirect path based on role
     const getRedirectPath = () => {
       switch (role) {
@@ -141,13 +150,12 @@ const Auth = () => {
     // Use devSignIn to set up the auth state
     devSignIn(role);
 
-    // Navigate immediately without timeout or window.location (better UX)
-    const redirectPath = getRedirectPath();
-    console.log('Navigating to:', redirectPath);
-    navigate(redirectPath);
-
-    // Reset loading state
-    setQuickLoading(null);
+    // Small delay to ensure state updates are processed
+    setTimeout(() => {
+      const redirectPath = getRedirectPath();
+      navigate(redirectPath);
+      setQuickLoading(null);
+    }, 100);
   };
 
   return (
@@ -512,7 +520,7 @@ const Auth = () => {
 
           <div className="mt-6 text-center">
             <Link
-              to="/landing"
+              to="/"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               ← Back to Landing Page

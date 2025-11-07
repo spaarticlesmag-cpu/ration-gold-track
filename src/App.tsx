@@ -1,5 +1,4 @@
-import React, { Suspense } from "react";
-import { ThemeProvider } from "next-themes";
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,16 +24,13 @@ import QRScanner from "./pages/QRScanner";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import DeliveryDashboard from "./pages/DeliveryDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import NotFound from "./pages/NotFound";
+
 import Beneficiaries from "./pages/Beneficiaries";
 import IncomingOrders from "./pages/IncomingOrders";
 
 const queryClient = new QueryClient();
 
-// Public Route Component (accessible without authentication)
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  return <>{children}</>;
-};
+
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -49,7 +45,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!user && !devMode) {
-    return <Navigate to="/landing" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -79,21 +75,7 @@ const RoleBasedRoute = () => {
   }
 };
 
-// Customer-only Route Component
-const CustomerOnlyRoute = ({ children }: { children: React.ReactNode }) => {
-  const { profile, loading } = useAuth();
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-  if (profile?.role !== 'customer') {
-    return <Navigate to="/orders" replace />;
-  }
-  return <>{children}</>;
-};
+
 
 // Error Boundary Component to catch crashes
 class ErrorBoundary extends React.Component<
@@ -143,14 +125,13 @@ export default function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary>
-          <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-            <TooltipProvider>
-              <AuthProvider>
-                <ErrorBoundary>
-                  <Toaster />
-                  <Sonner />
-                  <CartProvider>
-                    <BrowserRouter>
+          <TooltipProvider>
+            <AuthProvider>
+              <ErrorBoundary>
+                <Toaster />
+                <Sonner />
+                <CartProvider>
+                  <BrowserRouter>
                       <Routes>
                         <Route path="/" element={<Landing />} />
                         <Route path="/auth" element={<Auth />} />
@@ -186,7 +167,6 @@ export default function App() {
                 </ErrorBoundary>
               </AuthProvider>
             </TooltipProvider>
-          </ThemeProvider>
         </ErrorBoundary>
       </QueryClientProvider>
     </ErrorBoundary>

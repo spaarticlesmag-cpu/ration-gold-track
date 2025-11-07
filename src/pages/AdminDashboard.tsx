@@ -12,19 +12,15 @@ import { useToast } from '@/hooks/use-toast';
 import { useDebounce } from '@/hooks/useDebounce';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
-import { 
-  Package, 
-  Users, 
-  TrendingUp, 
+import {
+  Package,
+  Users,
+  TrendingUp,
   ShoppingCart,
   Plus,
   Edit,
   Trash2,
-  Eye,
   Crown,
-  CheckCircle,
-  Truck,
-  Clock
 } from 'lucide-react';
 import { NavHeader } from '@/components/NavHeader';
 import {
@@ -69,7 +65,6 @@ interface Stats {
 }
 
 const AdminDashboard = () => {
-  const { profile } = useAuth();
   const { toast } = useToast();
   const [items, setItems] = useState<RationItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -106,11 +101,6 @@ const AdminDashboard = () => {
     { id: 'demo-rice', name: 'Rice', price_per_kg: 25.5, stock_quantity: 240, image_url: '' },
     { id: 'demo-wheat', name: 'Wheat', price_per_kg: 18.75, stock_quantity: 160, image_url: '' },
     { id: 'demo-sugar', name: 'Sugar', price_per_kg: 35.0, stock_quantity: 80, image_url: '' },
-  ];
-  const demoRecentOrders: Order[] = [
-    { id: 'DEMO-ORD-1001', customer_id: 'demo-c1', total_amount: 420.0, status: 'delivered', created_at: new Date().toISOString(), profiles: { full_name: 'Anita Devi', mobile_number: '+91 90000 11111' } },
-    { id: 'DEMO-ORD-1002', customer_id: 'demo-c2', total_amount: 260.0, status: 'approved', created_at: new Date(Date.now() - 86400000).toISOString(), profiles: { full_name: 'Vijay Kumar', mobile_number: '+91 90000 22222' } },
-    { id: 'DEMO-ORD-1003', customer_id: 'demo-c3', total_amount: 780.0, status: 'out_for_delivery', created_at: new Date(Date.now() - 2*86400000).toISOString(), profiles: { full_name: 'Roshni', mobile_number: '+91 90000 33333' } },
   ];
 
   useEffect(() => {
@@ -172,11 +162,11 @@ const AdminDashboard = () => {
         ...item,
         profiles: item.profiles && typeof item.profiles === 'object' && !item.profiles.error ? item.profiles : null,
       })) as Order[];
-      setOrders(rows.length > 0 ? rows : demoRecentOrders);
+      setOrders(rows);
     } catch (error) {
       logger.error('Error fetching orders:', error);
       // fallback to demo data on failure
-      setOrders(demoRecentOrders);
+      setOrders([]);
     }
   };
 
@@ -187,8 +177,8 @@ const AdminDashboard = () => {
         .from('orders')
         .select('total_amount, status');
 
-      const totalOrders = (orderStats?.length || 0) || demoRecentOrders.length;
-      const totalRevenue = (orderStats?.reduce((sum, order) => sum + parseFloat(order.total_amount.toString()), 0) || 0) || demoRecentOrders.reduce((s, o) => s + o.total_amount, 0);
+      const totalOrders = (orderStats?.length || 0);
+      const totalRevenue = (orderStats?.reduce((sum, order) => sum + parseFloat(order.total_amount.toString()), 0) || 0);
 
       // Fetch active customers count
       const { count: activeCustomers } = await supabase
@@ -201,7 +191,7 @@ const AdminDashboard = () => {
       const inventoryValue = sourceItems.reduce((sum, item) => sum + (item.price_per_kg * item.stock_quantity), 0);
 
       setStats({
-        totalOrders: totalOrders || demoRecentOrders.length,
+        totalOrders: totalOrders,
         totalRevenue,
         activeCustomers: (activeCustomers || 0) || 128,
         inventoryValue,
@@ -210,8 +200,8 @@ const AdminDashboard = () => {
       logger.error('Error fetching stats:', error);
       // demo fallback
       setStats({
-        totalOrders: demoRecentOrders.length,
-        totalRevenue: demoRecentOrders.reduce((s, o) => s + o.total_amount, 0),
+        totalOrders: 0,
+        totalRevenue: 0,
         activeCustomers: 128,
         inventoryValue: demoItems.reduce((sum, item) => sum + (item.price_per_kg * item.stock_quantity), 0),
       });
@@ -331,7 +321,7 @@ const AdminDashboard = () => {
       out_for_delivery: 'default',
       delivered: 'default',
       cancelled: 'destructive',
-    };
+    } as const;
 
     const variant = statusVariants[status] || 'outline';
 
@@ -350,16 +340,7 @@ const AdminDashboard = () => {
     );
   }, [items, debouncedSearchTerm]);
 
-  // Memoize stats calculations
-  const calculatedStats = useMemo(() => {
-    const sourceItems = items.length > 0 ? items : demoItems;
-    const inventoryValue = sourceItems.reduce((sum, item) => sum + (item.price_per_kg * item.stock_quantity), 0);
 
-    return {
-      ...stats,
-      inventoryValue,
-    };
-  }, [stats, items]);
 
   if (loading) {
     return (
@@ -488,7 +469,7 @@ const AdminDashboard = () => {
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₹{calculatedStats.inventoryValue.toFixed(2)}</div>
+              <div className="text-2xl font-bold">₹{stats.inventoryValue.toFixed(2)}</div>
             </CardContent>
           </Card>
         </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { NavHeader } from '@/components/NavHeader';
 import { supabase } from '@/integrations/supabase/client';
@@ -115,13 +115,12 @@ const IncomingOrders = () => {
             ) : pending.map(order => (
               <Card key={order.id} className="shadow-soft">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3">
                       {getStatusBadge(order.status)}
                       <CardTitle>Order #{order.id.slice(0,8)}</CardTitle>
                     </div>
                     <CardDescription>{new Date(order.created_at).toLocaleString('en-IN')}</CardDescription>
-                  </div>
+                  
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
