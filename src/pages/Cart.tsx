@@ -5,7 +5,7 @@ import { useCart } from "@/hooks/useCart";
 import { Link } from "react-router-dom";
 
 export default function Cart() {
-  const { lines, totalAmount, clear } = useCart();
+  const { lines, totalAmount, totalItems, clear } = useCart();
   
 
   return (
@@ -15,7 +15,7 @@ export default function Cart() {
           <CardTitle>Your Cart</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {lines.length === 0 ? (
+          {totalItems === 0 ? (
             <div className="text-center text-muted-foreground">Your cart is empty.</div>
           ) : (
             <>
@@ -34,7 +34,7 @@ export default function Cart() {
               </div>
               <div className="flex gap-3 pt-2">
                 <Button variant="outline" onClick={clear}>Clear Cart</Button>
-                <Button asChild variant="premium" className="flex-1" disabled={lines.length === 0}>
+                <Button asChild variant="premium" className="flex-1">
                   <Link to="/payment">Proceed to Payment</Link>
                 </Button>
               </div>
@@ -46,5 +46,3 @@ export default function Cart() {
     </MainLayout>
   );
 }
-
-

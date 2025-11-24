@@ -1,4 +1,4 @@
-import MainLayout from "@/components/MainLayout";
+import MainLayout from "@/components/MainLayout"; // Corrected import
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { logger } from "@/lib/logger";
 
 export default function Payment() {
-  const { totalAmount, clear } = useCart();
+  const { lines, totalAmount, clear } = useCart();
   const { profile } = useAuth();
   const [processing, setProcessing] = useState(false);
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function Payment() {
         status: 'approved',
         delivery_address: profile?.address || 'Your saved address',
         created_at: new Date().toISOString(),
-        qr_code: JSON.stringify(qrPayload),
+        qr_code: JSON.stringify(qrPayload), // This should be handled server-side in a real app
         qr_expires_at: new Date(expiresAt).toISOString(),
         items: [],
       };
@@ -43,7 +43,7 @@ export default function Payment() {
     }
     clear();
     setProcessing(false);
-    navigate('/orders');
+    navigate('/user/dashboard'); // Redirect to customer dashboard
   };
 
   return (
