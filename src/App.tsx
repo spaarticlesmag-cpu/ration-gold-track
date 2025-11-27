@@ -1,4 +1,6 @@
 
+import React from "react";
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -119,56 +121,57 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-// FULLY RESTORED APP COMPONENT
-export default function App() {
+// Main App Component
+function AppContent() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <ErrorBoundary>
-          <TooltipProvider>
-            <AuthProvider>
-              <ErrorBoundary>
-                <Toaster />
-                <Sonner />
-                <CartProvider>
-                  <BrowserRouter>
-                      <Routes>
-                        <Route path="/" element={<Landing />} />
-                        <Route path="/auth" element={<Auth />} />
-                        <Route path="/dashboard" element={<ProtectedRoute><RoleBasedRoute /></ProtectedRoute>} />
-                        <Route path="/index" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-                        <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
-                        <Route path="/quota" element={<ProtectedRoute><Quota /></ProtectedRoute>} />
-                        <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
-                        <Route path="/orders-admin" element={<ProtectedRoute><OrdersAdmin /></ProtectedRoute>} />
-                        <Route path="/orders-customer" element={<ProtectedRoute><OrdersCustomer /></ProtectedRoute>} />
-                        <Route path="/orders-delivery" element={<ProtectedRoute><OrdersDelivery /></ProtectedRoute>} />
-                        <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
-                        <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-                        <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
-                        <Route path="/verify" element={<ProtectedRoute><Verify /></ProtectedRoute>} />
-                        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                        <Route path="/qr-scanner" element={<ProtectedRoute><QRScanner /></ProtectedRoute>} />
-                        <Route path="/beneficiaries" element={<ProtectedRoute><Beneficiaries /></ProtectedRoute>} />
-                        <Route path="/incoming-orders" element={<ProtectedRoute><IncomingOrders /></ProtectedRoute>} />
-                        <Route path="/user/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
-                        <Route path="/partner/dashboard" element={<ProtectedRoute><DeliveryDashboard /></ProtectedRoute>} />
-                        <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-                        <Route path="*" element={
-                          <div style={{ padding: '50px', textAlign: 'center', backgroundColor: '#ffe4e1', color: '#dc143c' }}>
-                            <h1>404 - Page Not Found</h1>
-                            <p>The page you're looking for doesn't exist.</p>
-                            <a href="/" style={{ color: '#0e7c7b', textDecoration: 'underline' }}>Go Home</a>
-                          </div>
-                        } />
-                      </Routes>
-                    </BrowserRouter>
-                  </CartProvider>
-                </ErrorBoundary>
-              </AuthProvider>
-            </TooltipProvider>
-        </ErrorBoundary>
+        <AuthProvider>
+          <CartProvider>
+            <BrowserRouter>
+              <TooltipProvider>
+                <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream">
+                  <Routes>
+                    {/* Public routes */}
+                    <Route path="/" element={<Landing />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/verify" element={<Verify />} />
+
+                    {/* Role-based dashboard */}
+                    <Route path="/dashboard" element={<RoleBasedRoute />} />
+
+                    {/* Protected routes */}
+                    <Route path="/index" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+                    <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
+                    <Route path="/quota" element={<ProtectedRoute><Quota /></ProtectedRoute>} />
+                    <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+                    <Route path="/orders-admin" element={<ProtectedRoute><OrdersAdmin /></ProtectedRoute>} />
+                    <Route path="/orders-customer" element={<ProtectedRoute><OrdersCustomer /></ProtectedRoute>} />
+                    <Route path="/orders-delivery" element={<ProtectedRoute><OrdersDelivery /></ProtectedRoute>} />
+                    <Route path="/beneficiaries" element={<ProtectedRoute><Beneficiaries /></ProtectedRoute>} />
+                    <Route path="/incoming-orders" element={<ProtectedRoute><IncomingOrders /></ProtectedRoute>} />
+                    <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+                    <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+                    <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                    <Route path="/qr-scanner" element={<ProtectedRoute><QRScanner /></ProtectedRoute>} />
+
+
+                  </Routes>
+
+                  {/* Toast containers */}
+                  <Toaster />
+                  <Sonner />
+                </div>
+              </TooltipProvider>
+            </BrowserRouter>
+          </CartProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );
+}
+
+export default function App() {
+  return <AppContent />;
 }

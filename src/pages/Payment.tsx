@@ -43,7 +43,7 @@ export default function Payment() {
     }
     clear();
     setProcessing(false);
-    navigate('/user/dashboard'); // Redirect to customer dashboard
+    navigate('/shop'); // Redirect back to shop after payment
   };
 
   return (

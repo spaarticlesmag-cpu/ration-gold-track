@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Star, ThumbsUp, ThumbsDown, Send, Bot, ShoppingCart, MapPin, QrCode, History, Store, Shield, AlertCircle, Package, Navigation, Clock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { NavHeader } from "@/components/NavHeader";
 import { QuotaCard } from "@/components/QuotaCard";
 import { RationItem } from "@/components/RationItem";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -248,226 +249,195 @@ const CustomerDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream">
-      <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="shop" value={activeTab} onValueChange={handleTabChange} className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream overflow-x-hidden">
+      <NavHeader />
+      <div className="container mx-auto px-4 py-8 max-w-7xl space-y-8">
 
-          <TabsList className="grid grid-cols-4 max-w-md mx-auto">
-            <TabsTrigger value="shop" className="flex items-center gap-2">
-              <Store className="w-4 h-4" />
-              <span className="hidden sm:inline">Shop</span>
-            </TabsTrigger>
-            <TabsTrigger value="quota" className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              <span className="hidden sm:inline">Quota</span>
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <History className="w-4 h-4" />
-              <span className="hidden sm:inline">Orders & Track</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="shop" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-6">
-                <div>
-                  <h2 className="text-2xl font-semibold mb-4">Available Ration Items</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {rationItems.map((item) => (
-                      <RationItem
-                        key={item.id}
-                        {...item}
-                        onAddToCart={handleAddToCart}
-                        onRemoveFromCart={handleRemoveFromCart}
-                        cartQuantity={getCartQuantity(item.id)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <QuotaCard
-                  quotaItems={quotaData}
-                  cardNumber={profile?.ration_card_number || "XXXX-XXXX-1234"}
-                  validUntil="Dec 2024"
-                />
-
-                {totalItems > 0 && (
-                  <Card className="shadow-gold">
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <ShoppingCart className="w-5 h-5" />
-                        <span>Your Cart ({totalItems} items)</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {lines.map((l) => (
-                        <div key={l.id} className="flex justify-between items-center">
-                          <div>
-                            <div className="font-medium">{l.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {l.quantity} {l.unit} × ₹{l.price}
-                            </div>
-                          </div>
-                          <div className="font-semibold">₹{(l.price * l.quantity).toFixed(2)}</div>
-                        </div>
-                      ))}
-                      
-                      <div className="border-t border-border pt-4">
-                        <div className="flex justify-between items-center text-lg font-bold">
-                          <span>Total</span>
-                          <span className="text-primary">₹{totalAmount.toFixed(2)}</span>
-                        </div>
-                      </div>
-                      
-                      <Button variant="premium" className="w-full" onClick={handlePlaceOrder}>
-                        Place Order
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <QrCode className="w-5 h-5" />
-                      <span>Your QR Code</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center">
-                      {qrCodeDataUrl ? (
-                        <img 
-                          src={qrCodeDataUrl} 
-                          alt="User QR Code" 
-                          className="w-32 h-32 mx-auto mb-3 rounded-lg border"
-                        />
-                      ) : (
-                        <div className="w-32 h-32 bg-muted rounded-lg mx-auto mb-3 flex items-center justify-center">
-                          <QrCode className="w-16 h-16 text-muted-foreground" />
-                        </div>
-                      )}
-                      <p className="text-sm text-muted-foreground">
-                        Show this QR code to confirm delivery
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="quota">
-            <div className="max-w-2xl mx-auto">
-              <Card className="shadow-soft">
-                <CardHeader>
-                  <CardTitle>Your Monthly Quota</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <QuotaCard
-                    quotaItems={quotaData}
-                    cardNumber={profile?.ration_card_number || "XXXX-XXXX-1234"}
-                    validUntil="Dec 2024"
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="history" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="w-6 h-6" />
-                  Your Orders
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {orders.map((order) => (
-                    <div key={order.id} className="border border-border rounded-lg p-4 space-y-3">
-                      {order.qr_expires_at && order.status !== 'delivered' && (
-                        <div className="flex items-center justify-between bg-muted/40 p-3 rounded-md">
-                          <div className="text-xs text-muted-foreground">
-                            Show this QR to delivery partner. Expires: {new Date(order.qr_expires_at).toLocaleTimeString()}
-                          </div>
-                          {qrMap[order.id] ? (
-                            <img src={qrMap[order.id]} alt="Order QR" className="h-24 w-24" />
-                          ) : (
-                            <QrCode className="w-6 h-6" />
-                          )}
-                        </div>
-                      )}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Badge variant={order.status === 'out_for_delivery' ? 'default' : 'secondary'}>
-                            {order.status.replace('_', ' ').toUpperCase()}
-                          </Badge>
-                          <span className="text-sm text-muted-foreground">Order #{order.id}</span>
-                        </div>
-                        <div className="text-sm font-semibold">₹{order.total_amount}</div>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">{order.address}</span>
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="text-sm">
-                            <span className="font-medium">Items:</span>
-                            <ul className="list-disc list-inside mt-1">
-                              {order.items.map((item: string, idx: number) => (
-                                <li key={idx} className="text-muted-foreground">{item}</li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">ETA: {order.eta}</span>
-                          </div>
-                        </div>
-                      </div>
-                      {order.status === 'out_for_delivery' && (
-                        <div className="flex gap-2 pt-2">
-                          <Button variant="outline" onClick={() => setShowLiveTracking(prev => !prev)} className="flex-1">
-                            <Navigation className="w-4 h-4 mr-2" />
-                            {showLiveTracking ? 'Hide' : 'Show'} Live Tracking
-                          </Button>
-                        </div>
-                      )}
-                    </div>
+        {/* Shopping Section */}
+        <section>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">Available Ration Items</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {rationItems.map((item) => (
+                    <RationItem
+                      key={item.id}
+                      {...item}
+                      onAddToCart={handleAddToCart}
+                      onRemoveFromCart={handleRemoveFromCart}
+                      cartQuantity={getCartQuantity(item.id)}
+                    />
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
 
-            {showLiveTracking && (
+              <QuotaCard
+                quotaItems={quotaData}
+                cardNumber={profile?.ration_card_number || "XXXX-XXXX-1234"}
+                validUntil="Dec 2024"
+              />
+            </div>
+
+            <div className="space-y-6">
+              {totalItems > 0 && (
+                <Card className="shadow-gold">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <ShoppingCart className="w-5 h-5" />
+                      <span>Your Cart ({totalItems} items)</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {lines.map((l) => (
+                      <div key={l.id} className="flex justify-between items-center">
+                        <div>
+                          <div className="font-medium">{l.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {l.quantity} {l.unit} × ₹{l.price}
+                          </div>
+                        </div>
+                        <div className="font-semibold">₹{(l.price * l.quantity).toFixed(2)}</div>
+                      </div>
+                    ))}
+
+                    <div className="border-t border-border pt-4">
+                      <div className="flex justify-between items-center text-lg font-bold">
+                        <span>Total</span>
+                        <span className="text-primary">₹{totalAmount.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    <Button variant="premium" className="w-full" onClick={handlePlaceOrder}>
+                      Place Order
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="w-6 h-6" /> Live Tracking
-                    <span className="ml-auto text-sm text-muted-foreground">ETA: <span className="font-semibold text-foreground">{etaMinutes} min</span></span>
+                  <CardTitle className="flex items-center space-x-2">
+                    <QrCode className="w-5 h-5" />
+                    <span>Your QR Code</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="map-wrapper w-full h-[400px] rounded-lg overflow-hidden border">
-                    {/* @ts-ignore */}
-                    <MapContainer center={pickup} zoom={14} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
-                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      <Marker position={destination}><Popup>Destination: You</Popup></Marker>
-                      {route.length > 0 && <Polyline positions={route} pathOptions={{ color: '#ef4444', weight: 6, opacity: 0.8 }} />}
-                      {/* @ts-ignore */}
-                      <Marker position={position} icon={truckIcon as any}><Popup>Current Location</Popup></Marker>
-                    </MapContainer>
+                  <div className="text-center">
+                    {qrCodeDataUrl ? (
+                      <img
+                        src={qrCodeDataUrl}
+                        alt="User QR Code"
+                        className="w-32 h-32 mx-auto mb-3 rounded-lg border"
+                      />
+                    ) : (
+                      <div className="w-32 h-32 bg-muted rounded-lg mx-auto mb-3 flex items-center justify-center">
+                        <QrCode className="w-16 h-16 text-muted-foreground" />
+                      </div>
+                    )}
+                    <p className="text-sm text-muted-foreground">
+                      Show this QR code to confirm delivery
+                    </p>
                   </div>
                 </CardContent>
               </Card>
-            )}
-          </TabsContent>
-        </Tabs>
+            </div>
+          </div>
+        </section>
+
+        {/* Orders Section */}
+        <section>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="w-6 h-6" />
+                Your Orders
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {orders.map((order) => (
+                  <div key={order.id} className="border border-border rounded-lg p-4 space-y-3">
+                    {order.qr_expires_at && order.status !== 'delivered' && (
+                      <div className="flex items-center justify-between bg-muted/40 p-3 rounded-md">
+                        <div className="text-xs text-muted-foreground">
+                          Show this QR to delivery partner. Expires: {new Date(order.qr_expires_at).toLocaleTimeString()}
+                        </div>
+                        {qrMap[order.id] ? (
+                          <img src={qrMap[order.id]} alt="Order QR" className="h-24 w-24" />
+                        ) : (
+                          <QrCode className="w-6 h-6" />
+                        )}
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Badge variant={order.status === 'out_for_delivery' ? 'default' : 'secondary'}>
+                          {order.status.replace('_', ' ').toUpperCase()}
+                        </Badge>
+                        <span className="text-sm text-muted-foreground">Order #{order.id}</span>
+                      </div>
+                      <div className="text-sm font-semibold">₹{order.total_amount}</div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">{order.address}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="text-sm">
+                          <span className="font-medium">Items:</span>
+                          <ul className="list-disc list-inside mt-1">
+                            {order.items.map((item: string, idx: number) => (
+                              <li key={idx} className="text-muted-foreground">{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm">ETA: {order.eta}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {order.status === 'out_for_delivery' && (
+                      <div className="flex gap-2 pt-2">
+                        <Button variant="outline" onClick={() => setShowLiveTracking(prev => !prev)} className="flex-1">
+                          <Navigation className="w-4 h-4 mr-2" />
+                          {showLiveTracking ? 'Hide' : 'Show'} Live Tracking
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {showLiveTracking && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="w-6 h-6" /> Live Tracking
+                  <span className="ml-auto text-sm text-muted-foreground">ETA: <span className="font-semibold text-foreground">{etaMinutes} min</span></span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="map-wrapper w-full h-[400px] rounded-lg overflow-hidden border">
+                  {/* @ts-ignore */}
+                  <MapContainer center={pickup} zoom={14} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <Marker position={destination}><Popup>Destination: You</Popup></Marker>
+                    {route.length > 0 && <Polyline positions={route} pathOptions={{ color: '#ef4444', weight: 6, opacity: 0.8 }} />}
+                    {/* @ts-ignore */}
+                    <Marker position={position} icon={truckIcon as any}><Popup>Current Location</Popup></Marker>
+                  </MapContainer>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </section>
       </div>
       
       {/* Review Section */}

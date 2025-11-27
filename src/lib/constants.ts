@@ -52,6 +52,21 @@ export const JADAYU_CONFIG = {
 export const UI_CONSTANTS = {
   ANIMATION_DURATION: 200, // ms
   TOAST_DURATION: 3000, // ms
+  LANDING_STATS: {
+    BENEFICIARIES_SERVED: '50,000+',
+    DELIVERY_PARTNERS: '1,200+',
+    ON_TIME_DELIVERY: '98.5%',
+    MONTHLY_SAVINGS: '₹2.5Cr',
+  },
+  LOADING_TIMEOUTS: {
+    INITIAL_LOAD: 5000,
+    COMPONENT_LOAD: 2000,
+    API_TIMEOUT: 15000,
+  },
+  PAGINATION_DEFAULTS: {
+    ITEMS_PER_PAGE: 10,
+    MAX_ITEMS_PER_PAGE: 100,
+  },
 } as const;
 
 // Pagination defaults

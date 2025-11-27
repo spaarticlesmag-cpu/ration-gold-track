@@ -9,5 +9,3 @@ export default function Orders() {
   if (profile?.role === 'delivery_partner') return <OrdersDelivery />;
   return <OrdersCustomer />;
 }
-
-

@@ -2,119 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    /* JADAYU Premium Design System */
-    --background: 45 30% 98%; /* Off-white #FAF9F6 */
-    --foreground: 0 0% 20%; /* Dark gray #333333 */
-
-    --card: 45 30% 98%;
-    --card-foreground: 0 0% 20%;
-
-    --popover: 45 30% 98%;
-    --popover-foreground: 0 0% 20%;
-
-    --primary: 51 100% 50%; /* Gold #FFD700 */
-    --primary-foreground: 0 0% 20%;
-
-    --secondary: 45 25% 94%;
-    --secondary-foreground: 0 0% 20%;
-
-    --muted: 45 20% 92%;
-    --muted-foreground: 0 0% 45%;
-
-    --accent: 51 100% 50%;
-    --accent-foreground: 0 0% 20%;
-
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 210 20% 60%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 98%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 20% 60%;
+    --accent-foreground: 222.2 84% 4.9%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 45 30% 98%;
-
-    --border: 45 15% 88%;
-    --input: 45 15% 88%;
-    --ring: 51 100% 50%;
-
-    /* Custom JADAYU tokens */
-    --gold-light: 51 100% 85%;
-    --gold-dark: 45 100% 35%;
-    --cream: 45 40% 96%;
-    --temple-shadow: 45 20% 85%;
-    
-    /* Gradients */
-    --gradient-gold: linear-gradient(135deg, hsl(51 100% 50%), hsl(45 100% 45%));
-    --gradient-cream: linear-gradient(180deg, hsl(45 30% 98%), hsl(45 25% 94%));
-    --gradient-premium: linear-gradient(135deg, hsl(51 100% 50%) 0%, hsl(45 100% 45%) 50%, hsl(40 100% 40%) 100%);
-    
-    /* Shadows */
-    --shadow-gold: 0 4px 20px hsl(51 100% 50% / 0.3);
-    --shadow-premium: 0 8px 32px hsl(51 100% 50% / 0.2);
-    --shadow-soft: 0 2px 16px hsl(0 0% 0% / 0.1);
-
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 24 95% 53%;
+    --gold-light: 45 93% 75%;
+    --cream: 51 28% 95%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    /* JADAYU Dark Mode */
-    --background: 0 0% 8%;
-    --foreground: 45 30% 95%;
-
-    --card: 0 0% 12%;
-    --card-foreground: 45 30% 95%;
-
-    --popover: 0 0% 12%;
-    --popover-foreground: 45 30% 95%;
-
-    --primary: 51 100% 50%;
-    --primary-foreground: 0 0% 8%;
-
-    --secondary: 0 0% 16%;
-    --secondary-foreground: 45 30% 95%;
-
-    --muted: 0 0% 16%;
-    --muted-foreground: 0 0% 60%;
-
-    --accent: 51 100% 50%;
-    --accent-foreground: 0 0% 8%;
-
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 45 30% 95%;
-
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 51 100% 50%;
-    
-    /* Dark mode custom tokens */
-    --gold-light: 51 100% 60%;
-    --gold-dark: 45 100% 40%;
-    --cream: 0 0% 12%;
-    --temple-shadow: 0 0% 5%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 24 95% 53%;
+    --gold-light: 45 93% 75%;
+    --cream: 51 28% 95%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -122,141 +67,80 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
-    scroll-behavior: smooth;
+    @apply bg-background text-foreground;
   }
 }
 
 @layer components {
-  .gradient-gold {
-    background: var(--gradient-gold);
-  }
-  
-  .gradient-premium {
-    background: var(--gradient-premium);
-  }
-  /* Role-specific brand gradients */
-  .gradient-red {
-    background: linear-gradient(135deg, hsl(0 85% 55%), hsl(12 88% 48%));
-  }
-  .gradient-brown {
-    background: linear-gradient(135deg, hsl(40 70% 42%), hsl(28 65% 34%));
-  }
-  
-  .shadow-gold {
-    box-shadow: var(--shadow-gold);
-  }
-  
-  .shadow-premium {
-    box-shadow: var(--shadow-premium);
-  }
-  
   .shadow-soft {
-    box-shadow: var(--shadow-soft);
+    box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
   }
 
-  /* Premium typography utilities */
-  .heading-premium {
-    @apply font-extrabold tracking-tight;
-    background: var(--gradient-premium);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 1px 0 hsl(var(--gold-light) / 0.2);
+  .gradient-gold {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
   }
 
-  /* Colorful card backgrounds */
-  .card-colorful {
-    background: linear-gradient(135deg, hsl(45 25% 96%) 0%, hsl(51 50% 95%) 100%);
-    border: 1px solid hsl(51 50% 80%);
+  .gradient-red {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
   }
 
-  .card-vibrant {
-    background: linear-gradient(135deg, hsl(51 100% 50% / 0.05) 0%, hsl(45 100% 50% / 0.02) 100%);
-    border-color: hsl(51 50% 80%);
+  .gradient-brown {
+    background: linear-gradient(135deg, #a855f7, #9333ea);
   }
 
-  .subheading-muted {
-    @apply text-sm md:text-base text-muted-foreground;
+  /* Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
   }
 
-  /* Icon sizing helpers for global scale-up */
-  .icon-lg {
-    width: 1.75rem; /* ~28px */
-    height: 1.75rem;
-  }
-  .icon-xl {
-    width: 2rem; /* 32px */
-    height: 2rem;
+  @keyframes fade-in {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
-  /* Tap target min sizes for touch */
-  .tap-target {
-    min-width: 44px;
-    min-height: 44px;
+  @keyframes fade-in-delayed {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
-  /* Ensure maps stay within their container and below overlays */
-  .map-wrapper {
-    position: relative;
-    isolation: isolate;
-  }
-  .map-wrapper .leaflet-container,
-  .map-wrapper .leaflet-pane,
-  .map-wrapper .leaflet-top,
-  .map-wrapper .leaflet-bottom {
-    z-index: 0 !important;
+  @keyframes fade-in-delayed-more {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
-  /* Custom animations for enhanced UX */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
   .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
+    animation: fade-in 1s ease-out forwards;
   }
 
-  .animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out forwards;
+  .animate-fade-in-delayed {
+    animation: fade-in-delayed 1s ease-out 0.3s forwards;
+    opacity: 0;
   }
 
-  .animation-delay-200 {
-    animation-delay: 0.2s;
+  .animate-fade-in-delayed-more {
+    animation: fade-in-delayed-more 1s ease-out 0.6s forwards;
+    opacity: 0;
+  }
+}
+
+@layer utilities {
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
   }
 
-  .animation-delay-400 {
-    animation-delay: 0.4s;
+  .icon-lg {
+    height: 1.25rem;
+    width: 1.25rem;
   }
 
-  .animation-delay-600 {
-    animation-delay: 0.6s;
-  }
-
-  .animation-delay-800 {
-    animation-delay: 0.8s;
-  }
-
-  .animation-delay-1000 {
-    animation-delay: 1s;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .text-balance {
+    text-wrap: balance;
   }
 }

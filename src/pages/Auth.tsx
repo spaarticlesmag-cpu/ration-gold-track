@@ -64,19 +64,7 @@ const Auth = () => {
 
   // Redirect authenticated users to their role-specific dashboard
   if (user && profile && !devMode) {
-    const getRedirectPath = () => {
-      switch (profile.role) {
-        case 'customer':
-          return '/user/dashboard';
-        case 'delivery_partner':
-          return '/partner/dashboard';
-        case 'admin':
-          return '/admin/dashboard';
-        default:
-          return '/user/dashboard';
-      }
-    };
-    return <Navigate to={getRedirectPath()} replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -134,15 +122,8 @@ const Auth = () => {
   };
 
   const quickLogin = (role: 'customer' | 'delivery_partner' | 'admin') => {
-    // Get the target redirect path based on role
-    const getRedirectPath = () => {
-      switch (role) {
-        case 'customer': return '/user/dashboard';
-        case 'delivery_partner': return '/partner/dashboard';
-        case 'admin': return '/admin/dashboard';
-        default: return '/user/dashboard';
-      }
-    };
+    // Redirect based on role - customers go directly to shop
+    const redirectPath = role === 'customer' ? '/shop' : '/dashboard';
 
     // Set loading state
     setQuickLoading(role);
@@ -152,7 +133,6 @@ const Auth = () => {
 
     // Small delay to ensure state updates are processed
     setTimeout(() => {
-      const redirectPath = getRedirectPath();
       navigate(redirectPath);
       setQuickLoading(null);
     }, 100);
