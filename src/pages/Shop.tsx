@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -223,8 +224,8 @@ const Shop = () => {
                   <div className="text-3xl font-bold text-amber-600 mb-1">
                     ₹{lines.reduce((sum, line) => sum + line.price * line.quantity, 0).toFixed(2)}
                   </div>
-                  <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
-                    View Cart
+                  <Button asChild size="sm" className="bg-amber-600 hover:bg-amber-700">
+                    <Link to="/cart">View Cart</Link>
                   </Button>
                 </div>
               </div>
