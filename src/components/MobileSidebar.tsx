@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +31,7 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
   const { t } = useTranslation();
   const { profile, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Use auth data if available, otherwise fall back to props
   const displayName = profile?.full_name || userName || "User";
@@ -49,6 +50,8 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
     try {
       await signOut();
       setOpen(false);
+      // Redirect to landing page after successful sign out
+      navigate('/', { replace: true });
     } catch (error) {
       logger.error('Logout failed:', error);
     }

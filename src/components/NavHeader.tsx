@@ -81,6 +81,8 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
         navigate('/', { replace: true });
       } else {
         await signOut();
+        // Redirect to landing page after successful sign out
+        navigate('/', { replace: true });
       }
     } catch (error) {
       logger.error('Logout failed:', error);

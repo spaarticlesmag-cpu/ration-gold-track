@@ -40,7 +40,7 @@ const Profile = () => {
     address: '',
     aadhaar_number: '',
     ration_card_number: '',
-    ration_card_type: (profile as any)?.ration_card_type || 'pink',
+    ration_card_type: profile?.ration_card_type || 'pink',
     aadhaar_document_url: '',
     ration_card_document_url: '',
   });
@@ -53,9 +53,9 @@ const Profile = () => {
         address: profile.address || '',
         aadhaar_number: profile.aadhaar_number || '',
         ration_card_number: profile.ration_card_number || '',
-        ration_card_type: (profile as any).ration_card_type || 'pink',
-        aadhaar_document_url: (profile as any).aadhaar_document_url || '',
-        ration_card_document_url: (profile as any).ration_card_document_url || '',
+        ration_card_type: profile.ration_card_type || 'pink',
+        aadhaar_document_url: profile.aadhaar_document_url || '',
+        ration_card_document_url: profile.ration_card_document_url || '',
       });
     }
   }, [profile]);
@@ -75,7 +75,7 @@ const Profile = () => {
   // Validation schema
   const profileSchema = z.object({
     full_name: z.string().min(1, 'Full name is required').max(100, 'Name too long'),
-    mobile_number: z.string().regex(/^[\+]?[0-9\-\s\(\)]{10,15}$/, 'Invalid mobile number format'),
+    mobile_number: z.string().regex(/^[+]?[0-9\s()-]{10,15}$/, 'Invalid mobile number format'),
     address: z.string().min(1, 'Address is required').max(500, 'Address too long'),
     aadhaar_number: z.string().regex(/^\d{12}$/, 'Aadhaar number must be 12 digits').optional().or(z.literal('')),
     ration_card_number: z.string().min(1, 'Ration card number is required').max(50, 'Card number too long'),
@@ -353,7 +353,7 @@ const Profile = () => {
                   <Label className="flex items-center gap-2">
                     <IdCard className="w-4 h-4" /> Ration Card Type
                   </Label>
-                  <Select value={formData.ration_card_type} onValueChange={(v) => setFormData({ ...formData, ration_card_type: v })} disabled={!isEditing}>
+                  <Select value={formData.ration_card_type} onValueChange={(v) => setFormData({ ...formData, ration_card_type: v as 'yellow' | 'pink' | 'blue' | 'white' })} disabled={!isEditing}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select card type" />
                     </SelectTrigger>

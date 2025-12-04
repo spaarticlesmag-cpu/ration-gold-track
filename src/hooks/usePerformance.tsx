@@ -108,7 +108,6 @@ export const usePerformance = () => {
   }, []);
 
   const logPerformance = () => {
-    console.log('Performance Metrics:', metrics);
     // In a real app, you might send this to an analytics service
   };
 

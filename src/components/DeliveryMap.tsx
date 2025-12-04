@@ -135,12 +135,7 @@ export function DeliveryMap({ className = "", height = "500px", orderId }: Deliv
         }, location.speed)
       }
 
-      console.log('GPS location audit logged:', {
-        user: user.id,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        orderId
-      })
+
 
       // TODO: Enable GPS storage after database migration
       /* const locationData = {
@@ -321,12 +316,7 @@ export function DeliveryMap({ className = "", height = "500px", orderId }: Deliv
             accuracy: position.accuracy
           })
 
-          console.log('Emergency alert audit logged:', {
-            user: user.id,
-            lat: position.latitude,
-            lng: position.longitude,
-            accuracy: position.accuracy
-          })
+
 
           // TODO: Enable SMS alert and emergency RPC after services are configured
           /* const { data: alertId, error } = await supabase.rpc('handle_emergency_alert', {
