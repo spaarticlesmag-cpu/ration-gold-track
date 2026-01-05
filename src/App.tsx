@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
 
@@ -47,6 +47,7 @@ const RouteTracker = () => {
 // Initial Redirect Component
 const InitialRedirect = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, loading } = useAuth();
 
   useEffect(() => {
@@ -57,11 +58,11 @@ const InitialRedirect = () => {
         // Only redirect to protected routes
         const protectedRoutes = ['/dashboard', '/shop', '/orders', '/history', '/profile', '/cart', '/payment', '/qr-scanner', '/beneficiaries', '/incoming-orders', '/quota'];
         if (protectedRoutes.some(route => lastPath.startsWith(route))) {
-          window.location.href = lastPath;
+          navigate(lastPath, { replace: true });
         }
       }
     }
-  }, [user, loading, location.pathname]);
+  }, [user, loading, location.pathname, navigate]);
 
   return null;
 };
