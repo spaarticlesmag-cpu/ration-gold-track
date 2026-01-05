@@ -1,21 +1,21 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { CartProvider } from "@/hooks/useCart";
-import Index from "./pages/Index";
+
 import Landing from "./pages/Landing";
 import Shop from "./pages/Shop";
 import Quota from "./pages/Quota";
 import Orders from "./pages/Orders";
 import OrdersAdmin from "./pages/OrdersAdmin";
 import OrdersCustomer from "./pages/OrdersCustomer";
-import OrdersDelivery from "./pages/OrdersDelivery";
+
 import History from "./pages/History";
 import Cart from "./pages/Cart";
 import Payment from "./pages/Payment";
@@ -31,6 +31,40 @@ import Beneficiaries from "./pages/Beneficiaries";
 import IncomingOrders from "./pages/IncomingOrders";
 
 const queryClient = new QueryClient();
+
+// Route Tracker Component to remember last visited page
+const RouteTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Save current path to sessionStorage
+    sessionStorage.setItem('lastVisitedPath', location.pathname);
+  }, [location.pathname]);
+
+  return null;
+};
+
+// Initial Redirect Component
+const InitialRedirect = () => {
+  const location = useLocation();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user && location.pathname === '/') {
+      // If user is logged in and on landing page, redirect to last visited path or dashboard
+      const lastPath = sessionStorage.getItem('lastVisitedPath');
+      if (lastPath && lastPath !== '/' && lastPath.startsWith('/')) {
+        // Only redirect to protected routes
+        const protectedRoutes = ['/dashboard', '/shop', '/orders', '/history', '/profile', '/cart', '/payment', '/qr-scanner', '/beneficiaries', '/incoming-orders', '/quota'];
+        if (protectedRoutes.some(route => lastPath.startsWith(route))) {
+          window.location.href = lastPath;
+        }
+      }
+    }
+  }, [user, loading, location.pathname]);
+
+  return null;
+};
 
 
 
@@ -129,6 +163,8 @@ function AppContent() {
         <AuthProvider>
           <CartProvider>
             <BrowserRouter>
+              <RouteTracker />
+              <InitialRedirect />
               <TooltipProvider>
                 <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream">
                   <Routes>
@@ -141,13 +177,13 @@ function AppContent() {
                     <Route path="/dashboard" element={<RoleBasedRoute />} />
 
                     {/* Protected routes */}
-                    <Route path="/index" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+
                     <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
                     <Route path="/quota" element={<ProtectedRoute><Quota /></ProtectedRoute>} />
                     <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
                     <Route path="/orders-admin" element={<ProtectedRoute><OrdersAdmin /></ProtectedRoute>} />
                     <Route path="/orders-customer" element={<ProtectedRoute><OrdersCustomer /></ProtectedRoute>} />
-                    <Route path="/orders-delivery" element={<ProtectedRoute><OrdersDelivery /></ProtectedRoute>} />
+
                     <Route path="/beneficiaries" element={<ProtectedRoute><Beneficiaries /></ProtectedRoute>} />
                     <Route path="/incoming-orders" element={<ProtectedRoute><IncomingOrders /></ProtectedRoute>} />
                     <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />

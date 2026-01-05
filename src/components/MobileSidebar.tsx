@@ -69,7 +69,6 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
         ];
       case 'delivery_partner':
         return [
-          { to: "/orders", label: t("nav.orders"), icon: MapPin },
           { to: "/qr-scanner", label: t("nav.qrScanner"), icon: QrCode },
           { to: "/history", label: t("nav.history"), icon: History },
         ];

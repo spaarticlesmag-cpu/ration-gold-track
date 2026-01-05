@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logger';
-import { Truck, Package, MapPin, Clock, CheckCircle, AlertCircle, QrCode, Navigation, Phone, Star, DollarSign, Timer, Camera } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Truck, Package, MapPin, Clock, CheckCircle, AlertCircle, QrCode, Navigation, Phone, Star, DollarSign, Timer, Camera, Route, Activity, Award, Target } from 'lucide-react';
 import { NavHeader } from '@/components/NavHeader';
 import {
   Dialog,
@@ -287,269 +288,315 @@ const DeliveryDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <NavHeader />
-      
-      {/* Header Section */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-6">
+
+      {/* Delivery Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+        <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">
-                Hello, {profile?.full_name || 'Delivery Partner'}! 👋
-              </h1>
-              <p className="text-gray-600">
-                You have {availableOrders.length} new orders and {assignedOrders.length} active deliveries
-              </p>
+            <div className="flex items-center gap-6">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <Truck className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold mb-1">
+                  Delivery Command Center
+                </h1>
+                <p className="text-blue-100 text-lg">
+                  Welcome back, {profile?.full_name || 'Delivery Partner'}! 🚀
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-2xl font-bold text-green-600">₹{orders.reduce((sum, order) => sum + (order.delivery_fee || 0), 0)}</div>
-                <div className="text-sm text-gray-500">Today's Earnings</div>
-              </div>
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                <Truck className="w-6 h-6 text-red-600" />
-              </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold mb-1">₹{orders.reduce((sum, order) => sum + (order.delivery_fee || 0), 0)}</div>
+              <div className="text-blue-200">Today's Earnings</div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6">
-        <Tabs defaultValue="available" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:w-fit bg-white shadow-sm">
-            <TabsTrigger value="available" className="flex items-center gap-2 data-[state=active]:bg-red-500 data-[state=active]:text-white">
-              <Package className="w-4 h-4" />
-              New Orders ({availableOrders.length})
-            </TabsTrigger>
-            <TabsTrigger value="assigned" className="flex items-center gap-2 data-[state=active]:bg-red-500 data-[state=active]:text-white">
-              <Truck className="w-4 h-4" />
-              Active Deliveries ({assignedOrders.length})
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="available" className="space-y-4">
-            {availableOrders.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No New Orders</h3>
-                <p className="text-gray-500">
-                  Check back later for new delivery opportunities!
-                </p>
-              </div>
-            ) : (
-              availableOrders.map((order) => (
-                <div key={order.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                  {/* Order Header */}
-                  <div className="bg-red-50 px-6 py-4 border-b border-red-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-                          <Package className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">Order #{order.id}</h3>
-                          <p className="text-sm text-gray-600">{formatDate(order.created_at)}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-gray-900">₹{order.total_amount}</div>
-                        <div className="text-sm text-gray-500">Order Value</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Order Details */}
-                  <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Customer Info */}
-                      <div className="space-y-4">
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Star className="w-4 h-4 text-blue-600" />
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-gray-900">{order.profiles?.full_name}</h4>
-                            <p className="text-sm text-gray-600 flex items-center gap-1">
-                              <Phone className="w-3 h-3" />
-                              {order.profiles?.mobile_number}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3">
-                          <MapPin className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 flex-shrink-0" />
-                          <div>
-                            <h4 className="font-medium text-gray-900">Delivery Address</h4>
-                            <p className="text-sm text-gray-600">{order.delivery_address}</p>
-                            <div className="flex items-center gap-4 mt-2">
-                              <span className="text-xs bg-gray-100 px-2 py-1 rounded-full flex items-center gap-1">
-                                <Navigation className="w-3 h-3" />
-                                {order.distance}
-                              </span>
-                              <span className="text-xs bg-gray-100 px-2 py-1 rounded-full flex items-center gap-1">
-                                <Timer className="w-3 h-3" />
-                                {order.estimated_time}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Items & Earnings */}
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-medium text-gray-900 mb-2">Items to Deliver</h4>
-                          <div className="space-y-1">
-                            {order.items?.map((item, index) => (
-                              <div key={index} className="text-sm text-gray-600 flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
-                                {item}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="bg-green-50 p-3 rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-900">Delivery Fee</span>
-                            <span className="text-lg font-bold text-green-600">₹{order.delivery_fee}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 mt-6">
-                      <Button 
-                        onClick={() => updateOrderStatus(order.id, 'out_for_delivery')}
-                        className="flex-1 bg-red-500 hover:bg-red-600 text-white"
-                      >
-                        <Truck className="w-4 h-4 mr-2" />
-                        Accept Order
-                      </Button>
-                    </div>
-                  </div>
+      <div className="container mx-auto px-4 py-8">
+        {/* Performance Metrics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Active Deliveries</p>
+                  <p className="text-3xl font-bold text-blue-600">{assignedOrders.length}</p>
                 </div>
-              ))
-            )}
-          </TabsContent>
-
-          <TabsContent value="assigned" className="space-y-4">
-            {assignedOrders.length === 0 ? (
-              <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                <Truck className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Active Deliveries</h3>
-                <p className="text-gray-500">
-                  You don't have any active deliveries at the moment.
-                </p>
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Truck className="w-6 h-6 text-blue-600" />
+                </div>
               </div>
-            ) : (
-              assignedOrders.map((order) => (
-                <div key={order.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                  {/* Active Delivery Header */}
-                  <div className="bg-green-50 px-6 py-4 border-b border-green-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                          <Truck className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">Active Delivery #{order.id}</h3>
-                          <p className="text-sm text-gray-600">Out for delivery • {formatDate(order.created_at)}</p>
-                        </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Available Orders</p>
+                  <p className="text-3xl font-bold text-green-600">{availableOrders.length}</p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <Package className="w-6 h-6 text-green-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Avg. Delivery Time</p>
+                  <p className="text-3xl font-bold text-purple-600">24m</p>
+                </div>
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Timer className="w-6 h-6 text-purple-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Success Rate</p>
+                  <p className="text-3xl font-bold text-orange-600">98%</p>
+                </div>
+                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                  <Award className="w-6 h-6 text-orange-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Delivery Interface */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Panel - Route Map */}
+          <div className="lg:col-span-2">
+            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
+                <CardTitle className="flex items-center gap-2">
+                  <Route className="w-5 h-5" />
+                  Delivery Route Map
+                </CardTitle>
+                <CardDescription className="text-blue-100">
+                  Real-time tracking and route optimization
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="relative h-96 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-b-lg overflow-hidden">
+                  {/* Mock Route Map */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <Route className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">Interactive Route Map</h3>
+                      <p className="text-gray-500 mb-4">Real-time delivery tracking and optimization</p>
+
+                      {/* Route visualization */}
+                      <div className="relative w-64 h-32 mx-auto mb-4">
+                        <svg viewBox="0 0 256 128" className="w-full h-full">
+                          {/* Route path */}
+                          <path
+                            d="M20,64 Q64,20 128,40 Q192,60 236,80"
+                            stroke="#3B82F6"
+                            strokeWidth="3"
+                            fill="none"
+                            strokeDasharray="5,5"
+                          />
+
+                          {/* Current location */}
+                          <circle cx="80" cy="45" r="6" fill="#10B981" className="animate-pulse">
+                            <circle cx="80" cy="45" r="10" fill="#10B981" opacity="0.3" className="animate-ping" />
+                          </circle>
+
+                          {/* Delivery points */}
+                          <circle cx="20" cy="64" r="4" fill="#F59E0B" />
+                          <circle cx="128" cy="40" r="4" fill="#EF4444" />
+                          <circle cx="236" cy="80" r="4" fill="#8B5CF6" />
+
+                          {/* Labels */}
+                          <text x="15" y="85" fontSize="10" fill="#6B7280">Start</text>
+                          <text x="125" y="25" fontSize="10" fill="#6B7280">Current</text>
+                          <text x="230" y="95" fontSize="10" fill="#6B7280">Next</text>
+                        </svg>
                       </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-gray-900">₹{order.total_amount}</div>
-                        <div className="text-sm text-gray-500">Order Value</div>
+
+                      <div className="flex justify-center gap-4 text-sm">
+                        <span className="flex items-center gap-1 text-green-600">
+                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          Current Location
+                        </span>
+                        <span className="flex items-center gap-1 text-orange-600">
+                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                          Pickup Point
+                        </span>
+                        <span className="flex items-center gap-1 text-red-600">
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          Delivery Point
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Delivery Details */}
-                  <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Customer Info */}
-                      <div className="space-y-4">
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Star className="w-4 h-4 text-blue-600" />
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-gray-900">{order.profiles?.full_name}</h4>
-                            <p className="text-sm text-gray-600 flex items-center gap-1">
-                              <Phone className="w-3 h-3" />
-                              {order.profiles?.mobile_number}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start gap-3">
-                          <MapPin className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 flex-shrink-0" />
-                          <div>
-                            <h4 className="font-medium text-gray-900">Delivery Address</h4>
-                            <p className="text-sm text-gray-600">{order.delivery_address}</p>
-                            <div className="flex items-center gap-4 mt-2">
-                              <span className="text-xs bg-gray-100 px-2 py-1 rounded-full flex items-center gap-1">
-                                <Navigation className="w-3 h-3" />
-                                {order.distance}
-                              </span>
-                              <span className="text-xs bg-gray-100 px-2 py-1 rounded-full flex items-center gap-1">
-                                <Timer className="w-3 h-3" />
-                                {order.estimated_time}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Items & QR */}
-                      <div className="space-y-4">
-                        <div>
-                          <h4 className="font-medium text-gray-900 mb-2">Items to Deliver</h4>
-                          <div className="space-y-1">
-                            {order.items?.map((item, index) => (
-                              <div key={index} className="text-sm text-gray-600 flex items-center gap-2">
-                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                                {item}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="bg-red-50 p-3 rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-900">Delivery Fee</span>
-                            <span className="text-lg font-bold text-red-600">₹{order.delivery_fee}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 mt-6">
-                      <Button 
-                        onClick={() => openMap(order)}
-                        variant="outline" 
-                        className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >
+                  {/* Route Actions */}
+                  <div className="p-6 bg-white border-t">
+                    <div className="flex gap-3">
+                      <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
                         <Navigation className="w-4 h-4 mr-2" />
-                        Navigate
+                        Start Navigation
                       </Button>
-                      <Button 
-                        onClick={() => openScanner(order)}
-                        className="flex-1 bg-green-500 hover:bg-green-600 text-white"
-                      >
-                        <QrCode className="w-4 h-4 mr-2" />
-                        Scan QR & Deliver
+                      <Button variant="outline" className="flex-1">
+                        <Route className="w-4 h-4 mr-2" />
+                        Optimize Route
+                      </Button>
+                      <Button variant="outline" className="flex-1">
+                        <Activity className="w-4 h-4 mr-2" />
+                        Live Tracking
                       </Button>
                     </div>
                   </div>
                 </div>
-              ))
-            )}
-          </TabsContent>
-        </Tabs>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Panel - Active Deliveries */}
+          <div className="space-y-6">
+            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-t-lg">
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  Active Deliveries
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4">
+                {assignedOrders.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Truck className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm">No active deliveries</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {assignedOrders.map((order) => (
+                      <div key={order.id} className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-semibold text-green-800">#{order.id}</span>
+                          <Badge className="bg-green-500">Active</Badge>
+                        </div>
+                        <p className="text-sm text-green-700 font-medium mb-1">{order.profiles?.full_name}</p>
+                        <p className="text-xs text-green-600 mb-2">{order.distance} • {order.estimated_time}</p>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1 border-green-300 text-green-700 hover:bg-green-100"
+                            onClick={() => openMap(order)}
+                          >
+                            <MapPin className="w-3 h-3 mr-1" />
+                            Map
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                            onClick={() => openScanner(order)}
+                          >
+                            <QrCode className="w-3 h-3 mr-1" />
+                            Scan
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+              <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-t-lg">
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Quick Actions
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-3">
+                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                  <Package className="w-4 h-4 mr-2" />
+                  Browse New Orders
+                </Button>
+                <Button variant="outline" className="w-full">
+                  <Phone className="w-4 h-4 mr-2" />
+                  Emergency Contact
+                </Button>
+                <Button variant="outline" className="w-full">
+                  <Award className="w-4 h-4 mr-2" />
+                  Performance Report
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Available Orders Section */}
+        {availableOrders.length > 0 && (
+          <Card className="mt-8 bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+            <CardHeader className="bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-t-lg">
+              <CardTitle className="flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                Available Delivery Opportunities ({availableOrders.length})
+              </CardTitle>
+              <CardDescription className="text-orange-100">
+                Accept new orders to expand your delivery route
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {availableOrders.map((order) => (
+                  <div key={order.id} className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-4 border border-orange-200 hover:shadow-lg transition-shadow">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-bold text-orange-800">#{order.id}</span>
+                      <Badge variant="secondary" className="bg-orange-500 text-white">₹{order.delivery_fee}</Badge>
+                    </div>
+
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-xs text-blue-600">👤</span>
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">{order.profiles?.full_name}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-red-500" />
+                        <span className="text-xs text-gray-600">{order.distance}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Timer className="w-4 h-4 text-purple-500" />
+                        <span className="text-xs text-gray-600">{order.estimated_time}</span>
+                      </div>
+                    </div>
+
+                    <Button
+                      className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                      onClick={() => updateOrderStatus(order.id, 'out_for_delivery')}
+                    >
+                      <Truck className="w-4 h-4 mr-2" />
+                      Accept Delivery
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Map Dialog */}
         <Dialog open={showMap} onOpenChange={setShowMap}>

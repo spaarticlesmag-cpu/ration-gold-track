@@ -34,12 +34,7 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
   const isAuthenticated = !!profile;
 
   const getDashboardPath = () => {
-    switch (displayRole) {
-      case 'admin': return '/admin/dashboard';
-      case 'delivery_partner': return '/partner/dashboard';
-      case 'customer':
-      default: return '/user/dashboard';
-    }
+    return '/dashboard';
   };
 
   const getRoleDisplay = () => {
@@ -147,11 +142,6 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                   <Button asChild variant={location.pathname === getDashboardPath() ? 'default' : 'ghost'}>
                     <Link to={getDashboardPath()} className="flex items-center gap-2">
                       <LayoutDashboard className="icon-lg" /> Dashboard
-                    </Link>
-                  </Button>
-                  <Button asChild variant={location.pathname === '/orders' ? 'default' : 'ghost'}>
-                    <Link to="/orders" className="flex items-center gap-2">
-                      <MapPin className="icon-lg" /> Orders
                     </Link>
                   </Button>
                   <Button asChild variant={location.pathname === '/qr-scanner' ? 'default' : 'ghost'}>
