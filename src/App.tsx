@@ -153,7 +153,7 @@ function AppContent() {
                     <Route path="/verify" element={<Verify />} />
 
                     {/* Role-based dashboard */}
-                    <Route path="/dashboard" element={<RoleBasedRoute />} />
+                    <Route path="/dashboard" element={<ProtectedRoute><RoleBasedRoute /></ProtectedRoute>} />
 
                     {/* Protected routes */}
 
