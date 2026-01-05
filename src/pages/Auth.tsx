@@ -62,9 +62,11 @@ const Auth = () => {
     );
   }
 
-  // Redirect authenticated users to their role-specific dashboard
+  // Redirect authenticated users to their role-specific dashboard or last visited path
   if (user && profile && !devMode) {
-    return <Navigate to="/dashboard" replace />;
+    const lastPath = sessionStorage.getItem('lastVisitedPath');
+    const redirectPath = lastPath && lastPath.startsWith('/') && lastPath !== '/' ? lastPath : '/dashboard';
+    return <Navigate to={redirectPath} replace />;
   }
 
   const handleSignIn = async (e: React.FormEvent) => {
