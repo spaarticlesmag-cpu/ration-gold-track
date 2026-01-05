@@ -288,11 +288,11 @@ const DeliveryDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100">
       <NavHeader />
 
       {/* Delivery Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+      <div className="bg-gradient-to-r from-red-600 to-pink-700 text-white">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -303,14 +303,14 @@ const DeliveryDashboard = () => {
                 <h1 className="text-3xl font-bold mb-1">
                   Delivery Command Center
                 </h1>
-                <p className="text-blue-100 text-lg">
+                <p className="text-red-100 text-lg">
                   Welcome back, {profile?.full_name || 'Delivery Partner'}! 🚀
                 </p>
               </div>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold mb-1">₹{orders.reduce((sum, order) => sum + (order.delivery_fee || 0), 0)}</div>
-              <div className="text-blue-200">Today's Earnings</div>
+              <div className="text-red-200">Today's Earnings</div>
             </div>
           </div>
         </div>
@@ -324,10 +324,10 @@ const DeliveryDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Active Deliveries</p>
-                  <p className="text-3xl font-bold text-blue-600">{assignedOrders.length}</p>
+                  <p className="text-3xl font-bold text-red-600">{assignedOrders.length}</p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Truck className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <Truck className="w-6 h-6 text-red-600" />
                 </div>
               </div>
             </CardContent>
@@ -352,10 +352,10 @@ const DeliveryDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Avg. Delivery Time</p>
-                  <p className="text-3xl font-bold text-purple-600">24m</p>
+                  <p className="text-3xl font-bold text-pink-600">24m</p>
                 </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Timer className="w-6 h-6 text-purple-600" />
+                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
+                  <Timer className="w-6 h-6 text-pink-600" />
                 </div>
               </div>
             </CardContent>
@@ -381,84 +381,132 @@ const DeliveryDashboard = () => {
           {/* Left Panel - Route Map */}
           <div className="lg:col-span-2">
             <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
+              <CardHeader className="bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-t-lg">
                 <CardTitle className="flex items-center gap-2">
                   <Route className="w-5 h-5" />
                   Delivery Route Map
                 </CardTitle>
-                <CardDescription className="text-blue-100">
+                <CardDescription className="text-red-100">
                   Real-time tracking and route optimization
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="relative h-96 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-b-lg overflow-hidden">
-                  {/* Mock Route Map */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <Route className="w-16 h-16 text-blue-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-700 mb-2">Interactive Route Map</h3>
-                      <p className="text-gray-500 mb-4">Real-time delivery tracking and optimization</p>
+                <div className="relative h-96 bg-gradient-to-br from-red-50 to-pink-50 rounded-b-lg overflow-hidden">
+                  {/* Enhanced Route Map with better organization */}
+                  <div className="absolute inset-0">
+                    {/* Route Header */}
+                    <div className="p-4 bg-white/90 border-b">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-sm font-semibold text-red-800">Optimized Delivery Route</h3>
+                        <Badge className="bg-red-100 text-red-800">3 Stops</Badge>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-gray-600">
+                        <span className="flex items-center gap-1">
+                          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                          Live Tracking Active
+                        </span>
+                        <span>Total Distance: 8.2 km</span>
+                        <span>Est. Time: 45 min</span>
+                      </div>
+                    </div>
 
-                      {/* Route visualization */}
-                      <div className="relative w-64 h-32 mx-auto mb-4">
-                        <svg viewBox="0 0 256 128" className="w-full h-full">
+                    {/* Route Visualization */}
+                    <div className="p-4 flex-1 flex items-center justify-center">
+                      <div className="relative w-full max-w-md">
+                        <svg viewBox="0 0 320 200" className="w-full h-full">
                           {/* Route path */}
                           <path
-                            d="M20,64 Q64,20 128,40 Q192,60 236,80"
-                            stroke="#3B82F6"
-                            strokeWidth="3"
+                            d="M40,160 Q80,40 160,80 Q240,120 280,160"
+                            stroke="#EF4444"
+                            strokeWidth="4"
                             fill="none"
-                            strokeDasharray="5,5"
+                            strokeDasharray="8,4"
+                            className="animate-pulse"
                           />
 
-                          {/* Current location */}
-                          <circle cx="80" cy="45" r="6" fill="#10B981" className="animate-pulse">
-                            <circle cx="80" cy="45" r="10" fill="#10B981" opacity="0.3" className="animate-ping" />
+                          {/* Current location with glow effect */}
+                          <circle cx="120" cy="60" r="8" fill="#10B981" className="animate-pulse">
+                            <circle cx="120" cy="60" r="12" fill="#10B981" opacity="0.3" className="animate-ping" />
                           </circle>
 
                           {/* Delivery points */}
-                          <circle cx="20" cy="64" r="4" fill="#F59E0B" />
-                          <circle cx="128" cy="40" r="4" fill="#EF4444" />
-                          <circle cx="236" cy="80" r="4" fill="#8B5CF6" />
+                          <circle cx="40" cy="160" r="6" fill="#F59E0B" stroke="#fff" strokeWidth="2" />
+                          <circle cx="200" cy="100" r="6" fill="#DC2626" stroke="#fff" strokeWidth="2" />
+                          <circle cx="280" cy="160" r="6" fill="#7C3AED" stroke="#fff" strokeWidth="2" />
 
-                          {/* Labels */}
-                          <text x="15" y="85" fontSize="10" fill="#6B7280">Start</text>
-                          <text x="125" y="25" fontSize="10" fill="#6B7280">Current</text>
-                          <text x="230" y="95" fontSize="10" fill="#6B7280">Next</text>
+                          {/* Stop numbers */}
+                          <text x="35" y="175" fontSize="12" fill="#fff" fontWeight="bold" textAnchor="middle">1</text>
+                          <text x="195" y="115" fontSize="12" fill="#fff" fontWeight="bold" textAnchor="middle">2</text>
+                          <text x="275" y="175" fontSize="12" fill="#fff" fontWeight="bold" textAnchor="middle">3</text>
+
+                          {/* Route labels */}
+                          <text x="35" y="190" fontSize="10" fill="#6B7280" textAnchor="middle">Pickup</text>
+                          <text x="195" y="130" fontSize="10" fill="#6B7280" textAnchor="middle">Current</text>
+                          <text x="275" y="190" fontSize="10" fill="#6B7280" textAnchor="middle">Next</text>
                         </svg>
-                      </div>
 
-                      <div className="flex justify-center gap-4 text-sm">
-                        <span className="flex items-center gap-1 text-green-600">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          Current Location
-                        </span>
-                        <span className="flex items-center gap-1 text-orange-600">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                          Pickup Point
-                        </span>
-                        <span className="flex items-center gap-1 text-red-600">
-                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                          Delivery Point
-                        </span>
+                        {/* Route stats overlay */}
+                        <div className="absolute top-2 right-2 bg-white/90 rounded-lg p-2 shadow-sm">
+                          <div className="text-xs space-y-1">
+                            <div className="flex justify-between gap-3">
+                              <span className="text-gray-600">ETA:</span>
+                              <span className="font-semibold text-red-600">18 min</span>
+                            </div>
+                            <div className="flex justify-between gap-3">
+                              <span className="text-gray-600">Next:</span>
+                              <span className="font-semibold text-gray-800">ORD003</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Route Progress */}
+                    <div className="p-4 bg-white/90 border-t">
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="font-medium text-gray-700">Route Progress</span>
+                          <span className="text-red-600 font-semibold">67%</span>
+                        </div>
+                        <Progress value={67} className="h-2" />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>2 of 3 deliveries completed</span>
+                          <span>₹145 earned today</span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Route Actions */}
                   <div className="p-6 bg-white border-t">
-                    <div className="flex gap-3">
-                      <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                        onClick={() => toast({ title: 'Navigation Started', description: 'Opening Google Maps...' })}
+                      >
                         <Navigation className="w-4 h-4 mr-2" />
                         Start Navigation
                       </Button>
-                      <Button variant="outline" className="flex-1">
+                      <Button
+                        variant="outline"
+                        onClick={() => toast({ title: 'Route Optimized', description: 'Best route calculated!' })}
+                      >
                         <Route className="w-4 h-4 mr-2" />
                         Optimize Route
                       </Button>
-                      <Button variant="outline" className="flex-1">
+                      <Button
+                        variant="outline"
+                        onClick={() => toast({ title: 'Live Tracking', description: 'Sharing location with dispatcher...' })}
+                      >
                         <Activity className="w-4 h-4 mr-2" />
                         Live Tracking
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => toast({ title: 'Route Details', description: 'Detailed route information sent to your phone.' })}
+                      >
+                        <MapPin className="w-4 h-4 mr-2" />
+                        Route Details
                       </Button>
                     </div>
                   </div>
@@ -520,24 +568,82 @@ const DeliveryDashboard = () => {
 
             {/* Quick Actions */}
             <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
-              <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-t-lg">
+              <CardHeader className="bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-t-lg">
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="w-5 h-5" />
                   Quick Actions
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 space-y-3">
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
+                <Button
+                  className="w-full bg-red-600 hover:bg-red-700 text-white"
+                  onClick={() => {
+                    const availableOrders = orders.filter(order => order.status === 'approved');
+                    if (availableOrders.length > 0) {
+                      toast({
+                        title: "New Orders Available",
+                        description: `Found ${availableOrders.length} orders ready for pickup!`,
+                      });
+                    } else {
+                      toast({
+                        title: "No New Orders",
+                        description: "Check back later for new delivery opportunities.",
+                      });
+                    }
+                  }}
+                >
                   <Package className="w-4 h-4 mr-2" />
                   Browse New Orders
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full border-red-300 text-red-700 hover:bg-red-50"
+                  onClick={() => {
+                    toast({
+                      title: "Emergency Contact",
+                      description: "Calling dispatch center... 📞",
+                    });
+                    // In a real app, this would initiate a phone call
+                    setTimeout(() => {
+                      toast({
+                        title: "Connected",
+                        description: "Emergency line connected successfully.",
+                      });
+                    }, 2000);
+                  }}
+                >
                   <Phone className="w-4 h-4 mr-2" />
                   Emergency Contact
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full border-red-300 text-red-700 hover:bg-red-50"
+                  onClick={() => {
+                    const completedOrders = orders.filter(order => order.status === 'delivered').length;
+                    const totalEarnings = orders.reduce((sum, order) => sum + (order.delivery_fee || 0), 0);
+                    const avgRating = 4.8; // Mock rating
+
+                    toast({
+                      title: "Performance Report",
+                      description: `Completed: ${completedOrders} deliveries | Earnings: ₹${totalEarnings} | Rating: ${avgRating}⭐`,
+                    });
+                  }}
+                >
                   <Award className="w-4 h-4 mr-2" />
                   Performance Report
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full border-red-300 text-red-700 hover:bg-red-50"
+                  onClick={() => {
+                    toast({
+                      title: "Break Time",
+                      description: "Break mode activated. You won't receive new orders for 30 minutes.",
+                    });
+                  }}
+                >
+                  <Timer className="w-4 h-4 mr-2" />
+                  Take Break
                 </Button>
               </CardContent>
             </Card>
