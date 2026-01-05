@@ -391,119 +391,165 @@ const DeliveryDashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="relative h-96 bg-gradient-to-br from-red-50 to-pink-50 rounded-b-lg overflow-hidden">
-                  {/* Enhanced Route Map with better organization */}
-                  <div className="absolute inset-0">
-                    {/* Route Header */}
-                    <div className="p-4 bg-white/90 border-b">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-semibold text-red-800">Optimized Delivery Route</h3>
-                        <Badge className="bg-red-100 text-red-800">3 Stops</Badge>
+                <div className="bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 rounded-b-lg">
+                  {/* Route Header */}
+                  <div className="p-6 border-b border-red-100 bg-white/80 backdrop-blur-sm">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                          <Route className="w-5 h-5 text-red-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-red-900">Optimized Delivery Route</h3>
+                          <p className="text-sm text-red-700">Smart routing for maximum efficiency</p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-600">
-                        <span className="flex items-center gap-1">
-                          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                      <div className="text-right">
+                        <Badge className="bg-red-100 text-red-800 border-red-200 mb-2">3 Active Stops</Badge>
+                        <div className="flex items-center gap-2 text-sm text-green-600">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                           Live Tracking Active
-                        </span>
-                        <span>Total Distance: 8.2 km</span>
-                        <span>Est. Time: 45 min</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Route Visualization */}
-                    <div className="p-4 flex-1 flex items-center justify-center">
-                      <div className="relative w-full max-w-md">
-                        <svg viewBox="0 0 320 200" className="w-full h-full">
-                          {/* Route path */}
+                    {/* Route Stats */}
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="bg-white/60 rounded-lg p-3 border border-red-100">
+                        <div className="flex items-center gap-2 mb-1">
+                          <MapPin className="w-4 h-4 text-red-500" />
+                          <span className="text-xs font-medium text-gray-600">Distance</span>
+                        </div>
+                        <p className="text-lg font-bold text-red-800">8.2 km</p>
+                      </div>
+                      <div className="bg-white/60 rounded-lg p-3 border border-red-100">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Timer className="w-4 h-4 text-pink-500" />
+                          <span className="text-xs font-medium text-gray-600">Est. Time</span>
+                        </div>
+                        <p className="text-lg font-bold text-red-800">45 min</p>
+                      </div>
+                      <div className="bg-white/60 rounded-lg p-3 border border-red-100">
+                        <div className="flex items-center gap-2 mb-1">
+                          <DollarSign className="w-4 h-4 text-green-500" />
+                          <span className="text-xs font-medium text-gray-600">Earnings</span>
+                        </div>
+                        <p className="text-lg font-bold text-red-800">₹145</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Route Visualization */}
+                  <div className="p-6">
+                    <div className="bg-white/80 rounded-xl p-4 border border-red-100 shadow-sm">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="font-semibold text-gray-800">Route Visualization</h4>
+                        <Badge variant="outline" className="text-xs">Real-time</Badge>
+                      </div>
+
+                      {/* Clean Route Map */}
+                      <div className="relative">
+                        <svg viewBox="0 0 400 180" className="w-full h-44">
+                          {/* Background grid for better visual appeal */}
+                          <defs>
+                            <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f3f4f6" strokeWidth="0.5"/>
+                            </pattern>
+                          </defs>
+                          <rect width="100%" height="100%" fill="url(#grid)" />
+
+                          {/* Route path with gradient */}
+                          <defs>
+                            <linearGradient id="routeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" style={{stopColor:'#EF4444', stopOpacity:1}} />
+                              <stop offset="50%" style={{stopColor:'#EC4899', stopOpacity:1}} />
+                              <stop offset="100%" style={{stopColor:'#DC2626', stopOpacity:1}} />
+                            </linearGradient>
+                          </defs>
                           <path
-                            d="M40,160 Q80,40 160,80 Q240,120 280,160"
-                            stroke="#EF4444"
-                            strokeWidth="4"
+                            d="M 50 140 Q 100 60 200 80 Q 300 100 350 140"
+                            stroke="url(#routeGradient)"
+                            strokeWidth="5"
                             fill="none"
-                            strokeDasharray="8,4"
-                            className="animate-pulse"
+                            strokeLinecap="round"
+                            className="drop-shadow-sm"
                           />
 
-                          {/* Current location with glow effect */}
-                          <circle cx="120" cy="60" r="8" fill="#10B981" className="animate-pulse">
-                            <circle cx="120" cy="60" r="12" fill="#10B981" opacity="0.3" className="animate-ping" />
+                          {/* Animated progress indicator */}
+                          <circle r="6" fill="#10B981" stroke="#fff" strokeWidth="3" className="drop-shadow-md">
+                            <animateMotion dur="8s" repeatCount="indefinite">
+                              <path d="M 50 140 Q 100 60 200 80 Q 300 100 350 140" />
+                            </animateMotion>
+                            <animate attributeName="r" values="6;8;6" dur="2s" repeatCount="indefinite" />
                           </circle>
 
-                          {/* Delivery points */}
-                          <circle cx="40" cy="160" r="6" fill="#F59E0B" stroke="#fff" strokeWidth="2" />
-                          <circle cx="200" cy="100" r="6" fill="#DC2626" stroke="#fff" strokeWidth="2" />
-                          <circle cx="280" cy="160" r="6" fill="#7C3AED" stroke="#fff" strokeWidth="2" />
+                          {/* Delivery stops */}
+                          <g className="drop-shadow-sm">
+                            {/* Stop 1 - Pickup */}
+                            <circle cx="50" cy="140" r="12" fill="#F59E0B" stroke="#fff" strokeWidth="3" />
+                            <circle cx="50" cy="140" r="6" fill="#D97706" />
+                            <text x="50" y="147" fontSize="10" fill="#fff" fontWeight="bold" textAnchor="middle">1</text>
 
-                          {/* Stop numbers */}
-                          <text x="35" y="175" fontSize="12" fill="#fff" fontWeight="bold" textAnchor="middle">1</text>
-                          <text x="195" y="115" fontSize="12" fill="#fff" fontWeight="bold" textAnchor="middle">2</text>
-                          <text x="275" y="175" fontSize="12" fill="#fff" fontWeight="bold" textAnchor="middle">3</text>
+                            {/* Stop 2 - Current */}
+                            <circle cx="200" cy="80" r="14" fill="#DC2626" stroke="#fff" strokeWidth="4" className="animate-pulse" />
+                            <circle cx="200" cy="80" r="8" fill="#B91C1C" />
+                            <text x="200" y="87" fontSize="11" fill="#fff" fontWeight="bold" textAnchor="middle">2</text>
 
-                          {/* Route labels */}
-                          <text x="35" y="190" fontSize="10" fill="#6B7280" textAnchor="middle">Pickup</text>
-                          <text x="195" y="130" fontSize="10" fill="#6B7280" textAnchor="middle">Current</text>
-                          <text x="275" y="190" fontSize="10" fill="#6B7280" textAnchor="middle">Next</text>
+                            {/* Stop 3 - Next */}
+                            <circle cx="350" cy="140" r="12" fill="#7C3AED" stroke="#fff" strokeWidth="3" />
+                            <circle cx="350" cy="140" r="6" fill="#6D28D9" />
+                            <text x="350" cy="140" r="6" fill="#6D28D9" />
+                            <text x="350" y="147" fontSize="10" fill="#fff" fontWeight="bold" textAnchor="middle">3</text>
+                          </g>
+
+                          {/* Location labels */}
+                          <text x="50" y="165" fontSize="12" fill="#374151" fontWeight="600" textAnchor="middle">Pickup Point</text>
+                          <text x="200" y="105" fontSize="12" fill="#DC2626" fontWeight="700" textAnchor="middle">Current Location</text>
+                          <text x="350" y="165" fontSize="12" fill="#374151" fontWeight="600" textAnchor="middle">Next Stop</text>
                         </svg>
 
-                        {/* Route stats overlay */}
-                        <div className="absolute top-2 right-2 bg-white/90 rounded-lg p-2 shadow-sm">
-                          <div className="text-xs space-y-1">
-                            <div className="flex justify-between gap-3">
-                              <span className="text-gray-600">ETA:</span>
-                              <span className="font-semibold text-red-600">18 min</span>
-                            </div>
-                            <div className="flex justify-between gap-3">
-                              <span className="text-gray-600">Next:</span>
-                              <span className="font-semibold text-gray-800">ORD003</span>
-                            </div>
-                          </div>
+                        {/* Route Progress Bar */}
+                        <div className="mt-4 bg-gray-100 rounded-full h-3 overflow-hidden">
+                          <div className="bg-gradient-to-r from-red-500 to-pink-500 h-full rounded-full transition-all duration-1000 ease-out" style={{width: '67%'}}></div>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Route Progress */}
-                    <div className="p-4 bg-white/90 border-t">
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="font-medium text-gray-700">Route Progress</span>
-                          <span className="text-red-600 font-semibold">67%</span>
-                        </div>
-                        <Progress value={67} className="h-2" />
-                        <div className="flex justify-between text-xs text-gray-500">
+                        <div className="flex justify-between text-xs text-gray-600 mt-1">
                           <span>2 of 3 deliveries completed</span>
-                          <span>₹145 earned today</span>
+                          <span>67% route progress</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Route Actions */}
-                  <div className="p-6 bg-white border-t">
-                    <div className="grid grid-cols-2 gap-3">
+                  <div className="p-6 bg-white/95 border-t border-red-100">
+                    <div className="grid grid-cols-2 gap-4">
                       <Button
-                        className="bg-red-600 hover:bg-red-700 text-white"
-                        onClick={() => toast({ title: 'Navigation Started', description: 'Opening Google Maps...' })}
+                        className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                        onClick={() => toast({ title: 'Navigation Started', description: 'Opening Google Maps with optimized route...' })}
                       >
                         <Navigation className="w-4 h-4 mr-2" />
                         Start Navigation
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => toast({ title: 'Route Optimized', description: 'Best route calculated!' })}
+                        className="border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 transition-all duration-200"
+                        onClick={() => toast({ title: 'Route Optimized', description: 'Route recalculated for traffic conditions!' })}
                       >
                         <Route className="w-4 h-4 mr-2" />
                         Optimize Route
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => toast({ title: 'Live Tracking', description: 'Sharing location with dispatcher...' })}
+                        className="border-pink-300 text-pink-700 hover:bg-pink-50 hover:border-pink-400 transition-all duration-200"
+                        onClick={() => toast({ title: 'Live Tracking Enabled', description: 'Location sharing activated for dispatcher...' })}
                       >
                         <Activity className="w-4 h-4 mr-2" />
                         Live Tracking
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => toast({ title: 'Route Details', description: 'Detailed route information sent to your phone.' })}
+                        className="border-purple-300 text-purple-700 hover:bg-purple-50 hover:border-purple-400 transition-all duration-200"
+                        onClick={() => toast({ title: 'Route Details Sent', description: 'Complete route information sent to your device.' })}
                       >
                         <MapPin className="w-4 h-4 mr-2" />
                         Route Details
