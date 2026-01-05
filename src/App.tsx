@@ -44,28 +44,7 @@ const RouteTracker = () => {
   return null;
 };
 
-// Initial Redirect Component
-const InitialRedirect = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    if (!loading && user && location.pathname === '/') {
-      // If user is logged in and on landing page, redirect to last visited path or dashboard
-      const lastPath = sessionStorage.getItem('lastVisitedPath');
-      if (lastPath && lastPath !== '/' && lastPath.startsWith('/')) {
-        // Only redirect to protected routes
-        const protectedRoutes = ['/dashboard', '/shop', '/orders', '/history', '/profile', '/cart', '/payment', '/qr-scanner', '/beneficiaries', '/incoming-orders', '/quota'];
-        if (protectedRoutes.some(route => lastPath.startsWith(route))) {
-          navigate(lastPath, { replace: true });
-        }
-      }
-    }
-  }, [user, loading, location.pathname, navigate]);
-
-  return null;
-};
 
 
 
@@ -165,7 +144,6 @@ function AppContent() {
           <CartProvider>
             <BrowserRouter>
               <RouteTracker />
-              <InitialRedirect />
               <TooltipProvider>
                 <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream">
                   <Routes>
