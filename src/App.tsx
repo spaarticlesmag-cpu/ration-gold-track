@@ -67,17 +67,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Role-based Route Component
-const RoleBasedRoute = () => {
-  const { profile, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gold-light/20 to-cream flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+// Simple Dashboard Route Component
+const DashboardRoute = () => {
+  const { profile } = useAuth();
 
   // Route based on user role
   switch (profile?.role) {
@@ -153,7 +145,7 @@ function AppContent() {
                     <Route path="/verify" element={<Verify />} />
 
                     {/* Role-based dashboard */}
-                    <Route path="/dashboard" element={<ProtectedRoute><RoleBasedRoute /></ProtectedRoute>} />
+                    <Route path="/dashboard" element={<ProtectedRoute><DashboardRoute /></ProtectedRoute>} />
 
                     {/* Protected routes */}
 
