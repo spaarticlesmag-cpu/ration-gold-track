@@ -109,39 +109,31 @@ const Shop = () => {
   };
 
   const handleAddToCart = (item: any, qty: number = 1) => {
-    // IMMEDIATE ALERT TO SHOW BUTTON IS WORKING
-    alert(`🛒 BUTTON CLICKED!\n\nItem: ${item.name}\nQuantity: ${qty} ${item.unit}\n\nCheck browser console for details!`);
-
-    console.log('Add to cart clicked:', item.name, 'quantity:', qty);
+    console.log('🛒 ADD TO CART:', item.name, 'quantity:', qty);
 
     // Get current cart quantities for this item
     const currentCartQty = lines.reduce((total, line) => {
       return line.id === item.id ? total + line.quantity : total;
     }, 0);
 
-    console.log('Current cart quantity:', currentCartQty);
-
     // Check quota enforcement (cumulative across cart)
     const remainingQuota = getRemainingQuota(item.name);
-    console.log('Remaining quota for', item.name, ':', remainingQuota);
-
     if (remainingQuota !== null) {
       const totalAfterAddition = currentCartQty + qty;
-      console.log('Total after addition:', totalAfterAddition);
-
       if (totalAfterAddition > remainingQuota) {
         const availableToAdd = Math.max(0, remainingQuota - currentCartQty);
         if (availableToAdd === 0) {
-          alert(`❌ QUOTA EXCEEDED!\n\nYou have already reached your monthly quota for ${item.name}.\nNo more can be added.`);
+          alert(`❌ QUOTA EXCEEDED\n\nYou have already reached your monthly quota for ${item.name}.\nNo more can be added.`);
         } else {
-          alert(`❌ QUOTA LIMIT!\n\nCannot add ${qty} ${item.unit} of ${item.name}.\nOnly ${availableToAdd} ${item.unit} can be added.`);
+          alert(`❌ QUOTA LIMIT\n\nCannot add ${qty} ${item.unit} of ${item.name}.\nOnly ${availableToAdd} ${item.unit} can be added.`);
         }
+        console.log('❌ Quota exceeded, item not added');
         return;
       }
     }
 
     const pricing = getPDSPricing(item);
-    console.log('Pricing:', pricing);
+    console.log('💰 Pricing:', pricing);
 
     add({
       id: item.id,
@@ -150,13 +142,15 @@ const Shop = () => {
       price: pricing.subsidizedPrice,
     }, qty);
 
-    alert(`✅ ITEM ADDED TO CART!\n\n${item.name} (${qty} ${item.unit})\nPrice: ${pricing.isFree ? 'FREE' : `₹${pricing.subsidizedPrice}`}\n\nGo to cart to checkout!`);
+    console.log('✅ Item successfully added to cart');
 
-    console.log('Item added to cart successfully');
+    // Show visual confirmation
+    // You could add a toast notification here instead of alert
+    // For now, just console log to confirm it's working
 
-    // Log subsidy transaction
+    // Log subsidy transaction for analytics
     if (profile && pricing.subsidy > 0) {
-      console.log(`Subsidy logged: ₹${pricing.subsidy} saved on ${item.name}`);
+      console.log(`💸 Subsidy saved: ₹${pricing.subsidy} on ${item.name}`);
     }
   };
 
@@ -297,24 +291,7 @@ const Shop = () => {
 
       <div className="container mx-auto px-4 py-12">
 
-        {/* BIG VISIBLE INDICATOR */}
-        <div className="mb-8 bg-gradient-to-r from-red-500 to-pink-500 text-white p-6 rounded-xl shadow-2xl animate-pulse">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold mb-2">🎉 ALL FEATURES WORKING! 🎉</h2>
-            <p className="text-xl mb-4">✅ Complaint Page Added | ✅ Add Buttons Fixed | ✅ Quota System Active</p>
-            <div className="flex justify-center gap-4 text-sm mb-4">
-              <a href="/complaint" className="bg-white text-red-600 px-4 py-2 rounded font-bold hover:bg-gray-100">📋 COMPLAINT PAGE</a>
-              <a href="/orders-admin" className="bg-white text-red-600 px-4 py-2 rounded font-bold hover:bg-gray-100">👨‍💼 ADMIN ORDERS</a>
-              <a href="/debug" className="bg-white text-red-600 px-4 py-2 rounded font-bold hover:bg-gray-100">🔧 DEBUG PAGE</a>
-            </div>
-            <button
-              onClick={() => alert('🧪 TEST BUTTON WORKS!')}
-              className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-bold text-lg animate-bounce"
-            >
-              🧪 CLICK THIS TEST BUTTON FIRST!
-            </button>
-          </div>
-        </div>
+
 
         {/* Shop Section Header */}
         <div className="text-center mb-12">

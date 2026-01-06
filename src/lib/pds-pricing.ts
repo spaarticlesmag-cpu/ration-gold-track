@@ -170,11 +170,11 @@ export function calculatePDSPricing(
   let subsidizedPrice = 0;
   let appliedPolicy = '';
 
-  // 1. Check if free grain period is active
-  if (isFree && (item.type === 'rice' || item.type === 'wheat' || item.type === 'coarse_grains')) {
-    subsidizedPrice = 0;
-    appliedPolicy = 'PMGKAY Free Grain Scheme';
-  } else {
+    // 1. Check if free grain period is active
+    if (isFree && (item.type === 'rice' || item.type === 'wheat' || item.type === 'coarse_grains' || item.type === 'sugar')) {
+      subsidizedPrice = 0;
+      appliedPolicy = 'PMGKAY Free Grain Scheme';
+    } else {
     // 2. Apply base rates
     const baseRate = CURRENT_POLICY.base_rates[item.type] || 0;
     subsidizedPrice = baseRate;
