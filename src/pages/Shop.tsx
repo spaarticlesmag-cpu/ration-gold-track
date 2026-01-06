@@ -422,27 +422,15 @@ const Shop = () => {
                     </div>
                   )}
 
-                  <div className="flex gap-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 border-amber-200 bg-white"
-                      onClick={() => handleAddToCart(item, 1)}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add 1 {item.unit}
-                    </Button>
-
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="flex-1 bg-amber-600"
-                      onClick={() => handleAddToCart(item, 1)}
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add 1 {item.unit}
-                    </Button>
-                  </div>
+                  <Button
+                    variant="default"
+                    size="lg"
+                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                    onClick={() => handleAddToCart(item, 1)}
+                  >
+                    <Plus className="h-5 w-5 mr-2" />
+                    Add 1 {item.unit}
+                  </Button>
                 </CardContent>
               </Card>
             );
