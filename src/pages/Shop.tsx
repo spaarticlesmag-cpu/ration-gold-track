@@ -449,7 +449,7 @@ const Shop = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="flex-1 border-amber-200 hover:border-amber-300 hover:bg-amber-50 transition-all duration-200"
+                      className="flex-1 border-amber-200 bg-white"
                       onClick={() => handleAddToCart(item, 1)}
                     >
                       <Plus className="h-4 w-4 mr-1" />
@@ -459,7 +459,7 @@ const Shop = () => {
                     <Button
                       variant="default"
                       size="sm"
-                      className="flex-1 bg-amber-600 hover:bg-amber-700 transition-all duration-200 hover:shadow-md"
+                      className="flex-1 bg-amber-600"
                       onClick={() => handleAddToCart(item, 5)}
                     >
                       <Plus className="h-4 w-4 mr-1" />
