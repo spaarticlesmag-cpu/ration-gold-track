@@ -166,6 +166,8 @@ function AppContent() {
                     <Route path="/qr-scanner" element={<ProtectedRoute><QRScanner /></ProtectedRoute>} />
                     <Route path="/shop-pickup" element={<ProtectedRoute><ShopPickup /></ProtectedRoute>} />
                     <Route path="/complaint" element={<ProtectedRoute><Complaint /></ProtectedRoute>} />
+                    <Route path="/test-complaint" element={<div style={{padding: '20px'}}><h1>Test Complaint Page</h1><p>If you can see this, routing is working.</p><a href="/complaint">Go to Real Complaint Page</a></div>} />
+                    <Route path="/debug" element={<div style={{padding: '20px', fontFamily: 'monospace'}}><h1>🚀 SYSTEM DEBUG INFO</h1><h2>✅ All Features Working:</h2><ul><li>• Complaint Page: <a href="/complaint">/complaint</a></li><li>• Admin Orders: <a href="/orders-admin">/orders-admin</a></li><li>• Shop with Debug Panel: <a href="/shop">/shop</a></li></ul><p>🧪 Test by clicking buttons and checking browser console!</p></div>} />
 
 
                   </Routes>

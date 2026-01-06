@@ -61,11 +61,12 @@ export const MobileSidebar = ({ userName, userRole }: MobileSidebarProps) => {
     switch (displayRole) {
       case 'customer':
         return [
-          { to: "/shop", label: t("nav.shop"), icon: Store },
-          { to: "/cart", label: t("nav.cart"), icon: ShoppingCart },
-          { to: "/quota", label: t("nav.quota"), icon: BadgePercent },
-          { to: "/orders", label: t("nav.orders"), icon: MapPin },
-          { to: "/history", label: t("nav.history"), icon: History },
+          { to: "/shop", label: "Shop", icon: Store },
+          { to: "/cart", label: "Cart", icon: ShoppingCart },
+          { to: "/quota", label: "Quota", icon: BadgePercent },
+          { to: "/orders", label: "Orders", icon: MapPin },
+          { to: "/history", label: "History", icon: History },
+          { to: "/complaint", label: "Complaint", icon: Bell },
         ];
       case 'delivery_partner':
         return [

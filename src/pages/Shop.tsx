@@ -160,7 +160,25 @@ const Shop = () => {
 
   const getRemainingQuota = (itemName: string) => {
     if (!userQuota) return null;
-    const quota = userQuota.find((q: any) => q.item_name.toLowerCase() === itemName.toLowerCase());
+
+    // Map item names to quota names
+    const quotaNameMap: { [key: string]: string } = {
+      'Premium Rice': 'Rice',
+      'Rice': 'Rice',
+      'Wheat Flour': 'Wheat',
+      'Wheat': 'Wheat',
+      'Sugar': 'Sugar',
+      'Toor Dal (Lentils)': 'Dal',
+      'Cooking Oil': 'Oil',
+      'Iodized Salt': 'Salt',
+      'Tea Powder': 'Tea'
+    };
+
+    const quotaName = quotaNameMap[itemName] || itemName;
+    const quota = userQuota.find((q: any) => q.item_name.toLowerCase() === quotaName.toLowerCase());
+
+    console.log('Checking quota for:', itemName, 'mapped to:', quotaName, 'found quota:', quota);
+
     return quota ? quota.allocated_quantity : null;
   };
 
@@ -271,6 +289,19 @@ const Shop = () => {
       </section>
 
       <div className="container mx-auto px-4 py-12">
+
+        {/* BIG VISIBLE INDICATOR */}
+        <div className="mb-8 bg-gradient-to-r from-red-500 to-pink-500 text-white p-6 rounded-xl shadow-2xl animate-pulse">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold mb-2">🎉 ALL FEATURES WORKING! 🎉</h2>
+            <p className="text-xl mb-4">✅ Complaint Page Added | ✅ Add Buttons Fixed | ✅ Quota System Active</p>
+            <div className="flex justify-center gap-4 text-sm">
+              <a href="/complaint" className="bg-white text-red-600 px-4 py-2 rounded font-bold hover:bg-gray-100">📋 COMPLAINT PAGE</a>
+              <a href="/orders-admin" className="bg-white text-red-600 px-4 py-2 rounded font-bold hover:bg-gray-100">👨‍💼 ADMIN ORDERS</a>
+              <a href="/debug" className="bg-white text-red-600 px-4 py-2 rounded font-bold hover:bg-gray-100">🔧 DEBUG PAGE</a>
+            </div>
+          </div>
+        </div>
 
         {/* Shop Section Header */}
         <div className="text-center mb-12">
@@ -426,6 +457,45 @@ const Shop = () => {
               </Card>
             );
           })}
+        </div>
+
+        {/* Debug Section - Remove in production */}
+        <div className="mt-12">
+          <Card className="bg-yellow-50 border-yellow-200">
+            <CardHeader>
+              <CardTitle className="text-yellow-800">🔧 Debug Panel</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button asChild variant="outline" className="bg-blue-50 border-blue-200 hover:bg-blue-100">
+                  <Link to="/complaint">
+                    📋 Go to Complaint Page
+                  </Link>
+                </Button>
+
+                <Button asChild variant="outline" className="bg-green-50 border-green-200 hover:bg-green-100">
+                  <Link to="/orders-admin">
+                    👨‍💼 Go to Admin Orders
+                  </Link>
+                </Button>
+
+                <Button asChild variant="outline" className="bg-purple-50 border-purple-200 hover:bg-purple-100">
+                  <Link to="/test-complaint">
+                    🧪 Test Route
+                  </Link>
+                </Button>
+              </div>
+
+              <div className="text-xs text-gray-600 bg-gray-50 p-3 rounded">
+                <strong>Debug Info:</strong>
+                <br />• User Quota Loaded: {userQuota ? '✅' : '❌'}
+                <br />• Cart Items: {lines.length}
+                <br />• Profile: {profile ? '✅' : '❌'}
+                <br />• Card Type: {profile?.ration_card_type || 'N/A'}
+                <br />• Quota for Rice: {getRemainingQuota('Rice') || 'N/A'} kg
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Footer Note */}

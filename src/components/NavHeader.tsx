@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode, Users, ArrowLeft, Store, LayoutDashboard, Package } from "lucide-react";
+import { User, Bell, Menu, LogOut, ShoppingCart, BadgePercent, MapPin, History, QrCode, Users, ArrowLeft, Store, LayoutDashboard, Package, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -133,6 +133,11 @@ export const NavHeader = ({ userName, userRole }: NavHeaderProps) => {
                   <Button asChild variant={location.pathname === '/history' ? 'default' : 'ghost'}>
                     <Link to="/history" className="flex items-center gap-2">
                       <History className="icon-lg" /> History
+                    </Link>
+                  </Button>
+                  <Button asChild variant={location.pathname === '/complaint' ? 'default' : 'ghost'}>
+                    <Link to="/complaint" className="flex items-center gap-2">
+                      <MessageSquare className="icon-lg" /> Complaint
                     </Link>
                   </Button>
                 </>
