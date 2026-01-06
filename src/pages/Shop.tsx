@@ -437,10 +437,10 @@ const Shop = () => {
                       variant="default"
                       size="sm"
                       className="flex-1 bg-amber-600"
-                      onClick={() => handleAddToCart(item, 5)}
+                      onClick={() => handleAddToCart(item, 1)}
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Add 5 {item.unit}
+                      Add 1 {item.unit}
                     </Button>
                   </div>
                 </CardContent>

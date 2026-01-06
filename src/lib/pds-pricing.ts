@@ -27,6 +27,8 @@ export interface PricingPolicy {
     rice: number; // ₹3/kg normally, ₹0 when free
     wheat: number; // ₹2/kg normally, ₹0 when free
     coarse_grains: number; // ₹1/kg normally, ₹0 when free
+    sugar: number; // ₹13/kg subsidized price
+    other: number; // Market price for other items
   };
   state_overrides: Record<string, {
     rice?: number;
@@ -50,9 +52,11 @@ export interface PricingResult {
 const CURRENT_POLICY: PricingPolicy = {
   free_grain_active: true, // PMGKAY scheme active
   base_rates: {
-    rice: 0, // Free under current scheme
-    wheat: 0, // Free under current scheme
-    coarse_grains: 0, // Free under current scheme
+    rice: 3, // ₹3/kg normally (but free under PMGKAY)
+    wheat: 2, // ₹2/kg normally (but free under PMGKAY)
+    coarse_grains: 1, // ₹1/kg normally (but free under PMGKAY)
+    sugar: 13, // ₹13/kg subsidized price
+    other: 35, // Market price for other items
   },
   state_overrides: {
     'Kerala': {
