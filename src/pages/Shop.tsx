@@ -6,11 +6,18 @@ import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { NavHeader } from '@/components/NavHeader';
-import { Package, ShoppingCart, Plus, Info } from 'lucide-react';
+import { Package, ShoppingCart, Plus, Info, IndianRupee, Sparkles } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
 import { SkeletonLoading } from '@/components/ui/skeleton-loading';
 import { Footer } from '@/components/Footer';
+import {
+  calculatePDSPricing,
+  mapRationCardToBeneficiaryCategory,
+  type PDSItem,
+  type PDSItemType,
+  type BeneficiaryProfile
+} from '@/lib/pds-pricing';
 
 interface RationItem {
   id: string;
@@ -28,15 +35,15 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
   const [userQuota, setUserQuota] = useState<any>(null);
 
-  // Sample ration items for demonstration
-  const sampleItems: RationItem[] = [
-    { id: 'rice', name: 'Premium Rice', unit: 'kg', price_per_unit: 25.50, image: '/rice.jpg', quantity: 0 },
-    { id: 'wheat', name: 'Wheat Flour', unit: 'kg', price_per_unit: 18.75, image: '/wheat.jpg', quantity: 0 },
-    { id: 'sugar', name: 'Sugar', unit: 'kg', price_per_unit: 35.00, image: '/sugar.jpg', quantity: 0 },
-    { id: 'dal', name: 'Toor Dal (Lentils)', unit: 'kg', price_per_unit: 120.00, image: '/toor-daal.jpg', quantity: 0 },
-    { id: 'oil', name: 'Cooking Oil', unit: 'L', price_per_unit: 160.00, image: '/cooking-oil.jpg', quantity: 0 },
-    { id: 'salt', name: 'Iodized Salt', unit: 'kg', price_per_unit: 18.00, image: '/iodized-salt.jpg', quantity: 0 },
-    { id: 'tea', name: 'Tea Powder', unit: 'kg', price_per_unit: 180.00, image: '/tea-powder.jpg', quantity: 0 },
+  // Sample ration items with PDS item types
+  const sampleItems: Array<RationItem & { pdsType: PDSItemType; economicCost: number }> = [
+    { id: 'rice', name: 'Premium Rice', unit: 'kg', price_per_unit: 25.50, image: '/rice.jpg', quantity: 0, pdsType: 'rice', economicCost: 45.00 },
+    { id: 'wheat', name: 'Wheat Flour', unit: 'kg', price_per_unit: 18.75, image: '/wheat.jpg', quantity: 0, pdsType: 'wheat', economicCost: 32.00 },
+    { id: 'sugar', name: 'Sugar', unit: 'kg', price_per_unit: 35.00, image: '/sugar.jpg', quantity: 0, pdsType: 'sugar', economicCost: 42.00 },
+    { id: 'dal', name: 'Toor Dal (Lentils)', unit: 'kg', price_per_unit: 120.00, image: '/toor-daal.jpg', quantity: 0, pdsType: 'other', economicCost: 85.00 },
+    { id: 'oil', name: 'Cooking Oil', unit: 'L', price_per_unit: 160.00, image: '/cooking-oil.jpg', quantity: 0, pdsType: 'other', economicCost: 180.00 },
+    { id: 'salt', name: 'Iodized Salt', unit: 'kg', price_per_unit: 18.00, image: '/iodized-salt.jpg', quantity: 0, pdsType: 'other', economicCost: 25.00 },
+    { id: 'tea', name: 'Tea Powder', unit: 'kg', price_per_unit: 180.00, image: '/tea-powder.jpg', quantity: 0, pdsType: 'other', economicCost: 220.00 },
   ];
 
   useEffect(() => {
@@ -70,13 +77,49 @@ const Shop = () => {
     loadData();
   }, [profile]);
 
-  const handleAddToCart = (item: RationItem, qty: number = 1) => {
+  // Get PDS pricing for an item based on beneficiary profile
+  const getPDSPricing = (item: any) => {
+    if (!profile) return { subsidizedPrice: item.price_per_unit, subsidy: 0, isFree: false, policy: 'Standard' };
+
+    const beneficiaryProfile: BeneficiaryProfile = {
+      category: mapRationCardToBeneficiaryCategory(profile.ration_card_type || 'yellow'),
+      state: 'Kerala', // Default state, in real app this would come from user profile
+      ration_card_type: profile.ration_card_type || 'yellow',
+      household_members: profile.household_members || 1,
+    };
+
+    const pdsItem: PDSItem = {
+      id: item.id,
+      name: item.name,
+      type: item.pdsType,
+      economic_cost: item.economicCost,
+      base_price: item.price_per_unit,
+    };
+
+    const pricing = calculatePDSPricing(pdsItem, beneficiaryProfile);
+    return {
+      subsidizedPrice: pricing.subsidized_price,
+      subsidy: pricing.subsidy_gap,
+      isFree: pricing.is_free,
+      policy: pricing.applied_policy,
+      economicCost: pricing.economic_cost,
+    };
+  };
+
+  const handleAddToCart = (item: any, qty: number = 1) => {
+    const pricing = getPDSPricing(item);
     add({
       id: item.id,
       name: item.name,
       unit: item.unit,
-      price: item.price_per_unit,
+      price: pricing.subsidizedPrice,
     }, qty);
+
+    // Log subsidy transaction
+    if (profile && pricing.subsidy > 0) {
+      // Note: In real app, this would be done after successful order placement
+      console.log(`Subsidy logged: ₹${pricing.subsidy} saved on ${item.name}`);
+    }
   };
 
   const getCartQuantity = (itemId: string) => {
@@ -275,8 +318,38 @@ const Shop = () => {
 
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex flex-col">
-                      <span className="text-2xl font-bold text-amber-600">₹{item.price_per_unit}</span>
-                      <span className="text-sm text-gray-500">per {item.unit}</span>
+                      {(() => {
+                        const pricing = getPDSPricing(item);
+                        return (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <span className={`text-2xl font-bold ${pricing.isFree ? 'text-green-600' : 'text-amber-600'}`}>
+                                {pricing.isFree ? 'FREE' : `₹${pricing.subsidizedPrice}`}
+                              </span>
+                              {pricing.isFree && (
+                                <Badge className="bg-green-100 text-green-800 text-xs px-2 py-1">
+                                  <Sparkles className="h-3 w-3 mr-1" />
+                                  PMGKAY
+                                </Badge>
+                              )}
+                            </div>
+                            <span className="text-sm text-gray-500">
+                              {pricing.isFree ? 'Government subsidized' : `per ${item.unit}`}
+                              {pricing.subsidy > 0 && (
+                                <span className="text-green-600 font-medium ml-1">
+                                  (Save ₹{pricing.subsidy}/kg)
+                                </span>
+                              )}
+                            </span>
+                            {pricing.policy !== 'Standard' && (
+                              <span className="text-xs text-blue-600 font-medium">
+                                {pricing.policy}
+                              </span>
+                            )}
+                          </>
+                        );
+                      })()}
+
                     </div>
 
                     {remainingQuota !== null && (

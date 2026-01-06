@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Clock, Package, Navigation, Store, CheckCircle, Truck, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { NavHeader } from "@/components/NavHeader";
+import { QRCodeDisplay } from "@/components/QRCodeDisplay";
 import QRCodeLib from 'qrcode';
 import { logger } from '@/lib/logger';
 import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet';
@@ -225,23 +226,39 @@ const OrdersCustomer = () => {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  {order.qr_expires_at && order.status !== 'delivered' && (
-                    <div className="flex items-center justify-between bg-muted/40 p-4 rounded-lg border-2 border-dashed border-primary/20">
-                      <div className="flex items-center gap-3">
-                        <div className="text-sm">
-                          <div className="font-medium text-primary">Show this QR to Delivery Partner</div>
-                          <div className="text-muted-foreground">Expires in {Math.ceil((new Date(order.qr_expires_at).getTime() - Date.now()) / (1000 * 60))} minutes</div>
-                        </div>
-                      </div>
-                      {qrMap[order.id] ? (
-                        <img
-                          src={qrMap[order.id]}
-                          alt="Order QR"
-                          className="h-20 w-20 rounded-lg border-2 border-white shadow-lg"
+                  {order.qr_code && order.qr_expires_at && order.status !== 'delivered' && (
+                    <div className="bg-muted/40 p-4 rounded-lg border-2 border-dashed border-primary/20">
+                      {order.fulfillment_type === 'pickup' ? (
+                        <QRCodeDisplay
+                          qrData={order.qr_code}
+                          orderId={order.id}
+                          shopLocation={order.shop_location || 'Nearest Ration Shop'}
+                          expiresAt={order.qr_expires_at}
+                          fulfillmentType="pickup"
                         />
                       ) : (
-                        <div className="h-20 w-20 bg-muted rounded-lg flex items-center justify-center">
-                          <Package className="w-8 h-8 text-muted-foreground" />
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="text-sm">
+                              <div className="font-medium text-primary">
+                                {order.payment_method === 'cod' ? 'Show QR to Delivery Partner for COD Payment' : 'Show this QR to Delivery Partner'}
+                              </div>
+                              <div className="text-muted-foreground">
+                                Expires in {Math.ceil((new Date(order.qr_expires_at).getTime() - Date.now()) / (1000 * 60))} minutes
+                              </div>
+                            </div>
+                          </div>
+                          {qrMap[order.id] ? (
+                            <img
+                              src={qrMap[order.id]}
+                              alt="Order QR"
+                              className="h-20 w-20 rounded-lg border-2 border-white shadow-lg"
+                            />
+                          ) : (
+                            <div className="h-20 w-20 bg-muted rounded-lg flex items-center justify-center">
+                              <Package className="w-8 h-8 text-muted-foreground" />
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

@@ -26,6 +26,7 @@ import QRScanner from "./pages/QRScanner";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import DeliveryDashboard from "./pages/DeliveryDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import ShopPickup from "./pages/ShopPickup";
 
 import Beneficiaries from "./pages/Beneficiaries";
 import IncomingOrders from "./pages/IncomingOrders";
@@ -162,6 +163,7 @@ function AppContent() {
                     <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/qr-scanner" element={<ProtectedRoute><QRScanner /></ProtectedRoute>} />
+                    <Route path="/shop-pickup" element={<ProtectedRoute><ShopPickup /></ProtectedRoute>} />
 
 
                   </Routes>
