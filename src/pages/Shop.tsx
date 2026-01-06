@@ -107,15 +107,23 @@ const Shop = () => {
   };
 
   const handleAddToCart = (item: any, qty: number = 1) => {
+    console.log('Add to cart clicked:', item.name, 'quantity:', qty);
+
     // Get current cart quantities for this item
     const currentCartQty = lines.reduce((total, line) => {
       return line.id === item.id ? total + line.quantity : total;
     }, 0);
 
+    console.log('Current cart quantity:', currentCartQty);
+
     // Check quota enforcement (cumulative across cart)
     const remainingQuota = getRemainingQuota(item.name);
+    console.log('Remaining quota for', item.name, ':', remainingQuota);
+
     if (remainingQuota !== null) {
       const totalAfterAddition = currentCartQty + qty;
+      console.log('Total after addition:', totalAfterAddition);
+
       if (totalAfterAddition > remainingQuota) {
         const availableToAdd = Math.max(0, remainingQuota - currentCartQty);
         if (availableToAdd === 0) {
@@ -128,12 +136,16 @@ const Shop = () => {
     }
 
     const pricing = getPDSPricing(item);
+    console.log('Pricing:', pricing);
+
     add({
       id: item.id,
       name: item.name,
       unit: item.unit,
       price: pricing.subsidizedPrice,
     }, qty);
+
+    console.log('Item added to cart successfully');
 
     // Log subsidy transaction
     if (profile && pricing.subsidy > 0) {

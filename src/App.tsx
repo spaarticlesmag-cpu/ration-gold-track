@@ -27,6 +27,7 @@ import CustomerDashboard from "./pages/CustomerDashboard";
 import DeliveryDashboard from "./pages/DeliveryDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import ShopPickup from "./pages/ShopPickup";
+import Complaint from "./pages/Complaint";
 
 import Beneficiaries from "./pages/Beneficiaries";
 import IncomingOrders from "./pages/IncomingOrders";
@@ -164,6 +165,7 @@ function AppContent() {
                     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                     <Route path="/qr-scanner" element={<ProtectedRoute><QRScanner /></ProtectedRoute>} />
                     <Route path="/shop-pickup" element={<ProtectedRoute><ShopPickup /></ProtectedRoute>} />
+                    <Route path="/complaint" element={<ProtectedRoute><Complaint /></ProtectedRoute>} />
 
 
                   </Routes>
