@@ -29,6 +29,8 @@ interface RationItem {
 }
 
 const Shop = () => {
+  console.log('🛒 SHOP COMPONENT RENDERED');
+
   const { profile } = useAuth();
   const { add, lines } = useCart();
   const [items, setItems] = useState<RationItem[]>([]);
@@ -300,11 +302,17 @@ const Shop = () => {
           <div className="text-center">
             <h2 className="text-3xl font-bold mb-2">🎉 ALL FEATURES WORKING! 🎉</h2>
             <p className="text-xl mb-4">✅ Complaint Page Added | ✅ Add Buttons Fixed | ✅ Quota System Active</p>
-            <div className="flex justify-center gap-4 text-sm">
+            <div className="flex justify-center gap-4 text-sm mb-4">
               <a href="/complaint" className="bg-white text-red-600 px-4 py-2 rounded font-bold hover:bg-gray-100">📋 COMPLAINT PAGE</a>
               <a href="/orders-admin" className="bg-white text-red-600 px-4 py-2 rounded font-bold hover:bg-gray-100">👨‍💼 ADMIN ORDERS</a>
               <a href="/debug" className="bg-white text-red-600 px-4 py-2 rounded font-bold hover:bg-gray-100">🔧 DEBUG PAGE</a>
             </div>
+            <button
+              onClick={() => alert('🧪 TEST BUTTON WORKS!')}
+              className="bg-yellow-400 text-black px-6 py-3 rounded-lg font-bold text-lg animate-bounce"
+            >
+              🧪 CLICK THIS TEST BUTTON FIRST!
+            </button>
           </div>
         </div>
 
