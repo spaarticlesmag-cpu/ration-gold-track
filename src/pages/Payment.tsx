@@ -17,7 +17,7 @@ export default function Payment() {
   const location = useLocation();
 
   // Get data from cart navigation state
-  const { fulfillmentType = "delivery", paymentMethod = "online", cartData } = location.state || {};
+  const { fulfillmentType = "delivery", paymentMethod = "online", selectedStore, cartData } = location.state || {};
 
   // Use cart data from state if available, otherwise use current cart
   const cartLines = cartData?.lines || lines;

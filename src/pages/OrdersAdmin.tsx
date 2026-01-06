@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { MapPin, Clock, Phone, Navigation, Package, User, Truck } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { MapPin, Clock, Phone, Navigation, Package, User, Truck, AlertTriangle } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { checkStockAvailability, reserveStock, getStoreById } from "@/lib/store-service";
 
 const getItemImage = (item: string) => {
   const itemName = item.toLowerCase();
@@ -29,6 +31,8 @@ interface Order {
   total_amount: number;
   eta?: string;
   driver?: { full_name: string; mobile_number: string; } | null;
+  fulfillment_type?: 'delivery' | 'pickup';
+  payment_method?: 'online' | 'cod';
 }
 
 export default function OrdersAdmin() {
@@ -37,6 +41,7 @@ export default function OrdersAdmin() {
 
   useEffect(() => {
     const fetchOrders = async () => {
+      // First try to get from Supabase
       const { data, error } = await supabase
         .from('orders')
         .select(`
@@ -46,13 +51,230 @@ export default function OrdersAdmin() {
         `)
         .order('created_at', { ascending: false });
 
-      if (data) {
-        setOrders(data as any[]);
+      let allOrders = data ? (data as any[]) : [];
+
+      // Also load demo orders from localStorage
+      try {
+        const stored = JSON.parse(localStorage.getItem('orders') || '[]');
+        if (Array.isArray(stored) && stored.length > 0) {
+          // Merge with Supabase orders, avoiding duplicates
+          const existingIds = new Set(allOrders.map(o => o.id));
+          const newOrders = stored.filter(o => !existingIds.has(o.id));
+          allOrders = [...allOrders, ...newOrders];
+        } else {
+          // Add some dummy orders for admin demo
+          const dummyOrders = [
+            {
+              id: 'ORD-ADMIN-001',
+              customer_id: 'demo-user-1',
+              status: 'pending',
+              delivery_address: '123 MG Road, Angamaly, Kerala',
+              total_amount: 1250,
+              created_at: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+              items: ['Premium Rice (10kg)', 'Wheat Flour (5kg)', 'Sugar (2kg)'],
+              fulfillment_type: 'delivery',
+              payment_method: 'online',
+              profiles: { full_name: 'Rajesh Kumar', mobile_number: '+91 98765 43210' },
+              driver: null,
+              eta: 'Processing'
+            },
+            {
+              id: 'ORD-ADMIN-002',
+              customer_id: 'demo-user-2',
+              status: 'pending',
+              delivery_address: 'Pickup at Ration Shop',
+              total_amount: 850,
+              created_at: new Date(Date.now() - 1800000).toISOString(), // 30 min ago
+              items: ['Premium Rice (8kg)', 'Cooking Oil (2L)'],
+              fulfillment_type: 'pickup',
+              payment_method: 'cod',
+              profiles: { full_name: 'Priya Sharma', mobile_number: '+91 87654 32109' },
+              driver: null,
+              eta: 'Ready for pickup'
+            },
+            {
+              id: 'ORD-ADMIN-003',
+              customer_id: 'demo-user-3',
+              status: 'approved',
+              delivery_address: '456 Market Road, Angamaly, Kerala',
+              total_amount: 2100,
+              created_at: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+              items: ['Premium Rice (15kg)', 'Wheat Flour (10kg)', 'Sugar (5kg)', 'Cooking Oil (5L)'],
+              fulfillment_type: 'delivery',
+              payment_method: 'online',
+              profiles: { full_name: 'Amit Patel', mobile_number: '+91 76543 21098' },
+              driver: { full_name: 'Ravi Kumar', mobile_number: '+91 91234 56789' },
+              eta: '45 mins'
+            },
+            {
+              id: 'ORD-ADMIN-004',
+              customer_id: 'demo-user-4',
+              status: 'out_for_delivery',
+              delivery_address: '789 Temple Road, Angamaly, Kerala',
+              total_amount: 1650,
+              created_at: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
+              items: ['Premium Rice (12kg)', 'Wheat Flour (8kg)', 'Sugar (3kg)'],
+              fulfillment_type: 'delivery',
+              payment_method: 'cod',
+              profiles: { full_name: 'Sunita Devi', mobile_number: '+91 65432 10987' },
+              driver: { full_name: 'Mohan Singh', mobile_number: '+91 89876 54321' },
+              eta: '15 mins'
+            }
+          ];
+          allOrders = [...allOrders, ...dummyOrders];
+          // Store in localStorage for demo
+          localStorage.setItem('orders', JSON.stringify(dummyOrders));
+        }
+      } catch (error) {
+        console.error('Error loading demo orders:', error);
       }
+
+      // Sort by creation date (newest first)
+      allOrders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      setOrders(allOrders);
       setLoading(false);
     };
     fetchOrders();
   }, []);
+
+  const handleApproveOrder = (orderId: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    // For pickup orders, check stock availability at the selected store
+    if (order.fulfillment_type === 'pickup') {
+      try {
+        // Parse items from the order (assuming format like "Premium Rice (10kg)")
+        const parsedItems = order.items.map(item => {
+          const match = item.match(/^(.+?)\s*\((\d+)(kg|L)\)$/);
+          if (match) {
+            const [, name, quantity, unit] = match;
+            // Map item names to our inventory keys
+            const itemKey = name.toLowerCase().includes('rice') ? 'rice' :
+                           name.toLowerCase().includes('wheat') ? 'wheat' :
+                           name.toLowerCase().includes('sugar') ? 'sugar' :
+                           name.toLowerCase().includes('dal') ? 'dal' :
+                           name.toLowerCase().includes('oil') ? 'oil' :
+                           name.toLowerCase().includes('salt') ? 'salt' :
+                           name.toLowerCase().includes('tea') ? 'tea' : 'other';
+
+            return {
+              id: itemKey,
+              name: name.trim(),
+              quantity: parseInt(quantity)
+            };
+          }
+          return null;
+        }).filter(Boolean) as Array<{ id: string; name: string; quantity: number }>;
+
+        // Use default store for demo (in real app, this would come from order data)
+        const stockCheck = checkStockAvailability('store-001', parsedItems);
+
+        if (!stockCheck.available) {
+          const unavailableList = stockCheck.unavailableItems.map(item =>
+            `${item.name}: requested ${item.requested}, available ${item.available}`
+          ).join('\n');
+
+          alert(`Cannot approve order - Insufficient stock at selected store:\n\n${unavailableList}\n\nPlease select a different store or wait for stock replenishment.`);
+          return;
+        }
+
+        // Reserve the stock
+        const stockReserved = reserveStock('store-001', parsedItems);
+        if (!stockReserved) {
+          alert('Failed to reserve stock. Please try again.');
+          return;
+        }
+
+        alert(`✅ Stock verified and reserved!\n\nOrder ${orderId.slice(0, 8)} has been approved for pickup.`);
+      } catch (error) {
+        console.error('Stock check error:', error);
+        alert('Error checking stock availability. Please try again.');
+        return;
+      }
+    }
+
+    // Update order status to approved
+    const updatedOrders = orders.map(order =>
+      order.id === orderId
+        ? { ...order, status: 'approved', eta: 'Driver assignment pending' }
+        : order
+    );
+    setOrders(updatedOrders);
+
+    // Update localStorage
+    const storedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const updatedStored = storedOrders.map((order: any) =>
+      order.id === orderId
+        ? { ...order, status: 'approved', eta: 'Driver assignment pending' }
+        : order
+    );
+    localStorage.setItem('orders', JSON.stringify(updatedStored));
+  };
+
+  const handleRejectOrder = (orderId: string) => {
+    if (confirm('Are you sure you want to reject this order?')) {
+      // Update order status to cancelled
+      const updatedOrders = orders.map(order =>
+        order.id === orderId
+          ? { ...order, status: 'cancelled' }
+          : order
+      );
+      setOrders(updatedOrders);
+
+      // Update localStorage
+      const storedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const updatedStored = storedOrders.map((order: any) =>
+        order.id === orderId
+          ? { ...order, status: 'cancelled' }
+          : order
+      );
+      localStorage.setItem('orders', JSON.stringify(updatedStored));
+
+      alert(`Order ${orderId.slice(0, 8)} has been rejected.`);
+    }
+  };
+
+  const handleAssignDriver = (orderId: string) => {
+    // Demo driver assignment - in real app, this would be more sophisticated
+    const demoDrivers = [
+      { full_name: 'Ravi Kumar', mobile_number: '+91 91234 56789' },
+      { full_name: 'Mohan Singh', mobile_number: '+91 89876 54321' },
+      { full_name: 'Suresh Patel', mobile_number: '+91 98765 12345' },
+    ];
+
+    const randomDriver = demoDrivers[Math.floor(Math.random() * demoDrivers.length)];
+
+    // Update order with assigned driver
+    const updatedOrders = orders.map(order =>
+      order.id === orderId
+        ? {
+            ...order,
+            status: 'out_for_delivery',
+            driver: randomDriver,
+            eta: '45 mins'
+          }
+        : order
+    );
+    setOrders(updatedOrders);
+
+    // Update localStorage
+    const storedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const updatedStored = storedOrders.map((order: any) =>
+      order.id === orderId
+        ? {
+            ...order,
+            status: 'out_for_delivery',
+            driver: randomDriver,
+            eta: '45 mins'
+          }
+        : order
+    );
+    localStorage.setItem('orders', JSON.stringify(updatedStored));
+
+    alert(`Driver ${randomDriver.full_name} has been assigned to order ${orderId.slice(0, 8)}!`);
+  };
 
   if (loading) return <MainLayout><div>Loading orders...</div></MainLayout>;
 
@@ -132,19 +354,48 @@ export default function OrdersAdmin() {
                     </div>
                   )}
                   <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                    <Button asChild variant="outline" className="flex-1">
-                      <a href={`tel:${order.driver?.mobile_number}`}>
-                        <Phone className="w-4 h-4 mr-2" /> Contact Driver
-                      </a>
-                    </Button>
-                    <Button asChild variant="outline" className="flex-1">
-                      <a href={`tel:${order.profiles?.mobile_number}`}>
-                        <Phone className="w-4 h-4 mr-2" /> Contact Customer
-                      </a>
-                    </Button>
-                    <Button variant="outline" className="flex-1">
-                      <Navigation className="w-4 h-4 mr-2" /> Navigate
-                    </Button>
+                    {order.status === 'pending' && (
+                      <>
+                        <Button
+                          onClick={() => handleApproveOrder(order.id)}
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                        >
+                          ✓ Approve Order
+                        </Button>
+                        <Button
+                          onClick={() => handleRejectOrder(order.id)}
+                          variant="destructive"
+                          className="flex-1"
+                        >
+                          ✗ Reject Order
+                        </Button>
+                      </>
+                    )}
+                    {order.status === 'approved' && !order.driver && (
+                      <Button
+                        onClick={() => handleAssignDriver(order.id)}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700"
+                      >
+                        👤 Assign Driver
+                      </Button>
+                    )}
+                    {order.driver && (
+                      <>
+                        <Button asChild variant="outline" className="flex-1">
+                          <a href={`tel:${order.driver?.mobile_number}`}>
+                            <Phone className="w-4 h-4 mr-2" /> Contact Driver
+                          </a>
+                        </Button>
+                        <Button asChild variant="outline" className="flex-1">
+                          <a href={`tel:${order.profiles?.mobile_number}`}>
+                            <Phone className="w-4 h-4 mr-2" /> Contact Customer
+                          </a>
+                        </Button>
+                        <Button variant="outline" className="flex-1">
+                          <Navigation className="w-4 h-4 mr-2" /> Navigate
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}

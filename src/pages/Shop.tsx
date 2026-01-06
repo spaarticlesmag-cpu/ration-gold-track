@@ -107,6 +107,26 @@ const Shop = () => {
   };
 
   const handleAddToCart = (item: any, qty: number = 1) => {
+    // Get current cart quantities for this item
+    const currentCartQty = lines.reduce((total, line) => {
+      return line.id === item.id ? total + line.quantity : total;
+    }, 0);
+
+    // Check quota enforcement (cumulative across cart)
+    const remainingQuota = getRemainingQuota(item.name);
+    if (remainingQuota !== null) {
+      const totalAfterAddition = currentCartQty + qty;
+      if (totalAfterAddition > remainingQuota) {
+        const availableToAdd = Math.max(0, remainingQuota - currentCartQty);
+        if (availableToAdd === 0) {
+          alert(`You have already reached your monthly quota for ${item.name}. No more can be added.`);
+        } else {
+          alert(`Cannot add ${qty} ${item.unit} of ${item.name}. Only ${availableToAdd} ${item.unit} can be added to stay within your monthly quota.`);
+        }
+        return;
+      }
+    }
+
     const pricing = getPDSPricing(item);
     add({
       id: item.id,
@@ -117,7 +137,6 @@ const Shop = () => {
 
     // Log subsidy transaction
     if (profile && pricing.subsidy > 0) {
-      // Note: In real app, this would be done after successful order placement
       console.log(`Subsidy logged: ₹${pricing.subsidy} saved on ${item.name}`);
     }
   };
