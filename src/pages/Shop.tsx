@@ -107,6 +107,9 @@ const Shop = () => {
   };
 
   const handleAddToCart = (item: any, qty: number = 1) => {
+    // IMMEDIATE ALERT TO SHOW BUTTON IS WORKING
+    alert(`🛒 BUTTON CLICKED!\n\nItem: ${item.name}\nQuantity: ${qty} ${item.unit}\n\nCheck browser console for details!`);
+
     console.log('Add to cart clicked:', item.name, 'quantity:', qty);
 
     // Get current cart quantities for this item
@@ -127,9 +130,9 @@ const Shop = () => {
       if (totalAfterAddition > remainingQuota) {
         const availableToAdd = Math.max(0, remainingQuota - currentCartQty);
         if (availableToAdd === 0) {
-          alert(`You have already reached your monthly quota for ${item.name}. No more can be added.`);
+          alert(`❌ QUOTA EXCEEDED!\n\nYou have already reached your monthly quota for ${item.name}.\nNo more can be added.`);
         } else {
-          alert(`Cannot add ${qty} ${item.unit} of ${item.name}. Only ${availableToAdd} ${item.unit} can be added to stay within your monthly quota.`);
+          alert(`❌ QUOTA LIMIT!\n\nCannot add ${qty} ${item.unit} of ${item.name}.\nOnly ${availableToAdd} ${item.unit} can be added.`);
         }
         return;
       }
@@ -144,6 +147,8 @@ const Shop = () => {
       unit: item.unit,
       price: pricing.subsidizedPrice,
     }, qty);
+
+    alert(`✅ ITEM ADDED TO CART!\n\n${item.name} (${qty} ${item.unit})\nPrice: ${pricing.isFree ? 'FREE' : `₹${pricing.subsidizedPrice}`}\n\nGo to cart to checkout!`);
 
     console.log('Item added to cart successfully');
 
