@@ -5,10 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { MapPin, Clock, Phone, Navigation, Package, User, Truck, AlertTriangle } from "lucide-react";
+import { MapPin, Clock, Phone, Navigation, Package, User, Truck, AlertTriangle, Shield, AlertCircle, CheckCircle } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { checkStockAvailability, reserveStock, getStoreById } from "@/lib/store-service";
+import { triggerAudit, getAuditDashboardData, type AuditReport } from "@/lib/ai-auditor";
 
 const getItemImage = (item: string) => {
   const itemName = item.toLowerCase();
@@ -38,6 +39,9 @@ interface Order {
 export default function OrdersAdmin() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditReport, setAuditReport] = useState<AuditReport | null>(null);
+  const [auditDashboard, setAuditDashboard] = useState<any>(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -276,6 +280,33 @@ export default function OrdersAdmin() {
     alert(`Driver ${randomDriver.full_name} has been assigned to order ${orderId.slice(0, 8)}!`);
   };
 
+  const handleRunAudit = async (storeId: string = 'store-001') => {
+    setAuditLoading(true);
+    try {
+      const report = await triggerAudit(storeId);
+      if (report) {
+        setAuditReport(report);
+        alert(`🤖 AI Audit completed!\n\nRisk Level: ${report.risk_score.toUpperCase()}\nCompliance: ${report.compliance_rate.toFixed(1)}%\nFlagged Orders: ${report.flagged_orders.length}`);
+      } else {
+        alert('Audit failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Audit error:', error);
+      alert('Error running audit. Please try again.');
+    } finally {
+      setAuditLoading(false);
+    }
+  };
+
+  const loadAuditDashboard = () => {
+    const dashboard = getAuditDashboardData();
+    setAuditDashboard(dashboard);
+  };
+
+  useEffect(() => {
+    loadAuditDashboard();
+  }, []);
+
   if (loading) return <MainLayout><div>Loading orders...</div></MainLayout>;
 
   return (
@@ -400,6 +431,159 @@ export default function OrdersAdmin() {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* AI Auditor Section */}
+        <Card>
+          <CardHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="icon-lg" />
+              AI Auditor - Fraud Detection & Compliance
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Audit Dashboard */}
+            {auditDashboard && (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card className="bg-blue-50 border-blue-200">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-600">{auditDashboard.totalAudits}</div>
+                    <div className="text-sm text-blue-700">Total Audits</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-green-50 border-green-200">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{auditDashboard.averageCompliance?.toFixed(1)}%</div>
+                    <div className="text-sm text-green-700">Avg Compliance</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-red-50 border-red-200">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-red-600">{auditDashboard.criticalIssues}</div>
+                    <div className="text-sm text-red-700">Critical Issues</div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-yellow-50 border-yellow-200">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-2xl font-bold text-yellow-600">{auditDashboard.recentReports?.length || 0}</div>
+                    <div className="text-sm text-yellow-700">Recent Reports</div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {/* Run Audit Section */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Run AI Audit
+              </h3>
+              <div className="flex gap-4">
+                <Button
+                  onClick={() => handleRunAudit('store-001')}
+                  disabled={auditLoading}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  {auditLoading ? '🔍 Auditing...' : '🤖 Run Audit for Angamaly Store'}
+                </Button>
+                <Button
+                  onClick={() => handleRunAudit('store-002')}
+                  disabled={auditLoading}
+                  variant="outline"
+                >
+                  {auditLoading ? '🔍 Auditing...' : '🏪 Audit Aluva Store'}
+                </Button>
+              </div>
+              <p className="text-sm text-gray-600 mt-2">
+                AI auditor checks beneficiary eligibility, quota compliance, unusual patterns, and suspicious transactions.
+              </p>
+            </div>
+
+            {/* Latest Audit Report */}
+            {auditReport && (
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5" />
+                  Latest Audit Report
+                </h3>
+
+                <Card className="bg-gray-50">
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <h4 className="font-semibold mb-2">Audit Summary</h4>
+                        <div className="space-y-2 text-sm">
+                          <div>Store: <span className="font-medium">{auditReport.store_id}</span></div>
+                          <div>Period: <span className="font-medium">{auditReport.period}</span></div>
+                          <div>Total Orders: <span className="font-medium">{auditReport.total_orders}</span></div>
+                          <div>Total Amount: <span className="font-medium">₹{auditReport.total_amount.toLocaleString()}</span></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-2">Risk Assessment</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Badge variant={
+                              auditReport.risk_score === 'low' ? 'default' :
+                              auditReport.risk_score === 'medium' ? 'secondary' :
+                              auditReport.risk_score === 'high' ? 'destructive' : 'destructive'
+                            }>
+                              {auditReport.risk_score.toUpperCase()} RISK
+                            </Badge>
+                          </div>
+                          <div>Compliance Rate: <span className="font-medium">{auditReport.compliance_rate.toFixed(1)}%</span></div>
+                          <div>Flagged Orders: <span className="font-medium text-red-600">{auditReport.flagged_orders.length}</span></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <h4 className="font-semibold mb-2">Summary</h4>
+                      <p className="text-sm text-gray-700">{auditReport.summary}</p>
+                    </div>
+
+                    {auditReport.flagged_orders.length > 0 && (
+                      <div>
+                        <h4 className="font-semibold mb-2 text-red-700">🚨 Flagged Issues</h4>
+                        <div className="space-y-2">
+                          {auditReport.flagged_orders.slice(0, 5).map((issue, index) => (
+                            <div key={index} className="bg-red-50 border border-red-200 rounded p-3">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-medium text-red-800">{issue.description}</span>
+                                <Badge variant={
+                                  issue.severity === 'critical' ? 'destructive' :
+                                  issue.severity === 'high' ? 'destructive' :
+                                  issue.severity === 'medium' ? 'secondary' : 'outline'
+                                }>
+                                  {issue.severity.toUpperCase()}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-red-700">{issue.evidence}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {auditReport.recommendations.length > 0 && (
+                      <div className="mt-6">
+                        <h4 className="font-semibold mb-2 text-blue-700">💡 Recommendations</h4>
+                        <ul className="space-y-1">
+                          {auditReport.recommendations.map((rec, index) => (
+                            <li key={index} className="text-sm text-blue-700 flex items-start gap-2">
+                              <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                              {rec}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
