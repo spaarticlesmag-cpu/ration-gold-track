@@ -1,4 +1,4 @@
-// AI Auditor Service - Intelligent fraud detection and compliance monitoring for PDS system
+// AI Auditor Service - Intelligent fraud detection, compliance monitoring, and demand prediction for PDS system
 
 export interface AuditReport {
   id: string;
@@ -13,6 +13,46 @@ export interface AuditReport {
   compliance_rate: number;
   recommendations: string[];
   summary: string;
+}
+
+export interface DemandForecast {
+  store_id: string;
+  item_id: string;
+  forecasted_demand: number;
+  confidence_level: number;
+  prediction_basis: 'historical' | 'seasonal' | 'trend' | 'external_factors';
+  forecast_period: string; // e.g., '2026-02'
+  historical_data: Array<{
+    period: string;
+    actual_demand: number;
+    factors: string[];
+  }>;
+  recommended_stock: number;
+  risk_assessment: 'understock' | 'optimal' | 'overstock';
+}
+
+export interface StoreDemandReport {
+  store_id: string;
+  store_name: string;
+  location: {
+    latitude: number;
+    longitude: number;
+    district: string;
+  };
+  generated_at: string;
+  forecast_period: string;
+  total_monthly_demand: Record<string, number>;
+  item_forecasts: DemandForecast[];
+  recommendations: {
+    immediate_actions: string[];
+    procurement_plan: string[];
+    risk_mitigations: string[];
+  };
+  summary: {
+    overall_risk: 'low' | 'medium' | 'high';
+    confidence_score: number;
+    key_insights: string[];
+  };
 }
 
 export interface AuditIssue {
@@ -463,6 +503,420 @@ export class AIAuditor {
       return null;
     }
   }
+
+  // ==========================================
+  // DEMAND PREDICTION AND FORECASTING METHODS
+  // ==========================================
+
+  // Generate demand forecast for a specific store and item
+  generateDemandForecast(
+    storeId: string,
+    itemId: string,
+    forecastMonths: number = 3
+  ): DemandForecast {
+  console.log(`🔮 AI Auditor: Generating demand forecast for ${storeId} - ${itemId}`);
+
+  // Get historical data (last 12 months)
+  const historicalData = this.getHistoricalDemandData(storeId, itemId, 12);
+
+  // Apply multiple prediction algorithms
+  const algorithms = [
+    this.simpleMovingAverage(historicalData, 3),
+    this.exponentialSmoothing(historicalData, 0.3),
+    this.linearRegression(historicalData),
+    this.seasonalAdjustment(historicalData)
+  ];
+
+  // Ensemble prediction (weighted average)
+  const weights = [0.3, 0.3, 0.2, 0.2];
+  const predictions = algorithms.map((algo, index) => ({
+    value: algo.prediction,
+    weight: weights[index],
+    confidence: algo.confidence
+  }));
+
+  const weightedPrediction = predictions.reduce((sum, pred) =>
+    sum + (pred.value * pred.weight), 0
+  );
+
+  const averageConfidence = predictions.reduce((sum, pred) =>
+    sum + (pred.confidence * pred.weight), 0
+  );
+
+  // Determine prediction basis
+  const maxConfidence = Math.max(...predictions.map(p => p.confidence));
+  let predictionBasis: 'historical' | 'seasonal' | 'trend' | 'external_factors' = 'historical';
+
+  if (maxConfidence > 0.8) {
+    const bestAlgoIndex = predictions.findIndex(p => p.confidence === maxConfidence);
+    predictionBasis = ['historical', 'seasonal', 'trend', 'external_factors'][bestAlgoIndex] as any;
+  }
+
+  // Calculate recommended stock (prediction + 20% buffer)
+  const recommendedStock = Math.ceil(weightedPrediction * 1.2);
+
+  // Risk assessment
+  const currentStock = this.getCurrentStockLevel(storeId, itemId);
+  let riskAssessment: 'understock' | 'optimal' | 'overstock' = 'optimal';
+
+  if (currentStock < weightedPrediction * 0.8) {
+    riskAssessment = 'understock';
+  } else if (currentStock > weightedPrediction * 1.5) {
+    riskAssessment = 'overstock';
+  }
+
+  // Next month forecast period
+  const nextMonth = new Date();
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  const forecastPeriod = nextMonth.toISOString().slice(0, 7);
+
+  return {
+    store_id: storeId,
+    item_id: itemId,
+    forecasted_demand: Math.round(weightedPrediction),
+    confidence_level: Math.round(averageConfidence * 100),
+    prediction_basis: predictionBasis,
+    forecast_period: forecastPeriod,
+    historical_data: historicalData.slice(-6), // Last 6 months for display
+    recommended_stock: recommendedStock,
+    risk_assessment: riskAssessment
+  };
+}
+
+// Generate comprehensive demand report for a store
+async generateStoreDemandReport(storeId: string): Promise<StoreDemandReport> {
+  console.log(`📊 AI Auditor: Generating comprehensive demand report for store ${storeId}`);
+
+  const store = this.getStoreInfo(storeId);
+  const items = ['rice', 'wheat', 'sugar', 'dal', 'oil', 'salt', 'tea'];
+
+  // Generate forecasts for all items
+  const itemForecasts: DemandForecast[] = [];
+  const totalMonthlyDemand: Record<string, number> = {};
+
+  for (const itemId of items) {
+    const forecast = this.generateDemandForecast(storeId, itemId);
+    itemForecasts.push(forecast);
+
+    // Aggregate total demand
+    totalMonthlyDemand[itemId] = forecast.forecasted_demand;
+  }
+
+  // Generate recommendations
+  const recommendations = this.generateProcurementRecommendations(itemForecasts, storeId);
+
+  // Calculate overall risk
+  const riskLevels = itemForecasts.map(f => f.risk_assessment);
+  const understockCount = riskLevels.filter(r => r === 'understock').length;
+  const overstockCount = riskLevels.filter(r => r === 'overstock').length;
+
+  let overallRisk: 'low' | 'medium' | 'high' = 'low';
+  if (understockCount > items.length / 2 || overstockCount > items.length / 2) {
+    overallRisk = 'high';
+  } else if (understockCount > 0 || overstockCount > 0) {
+    overallRisk = 'medium';
+  }
+
+  // Calculate confidence score
+  const avgConfidence = itemForecasts.reduce((sum, f) => sum + f.confidence_level, 0) / items.length;
+
+  // Key insights
+  const keyInsights = this.generateDemandInsights(itemForecasts, storeId);
+
+  return {
+    store_id: storeId,
+    store_name: store.name,
+    location: {
+      latitude: store.latitude,
+      longitude: store.longitude,
+      district: store.district
+    },
+    generated_at: new Date().toISOString(),
+    forecast_period: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7),
+    total_monthly_demand: totalMonthlyDemand,
+    item_forecasts: itemForecasts,
+    recommendations,
+    summary: {
+      overall_risk: overallRisk,
+      confidence_score: Math.round(avgConfidence),
+      key_insights: keyInsights
+    }
+  };
+}
+
+// ==========================================
+// PREDICTION ALGORITHMS
+// ==========================================
+
+// Simple Moving Average
+private simpleMovingAverage(historicalData: any[], window: number) {
+  if (historicalData.length < window) {
+    return { prediction: historicalData[historicalData.length - 1]?.actual_demand || 0, confidence: 0.5 };
+  }
+
+  const recentData = historicalData.slice(-window);
+  const average = recentData.reduce((sum, d) => sum + d.actual_demand, 0) / window;
+
+  // Calculate confidence based on data consistency
+  const variance = recentData.reduce((sum, d) => sum + Math.pow(d.actual_demand - average, 2), 0) / window;
+  const stdDev = Math.sqrt(variance);
+  const confidence = Math.max(0.3, Math.min(0.9, 1 - (stdDev / average)));
+
+  return { prediction: average, confidence };
+}
+
+// Exponential Smoothing
+private exponentialSmoothing(historicalData: any[], alpha: number) {
+  if (historicalData.length === 0) {
+    return { prediction: 0, confidence: 0.3 };
+  }
+
+  let smoothed = historicalData[0].actual_demand;
+  for (let i = 1; i < historicalData.length; i++) {
+    smoothed = alpha * historicalData[i].actual_demand + (1 - alpha) * smoothed;
+  }
+
+  return { prediction: smoothed, confidence: 0.7 };
+}
+
+// Linear Regression Trend Analysis
+private linearRegression(historicalData: any[]) {
+  if (historicalData.length < 2) {
+    return { prediction: historicalData[0]?.actual_demand || 0, confidence: 0.4 };
+  }
+
+  const n = historicalData.length;
+  const x = historicalData.map((_, i) => i);
+  const y = historicalData.map(d => d.actual_demand);
+
+  const sumX = x.reduce((a, b) => a + b, 0);
+  const sumY = y.reduce((a, b) => a + b, 0);
+  const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+  const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
+
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+
+  const nextX = n;
+  const prediction = slope * nextX + intercept;
+
+  // Calculate R-squared for confidence
+  const yMean = sumY / n;
+  const ssRes = y.reduce((sum, yi, i) => {
+    const predicted = slope * x[i] + intercept;
+    return sum + Math.pow(yi - predicted, 2);
+  }, 0);
+  const ssTot = y.reduce((sum, yi) => sum + Math.pow(yi - yMean, 2), 0);
+  const rSquared = 1 - (ssRes / ssTot);
+
+  return { prediction: Math.max(0, prediction), confidence: Math.max(0.2, rSquared) };
+}
+
+// Seasonal Adjustment
+private seasonalAdjustment(historicalData: any[]) {
+  if (historicalData.length < 12) {
+    return { prediction: historicalData[historicalData.length - 1]?.actual_demand || 0, confidence: 0.4 };
+  }
+
+  // Simple seasonal adjustment (assuming monthly seasonality)
+  const seasonalFactors = this.calculateSeasonalFactors(historicalData);
+  const lastMonth = historicalData[historicalData.length - 1];
+  const lastMonthIndex = new Date(lastMonth.period + '-01').getMonth();
+  const seasonalFactor = seasonalFactors[lastMonthIndex];
+
+  const deseasonalized = lastMonth.actual_demand / seasonalFactor;
+  const trend = this.calculateTrend(historicalData);
+  const nextMonthPrediction = (deseasonalized + trend) * seasonalFactors[(lastMonthIndex + 1) % 12];
+
+  return { prediction: nextMonthPrediction, confidence: 0.6 };
+}
+
+// ==========================================
+// HELPER METHODS FOR DEMAND PREDICTION
+// ==========================================
+
+private getHistoricalDemandData(storeId: string, itemId: string, months: number): Array<{period: string, actual_demand: number, factors: string[]}> {
+  // Mock historical data - in real app, this would come from database
+  const data = [];
+  const now = new Date();
+
+  for (let i = months; i >= 1; i--) {
+    const date = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+    const period = date.toISOString().slice(0, 7);
+
+    // Generate realistic demand based on item type and seasonality
+    let baseDemand = 0;
+    const factors: string[] = [];
+
+    switch (itemId) {
+      case 'rice':
+        baseDemand = 400 + Math.random() * 200;
+        if ([5, 6, 7, 8, 9].includes(date.getMonth())) { // Monsoon season
+          baseDemand *= 1.2;
+          factors.push('Monsoon season increase');
+        }
+        break;
+      case 'wheat':
+        baseDemand = 300 + Math.random() * 150;
+        if ([11, 12, 1, 2].includes(date.getMonth())) { // Winter
+          baseDemand *= 1.1;
+          factors.push('Winter demand');
+        }
+        break;
+      case 'sugar':
+        baseDemand = 150 + Math.random() * 100;
+        break;
+      case 'dal':
+        baseDemand = 100 + Math.random() * 50;
+        break;
+      case 'oil':
+        baseDemand = 80 + Math.random() * 40;
+        break;
+      case 'salt':
+        baseDemand = 60 + Math.random() * 20;
+        break;
+      case 'tea':
+        baseDemand = 40 + Math.random() * 20;
+        break;
+    }
+
+    // Add growth trend
+    const growthFactor = 1 + (i * 0.02); // 2% monthly growth
+    baseDemand *= growthFactor;
+
+    data.push({
+      period,
+      actual_demand: Math.round(baseDemand),
+      factors
+    });
+  }
+
+  return data;
+}
+
+private getCurrentStockLevel(storeId: string, itemId: string): number {
+  // Get from store service
+  const stores = JSON.parse(localStorage.getItem('ration_stores') || '[]');
+  const store = stores.find((s: any) => s.id === storeId);
+  return store?.inventory?.[itemId] || 0;
+}
+
+private getStoreInfo(storeId: string) {
+  // Mock store info - in real app, get from store service
+  const mockStores = [
+    { id: 'store-001', name: 'Angamaly Ration Depot', latitude: 10.1965, longitude: 76.3912, district: 'Ernakulam' },
+    { id: 'store-002', name: 'Aluva Civil Supplies', latitude: 10.1075, longitude: 76.3570, district: 'Ernakulam' },
+    { id: 'store-003', name: 'Periyar Nagar Ration Shop', latitude: 9.9658, longitude: 76.2875, district: 'Ernakulam' }
+  ];
+
+  return mockStores.find(s => s.id === storeId) || mockStores[0];
+}
+
+private calculateSeasonalFactors(data: any[]): number[] {
+  const monthlyTotals = new Array(12).fill(0);
+  const monthlyCounts = new Array(12).fill(0);
+
+  data.forEach(d => {
+    const month = new Date(d.period + '-01').getMonth();
+    monthlyTotals[month] += d.actual_demand;
+    monthlyCounts[month]++;
+  });
+
+  const monthlyAverages = monthlyTotals.map((total, i) =>
+    monthlyCounts[i] > 0 ? total / monthlyCounts[i] : 0
+  );
+
+  const overallAverage = monthlyAverages.reduce((a, b) => a + b, 0) / 12;
+
+  return monthlyAverages.map(avg => avg / overallAverage);
+}
+
+private calculateTrend(data: any[]): number {
+  if (data.length < 2) return 0;
+
+  const recent = data.slice(-3);
+  const trend = (recent[recent.length - 1].actual_demand - recent[0].actual_demand) / recent.length;
+
+  return trend;
+}
+
+private generateProcurementRecommendations(forecasts: DemandForecast[], storeId: string) {
+  const understockItems = forecasts.filter(f => f.risk_assessment === 'understock');
+  const overstockItems = forecasts.filter(f => f.risk_assessment === 'overstock');
+
+  const immediateActions = [];
+  const procurementPlan = [];
+  const riskMitigations = [];
+
+  if (understockItems.length > 0) {
+    immediateActions.push(`Urgent restocking needed for: ${understockItems.map(f => f.item_id).join(', ')}`);
+    procurementPlan.push(`Procure additional ${understockItems.reduce((sum, f) => sum + f.recommended_stock, 0)} units this week`);
+  }
+
+  if (overstockItems.length > 0) {
+    immediateActions.push(`Consider redistributing excess stock of: ${overstockItems.map(f => f.item_id).join(', ')}`);
+    riskMitigations.push('Monitor overstock items for spoilage risk');
+  }
+
+  // Monthly procurement plan
+  const totalMonthlyRequirement = forecasts.reduce((sum, f) => sum + f.recommended_stock, 0);
+  procurementPlan.push(`Monthly procurement target: ${totalMonthlyRequirement} units across all items`);
+
+  // Seasonal planning
+  const currentMonth = new Date().getMonth();
+  if ([5, 6, 7, 8, 9].includes(currentMonth)) { // Monsoon
+    procurementPlan.push('Increase rice procurement by 20% for monsoon season');
+  }
+
+  riskMitigations.push('Maintain 15-20% buffer stock for demand fluctuations');
+  riskMitigations.push('Implement automated reorder alerts when stock drops below 20%');
+
+  return {
+    immediate_actions: immediateActions,
+    procurement_plan: procurementPlan,
+    risk_mitigations: riskMitigations
+  };
+}
+
+private generateDemandInsights(forecasts: DemandForecast[], storeId: string): string[] {
+  const insights = [];
+
+  // High confidence forecasts
+  const highConfidence = forecasts.filter(f => f.confidence_level > 80);
+  if (highConfidence.length > 0) {
+    insights.push(`High confidence predictions for ${highConfidence.length} items with accuracy >80%`);
+  }
+
+  // Risk assessments
+  const understockRisks = forecasts.filter(f => f.risk_assessment === 'understock');
+  const overstockRisks = forecasts.filter(f => f.risk_assessment === 'overstock');
+
+  if (understockRisks.length > 0) {
+    insights.push(`${understockRisks.length} items at risk of stockout`);
+  }
+
+  if (overstockRisks.length > 0) {
+    insights.push(`${overstockRisks.length} items may have excess inventory`);
+  }
+
+  // Seasonal patterns
+  const seasonalItems = forecasts.filter(f => f.prediction_basis === 'seasonal');
+  if (seasonalItems.length > 0) {
+    insights.push(`${seasonalItems.length} items show seasonal demand patterns`);
+  }
+
+  // Trend analysis
+  const trendingUp = forecasts.filter(f => f.prediction_basis === 'trend' && f.forecasted_demand > 100);
+  if (trendingUp.length > 0) {
+    insights.push(`${trendingUp.length} items showing upward demand trend`);
+  }
+
+  if (insights.length === 0) {
+    insights.push('Demand patterns appear stable with no significant variations');
+  }
+
+  return insights;
+}
 }
 
 // Export singleton instance
@@ -471,6 +925,15 @@ export const aiAuditor = new AIAuditor();
 // Helper function to trigger audit from admin panel
 export async function triggerAudit(storeId: string): Promise<AuditReport | null> {
   return await aiAuditor.runAutomatedAudit(storeId);
+}
+
+// Demand prediction helper functions
+export async function generateStoreDemandReport(storeId: string): Promise<StoreDemandReport> {
+  return await aiAuditor.generateStoreDemandReport(storeId);
+}
+
+export function generateItemDemandForecast(storeId: string, itemId: string): DemandForecast {
+  return aiAuditor.generateDemandForecast(storeId, itemId);
 }
 
 // Get audit dashboard data
@@ -490,5 +953,84 @@ export function getAuditDashboardData() {
       high: reports.filter(r => r.risk_score === 'high').length,
       critical: reports.filter(r => r.risk_score === 'critical').length
     }
+  };
+}
+
+// ==========================================
+// DEMAND PREDICTION DEMO FUNCTIONS
+// ==========================================
+
+// Demo function to generate sample demand reports
+export async function generateSampleDemandReports() {
+  console.log('🔮 AI Auditor: Generating sample demand prediction reports...');
+
+  const stores = ['store-001', 'store-002', 'store-003'];
+  const reports = [];
+
+  for (const storeId of stores) {
+    try {
+      const report = await generateStoreDemandReport(storeId);
+      reports.push(report);
+      console.log(`✅ Generated report for ${report.store_name}`);
+    } catch (error) {
+      console.error(`❌ Failed to generate report for ${storeId}:`, error);
+    }
+  }
+
+  return reports;
+}
+
+// Demo function to show individual item forecasts
+export function demonstrateForecastAlgorithms() {
+  console.log('🔮 AI Auditor: Demonstrating forecast algorithms...');
+
+  const storeId = 'store-001';
+  const items = ['rice', 'wheat', 'sugar'];
+
+  const results = items.map(itemId => {
+    const forecast = generateItemDemandForecast(storeId, itemId);
+    console.log(`${itemId.toUpperCase()}: ${forecast.forecasted_demand} units (${forecast.confidence_level}% confidence, ${forecast.prediction_basis})`);
+    return forecast;
+  });
+
+  return results;
+}
+
+// Export comprehensive demand analytics
+export function getDemandAnalyticsDashboard() {
+  console.log('📊 AI Auditor: Generating demand analytics dashboard...');
+
+  // Generate sample reports for demo
+  const sampleReports = [
+    // Mock data for demonstration
+    {
+      store_id: 'store-001',
+      store_name: 'Angamaly Ration Depot',
+      forecast_period: '2026-02',
+      total_monthly_demand: { rice: 480, wheat: 330, sugar: 180 },
+      summary: {
+        overall_risk: 'medium' as const,
+        confidence_score: 78,
+        key_insights: ['Rice demand increasing due to monsoon season', 'Optimal stock levels for wheat']
+      }
+    }
+  ];
+
+  return {
+    totalStoresAnalyzed: sampleReports.length,
+    averageConfidence: 78,
+    highRiskStores: sampleReports.filter((r: any) => r.summary.overall_risk === 'high').length,
+    totalMonthlyDemand: sampleReports.reduce((acc, report) => {
+      Object.entries(report.total_monthly_demand).forEach(([item, demand]) => {
+        acc[item] = (acc[item] || 0) + demand;
+      });
+      return acc;
+    }, {} as Record<string, number>),
+    recentReports: sampleReports,
+    procurementAlerts: [
+      'Store-001 needs 480kg rice this month',
+      'Store-002 wheat stock below optimal level',
+      'Seasonal rice demand increase expected in June-September'
+    ]
   };
 }
