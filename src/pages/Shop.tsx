@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
 import { useGeolocation } from '@/hooks/useGeolocation';
@@ -12,7 +13,7 @@ import { logger } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
 import { SkeletonLoading } from '@/components/ui/skeleton-loading';
 import { Footer } from '@/components/Footer';
-import { findClosestStores, type RationStore } from '@/lib/store-service';
+import { findClosestStores, getAllStores, type RationStore } from '@/lib/store-service';
 import {
   calculatePDSPricing,
   mapRationCardToBeneficiaryCategory,
@@ -40,11 +41,13 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
   const [userQuota, setUserQuota] = useState<any>(null);
   const [nearestStore, setNearestStore] = useState<RationStore & { distance: number } | null>(null);
+  const [selectedStore, setSelectedStore] = useState<RationStore | null>(null);
+  const [allStores, setAllStores] = useState<RationStore[]>([]);
 
   // Sample ration items with PDS item types
   const sampleItems: Array<RationItem & { pdsType: PDSItemType; economicCost: number }> = [
     { id: 'rice', name: 'Premium Rice', unit: 'kg', price_per_unit: 25.50, image: '/rice.jpg', quantity: 0, pdsType: 'rice', economicCost: 45.00 },
-    { id: 'wheat', name: 'Wheat Flour', unit: 'kg', price_per_unit: 18.75, image: '/wheat.jpg', quantity: 0, pdsType: 'wheat', economicCost: 32.00 },
+    { id: 'wheat', name: 'Wheat', unit: 'kg', price_per_unit: 18.75, image: '/wheat.jpg', quantity: 0, pdsType: 'wheat', economicCost: 32.00 },
     { id: 'sugar', name: 'Sugar', unit: 'kg', price_per_unit: 35.00, image: '/sugar.jpg', quantity: 0, pdsType: 'sugar', economicCost: 42.00 },
     { id: 'dal', name: 'Toor Dal (Lentils)', unit: 'kg', price_per_unit: 120.00, image: '/toor-daal.jpg', quantity: 0, pdsType: 'other', economicCost: 85.00 },
     { id: 'oil', name: 'Cooking Oil', unit: 'L', price_per_unit: 160.00, image: '/cooking-oil.jpg', quantity: 0, pdsType: 'other', economicCost: 180.00 },
@@ -116,6 +119,16 @@ const Shop = () => {
     return () => clearTimeout(timer);
   }, [position, locationError, locationLoading, getCurrentPosition]);
 
+  // Load all stores and set initial selection
+  useEffect(() => {
+    const stores = getAllStores();
+    setAllStores(stores);
+    // Set first store as selected by default if none selected
+    if (!selectedStore && stores.length > 0) {
+      setSelectedStore(stores[0]);
+    }
+  }, [selectedStore]);
+
   // Find nearest store when user location is available
   useEffect(() => {
     if (position && !nearestStore) {
@@ -127,12 +140,16 @@ const Shop = () => {
 
         if (closestStores.length > 0) {
           setNearestStore(closestStores[0]);
+          // Also set as selected store if not already set
+          if (!selectedStore) {
+            setSelectedStore(closestStores[0]);
+          }
         }
       } catch (error) {
         logger.error('Error finding nearest store:', error);
       }
     }
-  }, [position, nearestStore]);
+  }, [position, nearestStore, selectedStore]);
 
   // Get PDS pricing for an item based on beneficiary profile
   const getPDSPricing = (item: any) => {
@@ -468,6 +485,98 @@ const Shop = () => {
                 </div>
               </div>
             </CardContent>
+          </Card>
+        )}
+
+        {/* Store Selector */}
+        {allStores.length > 0 && (
+          <Card className="mb-10 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 shadow-lg">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-green-100 rounded-full">
+                  <Store className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="flex-1">
+                  <CardTitle className="text-xl text-gray-900">Select Ration Store</CardTitle>
+                  <p className="text-sm text-gray-600">Choose a store to view current stock levels</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="store-select" className="text-sm font-medium">Store:</Label>
+                  <select
+                    id="store-select"
+                    value={selectedStore?.id || ''}
+                    onChange={(e) => {
+                      const store = allStores.find(s => s.id === e.target.value);
+                      setSelectedStore(store || null);
+                    }}
+                    className="px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  >
+                    {allStores.map(store => (
+                      <option key={store.id} value={store.id}>
+                        {store.name} - {store.address.split(',')[0]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </CardHeader>
+            {selectedStore && (
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">{selectedStore.name}</h4>
+                    <p className="text-sm text-gray-600 mb-2">{selectedStore.address}</p>
+                    <p className="text-sm text-gray-600">{selectedStore.phone}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">Operating Hours</h4>
+                    <p className="text-sm text-gray-600">{selectedStore.operating_hours}</p>
+                    <Badge variant="outline" className="mt-2 bg-green-50 text-green-700 border-green-200">
+                      Stock Available
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Stock Levels for Selected Store */}
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold text-gray-900 mb-3">Current Stock Levels</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {Object.entries(selectedStore.inventory).map(([itemId, stock]) => {
+                      const itemName = itemId === 'rice' ? 'Rice' :
+                                     itemId === 'wheat' ? 'Wheat' :
+                                     itemId === 'sugar' ? 'Sugar' :
+                                     itemId === 'dal' ? 'Dal' :
+                                     itemId === 'oil' ? 'Oil' :
+                                     itemId === 'salt' ? 'Salt' :
+                                     itemId === 'tea' ? 'Tea' : itemId;
+
+                      const unit = itemId === 'oil' ? 'L' : 'kg';
+                      const isLowStock = stock < 50;
+
+                      return (
+                        <div key={itemId} className="bg-white rounded-lg p-3 border border-gray-200">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm font-medium text-gray-900">{itemName}</span>
+                            <Badge
+                              variant={isLowStock ? "destructive" : "secondary"}
+                              className={`text-xs ${isLowStock ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}
+                            >
+                              {stock} {unit}
+                            </Badge>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div
+                              className={`h-2 rounded-full ${isLowStock ? 'bg-red-500' : 'bg-green-500'}`}
+                              style={{ width: `${Math.min((stock / 200) * 100, 100)}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </CardContent>
+            )}
           </Card>
         )}
 

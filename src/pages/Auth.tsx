@@ -466,7 +466,7 @@ const Auth = () => {
 
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <Label>Aadhaar Document Upload (Optional)</Label>
+                          <Label>Aadhaar Document Upload</Label>
                           <DocumentUpload
                             userId={signUpData.email}
                             bucket="documents"
@@ -478,7 +478,7 @@ const Auth = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <Label>Ration Card Document Upload (Optional)</Label>
+                          <Label>Ration Card Document Upload</Label>
                           <DocumentUpload
                             userId={signUpData.email}
                             bucket="documents"

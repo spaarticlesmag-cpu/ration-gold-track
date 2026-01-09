@@ -107,7 +107,7 @@ const CustomerDashboard = () => {
 
   const rationItemsBase = [
     { id: "rice", name: "Premium Rice", price: 25.50, image: riceImg, available: 7, unit: "kg", subsidized: true },
-    { id: "wheat", name: "Wheat Flour", price: 18.75, image: wheatImg, available: 6, unit: "kg", subsidized: true },
+    { id: "wheat", name: "Wheat", price: 18.75, image: wheatImg, available: 6, unit: "kg", subsidized: true },
     { id: "sugar", name: "Sugar", price: 35.00, image: sugarImg, available: 1.5, unit: "kg", subsidized: true },
   ];
 
