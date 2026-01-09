@@ -241,7 +241,7 @@ class AuditRulesEngine {
   checkDuplicateOrders(order: any, recentOrders: any[]): AuditIssue | null {
     const similarOrders = recentOrders.filter(existingOrder => {
       // Check if same items in similar timeframe
-      const timeDiff = Math.abs(new Date(order.created_at) - new Date(existingOrder.created_at));
+      const timeDiff = Math.abs(new Date(order.created_at).getTime() - new Date(existingOrder.created_at).getTime());
       const sameDay = timeDiff < 24 * 60 * 60 * 1000; // Within 24 hours
 
       if (!sameDay) return false;
@@ -261,7 +261,7 @@ class AuditRulesEngine {
         issue_type: 'duplicate',
         severity: 'medium',
         description: `Potential duplicate order detected`,
-        evidence: `Similar order ${similarOrders[0].id} placed ${Math.round((new Date(order.created_at) - new Date(similarOrders[0].created_at)) / (1000 * 60))} minutes ago`,
+        evidence: `Similar order ${similarOrders[0].id} placed ${Math.round((new Date(order.created_at).getTime() - new Date(similarOrders[0].created_at).getTime()) / (1000 * 60))} minutes ago`,
         risk_score: 50
       };
     }
@@ -530,16 +530,16 @@ export class AIAuditor {
   // Ensemble prediction (weighted average)
   const weights = [0.3, 0.3, 0.2, 0.2];
   const predictions = algorithms.map((algo, index) => ({
-    value: algo.prediction,
+    value: algo.prediction as number,
     weight: weights[index],
-    confidence: algo.confidence
+    confidence: algo.confidence as number
   }));
 
-  const weightedPrediction = predictions.reduce((sum, pred) =>
+  const weightedPrediction = predictions.reduce((sum: number, pred) =>
     sum + (pred.value * pred.weight), 0
   );
 
-  const averageConfidence = predictions.reduce((sum, pred) =>
+  const averageConfidence = predictions.reduce((sum: number, pred) =>
     sum + (pred.confidence * pred.weight), 0
   );
 
