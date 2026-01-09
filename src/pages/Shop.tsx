@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/useCart';
 import { useAuth } from '@/hooks/useAuth';
+import { useGeolocation } from '@/hooks/useGeolocation';
 import { NavHeader } from '@/components/NavHeader';
-import { Package, ShoppingCart, Plus, Info, IndianRupee, Sparkles } from 'lucide-react';
+import { Package, ShoppingCart, Plus, Info, IndianRupee, Sparkles, MapPin, Store } from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { supabase } from '@/integrations/supabase/client';
 import { SkeletonLoading } from '@/components/ui/skeleton-loading';
 import { Footer } from '@/components/Footer';
+import { findClosestStores, type RationStore } from '@/lib/store-service';
 import {
   calculatePDSPricing,
   mapRationCardToBeneficiaryCategory,
@@ -33,9 +35,11 @@ const Shop = () => {
 
   const { profile } = useAuth();
   const { add, lines } = useCart();
+  const { position, error: locationError, loading: locationLoading, getCurrentPosition } = useGeolocation();
   const [items, setItems] = useState<RationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [userQuota, setUserQuota] = useState<any>(null);
+  const [nearestStore, setNearestStore] = useState<RationStore & { distance: number } | null>(null);
 
   // Sample ration items with PDS item types
   const sampleItems: Array<RationItem & { pdsType: PDSItemType; economicCost: number }> = [
@@ -78,6 +82,57 @@ const Shop = () => {
 
     loadData();
   }, [profile]);
+
+  // Auto-get location on component mount for development/testing
+  useEffect(() => {
+    const autoGetLocation = async () => {
+      // In development, try to get location automatically
+      // In production, this might require user interaction
+      if (!position && !locationError && !locationLoading) {
+        try {
+          await getCurrentPosition();
+        } catch (error) {
+          // If geolocation fails, use fallback for development
+          console.log('Geolocation failed, using development fallback');
+          // Use a location near Kerala stores for testing
+          const fallbackPosition = {
+            latitude: 10.1075, // Near Aluva store
+            longitude: 76.3570,
+            accuracy: 1000,
+            timestamp: Date.now(),
+          };
+
+          // Set fallback position for development
+          setNearestStore(findClosestStores({
+            latitude: fallbackPosition.latitude,
+            longitude: fallbackPosition.longitude,
+          }, 1)[0]);
+        }
+      }
+    };
+
+    // Auto-attempt location after a short delay
+    const timer = setTimeout(autoGetLocation, 1000);
+    return () => clearTimeout(timer);
+  }, [position, locationError, locationLoading, getCurrentPosition]);
+
+  // Find nearest store when user location is available
+  useEffect(() => {
+    if (position && !nearestStore) {
+      try {
+        const closestStores = findClosestStores({
+          latitude: position.latitude,
+          longitude: position.longitude,
+        }, 1); // Get only the closest store
+
+        if (closestStores.length > 0) {
+          setNearestStore(closestStores[0]);
+        }
+      } catch (error) {
+        logger.error('Error finding nearest store:', error);
+      }
+    }
+  }, [position, nearestStore]);
 
   // Get PDS pricing for an item based on beneficiary profile
   const getPDSPricing = (item: any) => {
@@ -293,6 +348,129 @@ const Shop = () => {
 
 
 
+        {/* Nearest Store Information */}
+        {nearestStore && (
+          <Card className="mb-10 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 shadow-lg">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded-full">
+                  <Store className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl text-gray-900">Nearest Ration Store</CardTitle>
+                  <p className="text-sm text-gray-600 flex items-center gap-1">
+                    <MapPin className="h-4 w-4" />
+                    {nearestStore.distance.toFixed(1)} km away
+                  </p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">{nearestStore.name}</h4>
+                  <p className="text-sm text-gray-600 mb-2">{nearestStore.address}</p>
+                  <p className="text-sm text-gray-600">{nearestStore.phone}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Operating Hours</h4>
+                  <p className="text-sm text-gray-600">{nearestStore.operating_hours}</p>
+                  <Badge variant="outline" className="mt-2 bg-green-50 text-green-700 border-green-200">
+                    Stock Available
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Stock Levels */}
+              <div className="border-t pt-4">
+                <h4 className="font-semibold text-gray-900 mb-3">Current Stock Levels</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {Object.entries(nearestStore.inventory).map(([itemId, stock]) => {
+                    const itemName = itemId === 'rice' ? 'Rice' :
+                                   itemId === 'wheat' ? 'Wheat' :
+                                   itemId === 'sugar' ? 'Sugar' :
+                                   itemId === 'dal' ? 'Dal' :
+                                   itemId === 'oil' ? 'Oil' :
+                                   itemId === 'salt' ? 'Salt' :
+                                   itemId === 'tea' ? 'Tea' : itemId;
+
+                    const unit = itemId === 'oil' ? 'L' : 'kg';
+                    const isLowStock = stock < 50;
+
+                    return (
+                      <div key={itemId} className="bg-white rounded-lg p-3 border border-gray-200">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-medium text-gray-900">{itemName}</span>
+                          <Badge
+                            variant={isLowStock ? "destructive" : "secondary"}
+                            className={`text-xs ${isLowStock ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}
+                          >
+                            {stock} {unit}
+                          </Badge>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${isLowStock ? 'bg-red-500' : 'bg-green-500'}`}
+                            style={{ width: `${Math.min((stock / 200) * 100, 100)}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Location Permission Notice */}
+        {!position && !locationError && (
+          <Card className="mb-10 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200">
+            <CardContent className="py-6 px-8">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-amber-100 rounded-full">
+                  <MapPin className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Find Nearby Stores</h3>
+                  <p className="text-gray-600 mb-3">Allow location access to see stock levels at your nearest ration store</p>
+                  <Button
+                    onClick={getCurrentPosition}
+                    disabled={locationLoading}
+                    className="bg-amber-600 hover:bg-amber-700"
+                  >
+                    {locationLoading ? 'Getting Location...' : 'Enable Location Access'}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Location Error Notice */}
+        {locationError && (
+          <Card className="mb-10 bg-gradient-to-r from-red-50 to-pink-50 border-red-200">
+            <CardContent className="py-6 px-8">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-red-100 rounded-full">
+                  <MapPin className="h-6 w-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">Location Access Required</h3>
+                  <p className="text-gray-600 mb-3">We need your location to show stock levels at nearby stores. Please enable location access in your browser settings.</p>
+                  <Button
+                    onClick={getCurrentPosition}
+                    variant="outline"
+                    className="border-red-300 text-red-700 hover:bg-red-50"
+                  >
+                    Try Again
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Shop Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Available Ration Items</h2>
@@ -471,6 +649,14 @@ const Shop = () => {
                 <br />• Profile: {profile ? '✅' : '❌'}
                 <br />• Card Type: {profile?.ration_card_type || 'N/A'}
                 <br />• Quota for Rice: {getRemainingQuota('Rice') || 'N/A'} kg
+                <br />• Location Available: {position ? '✅' : '❌'} {position && `(${position.latitude.toFixed(4)}, ${position.longitude.toFixed(4)})`}
+                <br />• Location Error: {locationError || 'None'}
+                <br />• Nearest Store: {nearestStore ? `✅ ${nearestStore.name} (${nearestStore.distance.toFixed(1)} km)` : '❌'}
+                {nearestStore && (
+                  <>
+                    <br />• Store Stock - Rice: {nearestStore.inventory.rice}kg, Wheat: {nearestStore.inventory.wheat}kg, Sugar: {nearestStore.inventory.sugar}kg
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>

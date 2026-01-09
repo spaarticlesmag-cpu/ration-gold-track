@@ -434,6 +434,13 @@ export default function OrdersAdmin() {
           </CardContent>
         </Card>
 
+        {/* DEBUG MESSAGE */}
+        <div className="bg-yellow-100 border-2 border-yellow-400 p-4 rounded-lg mb-4">
+          <h2 className="text-xl font-bold text-yellow-800">🔧 AI AUDITOR SECTION LOADED</h2>
+          <p className="text-yellow-700">If you can see this message, the AI Auditor section is rendering correctly!</p>
+          <p className="text-sm text-yellow-600 mt-2">Scroll down to see the AI Auditor card with purple header.</p>
+        </div>
+
         {/* AI Auditor Section */}
         <Card>
           <CardHeader className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg">
